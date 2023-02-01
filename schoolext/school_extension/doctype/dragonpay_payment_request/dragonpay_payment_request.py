@@ -3,6 +3,7 @@
 
 import json
 import frappe
+from schoolext.school_extension.dragonpay import get_authorization_string
 from frappe import _
 from frappe.model.document import Document
 from frappe.integrations.utils import (
@@ -10,10 +11,11 @@ from frappe.integrations.utils import (
     make_get_request,
     make_post_request,
 )
-from frappe.utils import call_hook_method, cint, get_timestamp, get_url
+from frappe.utils import call_hook_method, cint, get_timestamp, get_url, flt
 from schoolext.school_extension.doctype.dragonpay_settings.dragonpay_settings import SERVICE_PRODUCTION_BASE_URL, SERVICE_TEST_BASE_URL
 
-from base64 import b64encode
+
+precision = cint(frappe.db.get_default("currency_precision")) or 2
 
 class DragonPayPaymentRequest(Document):
     def on_submit(self):
@@ -34,6 +36,7 @@ class DragonPayPaymentRequest(Document):
             "Currency": self.currency,
             "Description": self.description,
             "Email": self.email,
+            "ProcId": self.proc_id
             # "MobileNo": self.mobile_no,
             # "IPAddress": self.ip_address,
             # "UserAgent": self.user_agent
@@ -52,19 +55,12 @@ class DragonPayPaymentRequest(Document):
 
         if settings.test_mode:
             url = "{0}/{1}/post".format(SERVICE_TEST_BASE_URL, self.name)
-
-            username = settings.test_merchant_id
-            password = settings.test_password
         else:
             url = "{0}/{1}/post".format(SERVICE_PRODUCTION_BASE_URL, self.name)
 
-            username = settings.merchant_id
-            password = settings.password
-
-        print("basic auth: {}".format(basic_auth(username, password)))
         headers = {
             "Content-Type": "application/json",
-            "Authorization": basic_auth(username, password)
+            "Authorization": get_authorization_string()
             }
         
         try:
@@ -87,7 +83,3 @@ class DragonPayPaymentRequest(Document):
         frappe.db.set_value("DragonPay Payment Request", self.name, "payment_initiation_request_status", payment_initiation_request_status)
         frappe.db.set_value("DragonPay Payment Request", self.name, "payment_initiation_request_message", payment_request_response["Message"])
         frappe.db.set_value("DragonPay Payment Request", self.name, "url", payment_request_response["Url"])
-
-def basic_auth(username, password):
-    token = b64encode(f"{username}:{password}".encode('utf-8')).decode("ascii")
-    return f'Basic {token}'

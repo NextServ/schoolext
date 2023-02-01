@@ -7,14 +7,17 @@
 
 {% block page_content %}
 Test
-<div class="col grid-static-col col-xs-2 text-right bold" data-fieldname="rate" data-fieldtype="Currency">
-    <div class="field-area" style=""><div class="form-group frappe-control input-max-width" data-fieldtype="Currency" data-fieldname="rate" title="rate">
+<div class="col grid-static-col col-xs-2 text-right bold" data-fieldname="amount" data-fieldtype="Currency">
+    <div class="field-area" style=""><div class="form-group frappe-control input-max-width" data-fieldtype="Currency" data-fieldname="amount" title="amount">
         <input type="text" autocomplete="off" class="input-with-feedback form-control bold input-sm" 
-            data-fieldtype="Currency" data-fieldname="rate" placeholder="Rate (PHP)" data-col-idx="2"
+            data-fieldtype="Currency" data-fieldname="amount" placeholder="amount (PHP)" data-col-idx="2"
             id="amount">
     </div>
 </div>
-<div class="static-area ellipsis reqd" style="display: none;"><div style="text-align: right">₱ 0.00</div></div></div>
+<input type="text" autocomplete="off" class="input-with-feedback form-control bold input-sm" 
+            data-fieldtype="Data" data-fieldname="proc-id" placeholder="Proc ID" data-col-idx="18"
+            id="proc-id">
+<!-- <div class="static-area ellipsis reqd" style="display: none;"><div style="text-align: right">₱ 0.00</div></div></div> -->
 <br>
 <button class="btn btn-primary btn-sm btn-new-doc hidden-xs" id="enroll-now">
     Enroll now!
@@ -22,4 +25,8 @@ Test
 <button class="btn btn-primary btn-sm btn-new-doc hidden-xs" id="test">
     Test
 </button>
+<div id="proc-ids"></div>
+<!-- <button class="btn btn-primary btn-sm btn-new-doc hidden-xs" id="get-proc-ids">
+    Get Proc Ids
+</button> -->
 {% endblock %}

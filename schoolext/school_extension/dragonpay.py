@@ -1,9 +1,20 @@
 import frappe
-from frappe.utils import getdate, now, flt
+from frappe import _
+from frappe.utils import getdate, now, flt, cint
 from frappe.model.document import Document
 from werkzeug.wrappers import Response
+from schoolext.school_extension.doctype.dragonpay_settings.dragonpay_settings import SERVICE_PRODUCTION_BASE_URL, SERVICE_TEST_BASE_URL
+
+from frappe.integrations.utils import (
+    create_request_log,
+    make_get_request,
+    make_post_request,
+)
 
 import hashlib
+from base64 import b64encode
+
+precision = cint(frappe.db.get_default("currency_precision")) or 2
 
 # @frappe.whitelist()
 # def dragonpay_postback(
@@ -21,6 +32,37 @@ import hashlib
 #     response.data = "result=OK"
 
 #     return response
+
+@frappe.whitelist(methods=["GET"])
+def dragonpay_get_available_processors(amount):
+    amount = flt(amount, precision)
+    settings = frappe.get_doc("DragonPay Settings")
+
+    url = ""
+
+    if settings.test_mode:
+        url = "{0}/processors".format(SERVICE_TEST_BASE_URL)
+    else:
+        url = "{0}/processors".format(SERVICE_PRODUCTION_BASE_URL)
+
+    if amount > 0:
+        url = "{0}/available/{1}".format(url, amount)
+    
+    headers = {
+            "Content-Type": "application/json",
+            "Authorization": get_authorization_string()
+            }
+        
+    try:
+        response = make_get_request(
+            url,
+            headers=headers
+        )
+
+        return response        
+    except Exception:
+        frappe.log(frappe.get_traceback())
+        frappe.throw(_("Error in GetAvailableProcessors request"))
 
 @frappe.whitelist(methods=["GET"])
 def dragonpay_postback(
@@ -92,8 +134,8 @@ def dragonpay_postback1():
     return "result=OK"
 
 @frappe.whitelist()
-def create_dragonpay_payment_request(amount):
-    amount = flt(amount)
+def create_dragonpay_payment_request(amount, proc_id):
+    amount = flt(amount, precision)
 
     if amount <= 0.00:
         frappe.throw("Amount must be valid.")
@@ -108,7 +150,7 @@ def create_dragonpay_payment_request(amount):
     dppr.description = "Test only"
     dppr.email = "robert@serviotech.com"
     dppr.mobile_no = "09173049388"
-    dppr.proc_id = ""
+    dppr.proc_id = proc_id
     dppr.ip_address = frappe.local.request_ip
 
     request_dict = frappe.request.__dict__
@@ -134,3 +176,19 @@ def test_redirect():
     frappe.local.response["type"] = "redirect"
     # frappe.local.response["location"] = "/app/customer"
     frappe.local.response["location"] = "/blog"
+
+def get_authorization_string():
+    settings = frappe.get_doc("DragonPay Settings")
+
+    if settings.test_mode:
+        username = settings.test_merchant_id
+        password = settings.test_password
+    else:
+        username = settings.merchant_id
+        password = settings.password
+    
+    return basic_auth(username, password)
+
+def basic_auth(username, password):
+    token = b64encode(f"{username}:{password}".encode('utf-8')).decode("ascii")
+    return f'Basic {token}'
