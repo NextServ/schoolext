@@ -81,7 +81,8 @@ frappe.ready(function() {
                         message: __('Success.')
                     });
 
-                    window.location.replace(r.message.url)
+                    // window.location.replace(r.message.url);
+                    window.location.href(r.message.url);
                 } else {
                     console.log("error create_dragonpay_payment_request");
                 }
