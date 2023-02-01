@@ -3,7 +3,7 @@
 
 import json
 import frappe
-from schoolext.school_extension.dragonpay import get_authorization_string
+from schoolext.school_extension.dragonpay import get_authorization_string, get_username_and_password
 from frappe import _
 from frappe.model.document import Document
 from frappe.integrations.utils import (
@@ -58,14 +58,21 @@ class DragonPayPaymentRequest(Document):
         else:
             url = "{0}/{1}/post".format(SERVICE_PRODUCTION_BASE_URL, self.name)
 
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": get_authorization_string()
-            }
         
+
+        # headers = {
+        #     "Content-Type": "application/json",
+        #     "Authorization": get_authorization_string()
+        #     }
+        headers = {
+            "Content-Type": "application/json"
+            }
+        username, password = get_username_and_password()
+        auth = (username, password)
         try:
             payment_request_response = make_post_request(
                 url,
+                auth=auth,
                 headers=headers,
                 data=json.dumps(payment_options),
             )          

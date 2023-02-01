@@ -189,6 +189,18 @@ def get_authorization_string():
     
     return basic_auth(username, password)
 
+def get_username_and_password():
+    settings = frappe.get_doc("DragonPay Settings")
+
+    if settings.test_mode:
+        username = settings.test_merchant_id
+        password = settings.test_password
+    else:
+        username = settings.merchant_id
+        password = settings.password
+    
+    return username, password
+
 def basic_auth(username, password):
     token = b64encode(f"{username}:{password}".encode('utf-8')).decode("ascii")
     return f'Basic {token}'
