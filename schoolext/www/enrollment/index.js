@@ -6,7 +6,7 @@ frappe.ready(function() {
 
     function create_dragonpay_payment_request(amount) {
         frappe.call({
-            method: "schoolext.school_extension.doctype.dragonpay_settings.dragonpay_settings.create_dragonpay_payment_request",
+            method: "schoolext.school_extension.dragonpay.create_dragonpay_payment_request",
             type: "POST",
             args: {
                 'amount': amount
