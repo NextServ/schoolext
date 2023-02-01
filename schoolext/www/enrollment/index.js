@@ -82,7 +82,7 @@ frappe.ready(function() {
                     // });
                     frappe.show_alert({ message: __('DragonPay payment request submitted.'), indicator: 'green' });
                     // window.location.replace(r.message.url);
-                    window.location.href(r.message.url);
+                    window.location.href = r.message.url;
                 } else {
                     console.log("error create_dragonpay_payment_request");
                 }
