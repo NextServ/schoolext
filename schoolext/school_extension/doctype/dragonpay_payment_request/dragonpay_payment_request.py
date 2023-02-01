@@ -30,9 +30,9 @@ class DragonPayPaymentRequest(Document):
             "Currency": self.currency,
             "Description": self.description,
             "Email": self.email,
-            "MobileNo": self.mobile_no,
-            "IPAddress": self.ip_address,
-            "UserAgent": self.user_agent
+            # "MobileNo": self.mobile_no,
+            # "IPAddress": self.ip_address,
+            # "UserAgent": self.user_agent
         }
 
         data = payment_options
