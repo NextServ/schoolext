@@ -4,8 +4,8 @@
 import frappe
 from frappe.model.document import Document
 
-SERVICE_PRODUCTION_BASE_URL = "https://gw.dragonpay.ph/api/collect/v2"
-SERVICE_TEST_BASE_URL = "https://test.dragonpay.ph/api/collect/v2"
+SERVICE_PRODUCTION_BASE_URL = "https://gw.dragonpay.ph/api/collect/v1"
+SERVICE_TEST_BASE_URL = "https://test.dragonpay.ph/api/collect/v1"
 
 class DragonPaySettings(Document):
     pass
