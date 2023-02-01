@@ -35,7 +35,15 @@ class DragonPayPaymentRequest(Document):
             "UserAgent": self.user_agent
         }
 
-        integration_request = create_request_log(**payment_options, service_name="DragonPay")
+        data = payment_options
+        data.update(
+            {
+                "reference_doctype": "DragonPay Payment Request",
+                "reference_docname": self.name
+            }
+        )
+
+        integration_request = create_request_log(service_name="DragonPay", **payment_options)
 
         if settings.test_mode:
             url = "{0}/{1}/post".format(SERVICE_TEST_BASE_URL, self.name)
