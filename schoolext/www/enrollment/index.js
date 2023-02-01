@@ -75,12 +75,12 @@ frappe.ready(function() {
             callback: function(r) {
                 if(r.message) {
                     console.log("success create_dragonpay_payment_request");
-                    frappe.msgprint({
-                        title: __('create_dragonpay_payment_request'),
-                        indicator: 'green',
-                        message: __('Success.')
-                    });
-
+                    // frappe.msgprint({
+                    //     title: __('create_dragonpay_payment_request'),
+                    //     indicator: 'green',
+                    //     message: __('Success.')
+                    // });
+                    frappe.show_alert({ message: __('DragonPay payment request submitted.'), indicator: 'green' });
                     // window.location.replace(r.message.url);
                     window.location.href(r.message.url);
                 } else {
