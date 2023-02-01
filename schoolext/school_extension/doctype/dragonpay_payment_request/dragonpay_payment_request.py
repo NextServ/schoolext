@@ -23,6 +23,10 @@ class DragonPayPaymentRequest(Document):
         integration_request = create_request_log(kwargs, service_name="DragonPay")
 
     def create_payment_request(self):
+        frappe.local.response["type"] = "redirect"
+        frappe.local.response["location"] = "https://www.yahoo.com"
+        # frappe.local.response["location"] = "https://test-ui.dragonpay.ph/payments/NU3VPBD4"
+    def create_payment_request1(self):
         settings = frappe.get_doc("DragonPay Settings")
 
         payment_options = {
