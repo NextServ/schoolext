@@ -38,6 +38,11 @@ def dragonpay_postback(
     sha1_input = "{0}:{1}:{2}:{3}:{4}".format(txnid, refno, status, message, settings.test_payout_api_key)
     generated_digest = hashlib.sha1(sha1_input.encode())
 
+    if digest != generated_digest:
+        frappe.throw("Invalid digest {}".format(message))
+    else:
+        pass
+
     status_codes = {
         "S": "Success",
         "F": "Failure",
