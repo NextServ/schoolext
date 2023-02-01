@@ -1,0 +1,204 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "DPAYPR.############",
+ "creation": "2023-02-01 02:19:43.301171",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "collection_request_status",
+  "request_time",
+  "payment_entry",
+  "amount",
+  "currency",
+  "description",
+  "email",
+  "mobile_no",
+  "proc_id",
+  "ip_address",
+  "user_agent",
+  "party_type",
+  "party",
+  "reference_no",
+  "payment_initiation_request_status",
+  "payment_initiation_request_message",
+  "payment_completion_message",
+  "url",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "payment_entry",
+   "fieldtype": "Link",
+   "label": "Payment Entry",
+   "options": "Payment Entry"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "DragonPay Payment Request",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "options": "currency"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "length": 40,
+   "options": "Email"
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile No",
+   "length": 20,
+   "options": "Phone"
+  },
+  {
+   "fieldname": "proc_id",
+   "fieldtype": "Select",
+   "label": "Proc ID",
+   "options": "BAYD\nBDO\nCC\nCEBL\nDPAY\nECPY\nGCSH\nLBC\nPYPL\nMLH\nRDS\nSMR\n711\nINPY"
+  },
+  {
+   "fieldname": "ip_address",
+   "fieldtype": "Data",
+   "label": "IP Address"
+  },
+  {
+   "fieldname": "user_agent",
+   "fieldtype": "Data",
+   "label": "User Agent"
+  },
+  {
+   "fieldname": "request_time",
+   "fieldtype": "Datetime",
+   "label": "Request Time"
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Select",
+   "label": "Party Type",
+   "options": "Customer\nStudent"
+  },
+  {
+   "fieldname": "party",
+   "fieldtype": "Dynamic Link",
+   "label": "Party",
+   "options": "party_type"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "label": "Description",
+   "length": 128
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "collection_request_status",
+   "fieldtype": "Select",
+   "label": "Collection Request Status",
+   "options": "\nSuccess\nFailure\nPending\nUnknown\nRefund\nChargeback\nVoid\nAuthorized"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "reference_no",
+   "fieldtype": "Data",
+   "label": "Reference No",
+   "length": 10
+  },
+  {
+   "fieldname": "payment_initiation_request_status",
+   "fieldtype": "Select",
+   "label": "Payment Initiation Request Status",
+   "options": "\nSuccessful\nFailed"
+  },
+  {
+   "fieldname": "url",
+   "fieldtype": "Small Text",
+   "label": "URL"
+  },
+  {
+   "fieldname": "payment_initiation_request_message",
+   "fieldtype": "Data",
+   "label": "Payment Initiation Request Message",
+   "length": 128
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "payment_completion_message",
+   "fieldtype": "Data",
+   "label": "Payment Completion Message"
+  }
+ ],
+ "in_create": 1,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2023-02-01 14:22:10.912024",
+ "modified_by": "Administrator",
+ "module": "School Extension",
+ "name": "DragonPay Payment Request",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

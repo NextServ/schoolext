@@ -10,12 +10,13 @@ Test
 <div class="col grid-static-col col-xs-2 text-right bold" data-fieldname="rate" data-fieldtype="Currency">
     <div class="field-area" style=""><div class="form-group frappe-control input-max-width" data-fieldtype="Currency" data-fieldname="rate" title="rate">
         <input type="text" autocomplete="off" class="input-with-feedback form-control bold input-sm" 
-            data-fieldtype="Currency" data-fieldname="rate" placeholder="Rate (PHP)" data-doctype="Sales Invoice Item" data-col-idx="2">
+            data-fieldtype="Currency" data-fieldname="rate" placeholder="Rate (PHP)" data-col-idx="2"
+            id="amount">
     </div>
 </div>
 <div class="static-area ellipsis reqd" style="display: none;"><div style="text-align: right">₱ 0.00</div></div></div>
 <br>
-<button class="btn btn-primary btn-sm btn-new-doc hidden-xs">
+<button class="btn btn-primary btn-sm btn-new-doc hidden-xs" id="enroll-now">
     Enroll now!
 </button>
 {% endblock %}
