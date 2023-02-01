@@ -36,7 +36,7 @@ def dragonpay_postback(
     settings = frappe.get_doc("DragonPay Settings")
 
     sha1_input = "{0}:{1}:{2}:{3}:{4}".format(txnid, refno, status, message, settings.test_payout_api_key)
-    generated_digest = hashlib.sha1(sha1_input)
+    generated_digest = hashlib.sha1(sha1_input.encode())
 
     status_codes = {
         "S": "Success",
