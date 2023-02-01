@@ -16,4 +16,4 @@ def get_context(context):
     context.show_sidebar = 1
     
     if frappe.session.user=='Guest':
-        context.show_sidebar = 0
+        frappe.throw(_("You need to be logged in to access this page."), frappe.PermissionError)

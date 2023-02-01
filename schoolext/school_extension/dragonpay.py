@@ -120,9 +120,17 @@ def create_dragonpay_payment_request(amount):
 
     dppr.submit()
     # run DragonPayPaymentRequest on_submit
+    payment_request_response = dppr.create_payment_request()
 
     result = {
-        "dragonpay_payment_request": dppr.name
+        "dragonpay_payment_request": dppr.name,
+        "url": payment_request_response["Url"]
     }
 
     return result
+
+@frappe.whitelist(allow_guest=True)
+def test_redirect():
+    frappe.local.response["type"] = "redirect"
+    # frappe.local.response["location"] = "/app/customer"
+    frappe.local.response["location"] = "/blog"

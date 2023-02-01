@@ -17,16 +17,16 @@ from base64 import b64encode
 
 class DragonPayPaymentRequest(Document):
     def on_submit(self):
-        self.create_payment_request()
+        pass
 
     def get_payment_url(self, **kwargs):
         integration_request = create_request_log(kwargs, service_name="DragonPay")
 
-    def create_payment_request(self):
+    def create_payment_request_test(self):
         frappe.local.response["type"] = "redirect"
         frappe.local.response["location"] = "https://www.yahoo.com"
         # frappe.local.response["location"] = "https://test-ui.dragonpay.ph/payments/NU3VPBD4"
-    def create_payment_request1(self):
+    def create_payment_request(self):
         settings = frappe.get_doc("DragonPay Settings")
 
         payment_options = {
@@ -49,6 +49,7 @@ class DragonPayPaymentRequest(Document):
 
         integration_request = create_request_log(data=data, service_name="DragonPay", **payment_options)
 
+
         if settings.test_mode:
             url = "{0}/{1}/post".format(SERVICE_TEST_BASE_URL, self.name)
 
@@ -60,6 +61,7 @@ class DragonPayPaymentRequest(Document):
             username = settings.merchant_id
             password = settings.password
 
+        print("basic auth: {}".format(basic_auth(username, password)))
         headers = {
             "Content-Type": "application/json",
             "Authorization": basic_auth(username, password)
@@ -74,9 +76,7 @@ class DragonPayPaymentRequest(Document):
             
             self.update_ps_reply(payment_request_response)
 
-            # redirect
-            frappe.local.response["type"] = "redirect"
-            frappe.local.response["location"] = payment_request_response["Url"]
+            return payment_request_response
         except Exception:
             frappe.log(frappe.get_traceback())
             frappe.throw(_("Could not create DragonPay payment request"))
