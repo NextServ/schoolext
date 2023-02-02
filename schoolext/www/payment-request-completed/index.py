@@ -15,8 +15,8 @@ def default(o):
 def get_context(context):
     context.show_sidebar = 1
     
-    if frappe.session.user=='Guest':
-        frappe.throw(_("You need to be logged in to access this page."), frappe.PermissionError)
+    # if frappe.session.user=='Guest':
+    #     frappe.throw(_("You need to be logged in to access this page."), frappe.PermissionError)
     
     frappe.msgprint("Payment Request Completed. {0}".format(frappe.as_json(frappe.form_dict)))
 

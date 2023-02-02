@@ -64,7 +64,7 @@ def dragonpay_get_available_processors(amount):
         frappe.log(frappe.get_traceback())
         frappe.throw(_("Error in GetAvailableProcessors request"))
 
-@frappe.whitelist(methods=["GET"])
+@frappe.whitelist(allow_guest=True, methods=["GET"])
 def dragonpay_postback(
     txnid=None,
     refno=None,
