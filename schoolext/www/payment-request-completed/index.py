@@ -45,7 +45,7 @@ def get_context(context):
     generated_digest = hashlib.sha1(sha1_input.encode())
 
     if digest != generated_digest:
-        frappe.log_error(message="dp_returnurl_params message {0} Invalid digest {1} generated digest {2}".format(message, digest, generated_digest), title="dp_returnurl_params message {0} Invalid digest".format(txnid))
+        frappe.log_error(message="dp_returnurl_params message {0} Invalid digest {1} generated digest {2} hexdigest".format(message, digest, generated_digest.digest(), generated_digest.hexdigest()), title="dp_returnurl_params message {0} Invalid digest".format(txnid))
     else:
         pass
 
