@@ -27,12 +27,12 @@ def get_context(context):
     message = ""
     digest = ""
 
-    if "txnid" in params.keys() and params["txnid"]:
-        txnid = params["txnid"]
-        refno = params["refno"]
-        status = params["status"]
-        message = params["message"]
-        digest = params["digest"]
+    if params.txnid:
+        txnid = params.txnid
+        refno = params.refno
+        status = params.status
+        message = params.message
+        digest = params.digest
     # if frappe.session.user=='Guest':
     #     frappe.throw(_("You need to be logged in to access this page."), frappe.PermissionError)
     
