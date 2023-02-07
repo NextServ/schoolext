@@ -19,6 +19,8 @@ def get_context(context):
     
     params = frappe.form_dict
 
+    print("params: {}".format(params))
+
     txnid = ""
     refno = ""
     status = ""
@@ -48,6 +50,7 @@ def get_context(context):
         pass
 
     if txnid:
+        print("update dppr attempt")
         frappe.db.set_value("DragonPay Payment Request", txnid, "reference_no", refno)
         frappe.db.set_value("DragonPay Payment Request", txnid, "collection_request_status", STATUS_CODES[status] if status in STATUS_CODES.keys() else "")
         frappe.db.set_value("DragonPay Payment Request", txnid, "payment_completion_message", message)
