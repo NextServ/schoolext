@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe import _
+from werkzeug.wrappers import Response
 import json
 import datetime
 
@@ -14,10 +15,3 @@ def default(o):
 
 def get_context(context):
     context.show_sidebar = 1
-    
-    if frappe.session.user=='Guest':
-        frappe.throw(_("You need to be logged in to access this page."), frappe.PermissionError)
-
-
-    frappe.local.response["type"] = "redirect"
-    frappe.local.response["location"] = "https://www.google.com"
