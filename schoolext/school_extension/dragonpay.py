@@ -80,13 +80,13 @@ def dragonpay_postback(
     settings = frappe.get_doc("DragonPay Settings")
 
     sha1_input = "{0}:{1}:{2}:{3}:{4}".format(txnid, refno, status, message, (settings.test_password if settings.test_mode else settings.password))
-    generated_digest = hashlib.sha1(sha1_input.encode())
+    generated_digest = hashlib.sha1(sha1_input.encode()).hexdigest()
 
     if digest != generated_digest:
-        frappe.log_error("Invalid digest {}".format(message))
+        frappe.log_error("dragonpay_postback Invalid digest {}".format(message))
     else:
         pass
-    
+
     # dppr = frappe.get_doc("DragonPay Payment Request", txnid)
     # dppr.reference_no = refno
     # dppr.collection_request_status = status_codes[status]

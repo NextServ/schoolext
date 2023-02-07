@@ -42,10 +42,10 @@ def get_context(context):
     settings = frappe.get_doc("DragonPay Settings")
 
     sha1_input = "{0}:{1}:{2}:{3}:{4}".format(txnid, refno, status, message, (settings.test_password if settings.test_mode else settings.password))
-    generated_digest = hashlib.sha1(sha1_input.encode())
+    generated_digest = hashlib.sha1(sha1_input.encode()).hexdigest()
 
     if digest != generated_digest:
-        frappe.log_error(message="dp_returnurl_params message {0} Invalid digest {1} generated digest {2} hexdigest".format(message, digest, generated_digest.digest(), generated_digest.hexdigest()), title="dp_returnurl_params message {0} Invalid digest".format(txnid))
+        frappe.log_error(message="dp_returnurl_params message {0} Invalid digest {1} generated digest {2} hexdigest {3}".format(message, digest, generated_digest.digest(), generated_digest.hexdigest()), title="dp_returnurl_params message {0} Invalid digest".format(txnid))
     else:
         pass
 
