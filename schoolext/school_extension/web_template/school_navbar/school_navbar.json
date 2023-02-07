@@ -1,0 +1,16 @@
+{
+ "__unsaved": 1,
+ "creation": "2023-02-03 12:20:35.257471",
+ "docstatus": 0,
+ "doctype": "Web Template",
+ "fields": [],
+ "idx": 0,
+ "modified": "2023-02-03 12:58:59.127661",
+ "modified_by": "Administrator",
+ "module": "School Extension",
+ "name": "School Navbar",
+ "owner": "Administrator",
+ "standard": 1,
+ "template": "",
+ "type": "Navbar"
+}

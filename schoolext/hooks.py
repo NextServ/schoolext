@@ -14,9 +14,15 @@ app_license = "MIT"
 # app_include_css = "/assets/schoolext/css/schoolext.css"
 # app_include_js = "/assets/schoolext/js/schoolext.js"
 
+app_include_css = "/assets/schoolext/css/schoolext.css"
+app_include_js = "/assets/schoolext/js/schoolext.js"
+
 # include js, css files in header of web template
 # web_include_css = "/assets/schoolext/css/schoolext.css"
 # web_include_js = "/assets/schoolext/js/schoolext.js"
+
+web_include_css = "/assets/schoolext/css/schoolext.css"
+web_include_js = "/assets/schoolext/js/schoolext.js"
 
 # include custom scss in every website theme (without file extension ".scss")
 # website_theme_scss = "schoolext/public/scss/website"

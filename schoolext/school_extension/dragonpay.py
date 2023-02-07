@@ -77,7 +77,7 @@ def dragonpay_postback(
 ):
     settings = frappe.get_doc("DragonPay Settings")
 
-    sha1_input = "{0}:{1}:{2}:{3}:{4}".format(txnid, refno, status, message, settings.test_payout_api_key)
+    sha1_input = "{0}:{1}:{2}:{3}:{4}".format(txnid, refno, status, message, (settings.test_password if settings.test_mode else settings.password))
     generated_digest = hashlib.sha1(sha1_input.encode())
 
     if digest != generated_digest:
