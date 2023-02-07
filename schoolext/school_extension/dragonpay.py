@@ -3,7 +3,7 @@ from frappe import _
 from frappe.utils import getdate, now, flt, cint
 from frappe.model.document import Document
 from werkzeug.wrappers import Response
-from schoolext.school_extension.doctype.dragonpay_settings.dragonpay_settings import SERVICE_PRODUCTION_BASE_URL, SERVICE_TEST_BASE_URL
+from schoolext.school_extension.doctype.dragonpay_settings.dragonpay_settings import SERVICE_PRODUCTION_BASE_URL, SERVICE_TEST_BASE_URL, STATUS_CODES
 
 from frappe.integrations.utils import (
     create_request_log,
@@ -86,17 +86,7 @@ def dragonpay_postback(
         frappe.log_error("Invalid digest {}".format(message))
     else:
         pass
-
-    status_codes = {
-        "S": "Success",
-        "F": "Failure",
-        "P": "Pending",
-        "U": "Unknown",
-        "R": "Refund",
-        "K": "Chargeback",
-        "V": "Void",
-        "A": "Authorized"
-    }
+    
     # dppr = frappe.get_doc("DragonPay Payment Request", txnid)
     # dppr.reference_no = refno
     # dppr.collection_request_status = status_codes[status]
@@ -109,7 +99,7 @@ def dragonpay_postback(
     # dppr.save(ignore_permissions=True)
 
     frappe.db.set_value("DragonPay Payment Request", txnid, "reference_no", refno)
-    frappe.db.set_value("DragonPay Payment Request", txnid, "collection_request_status", status_codes[status] if status in status_codes.keys() else "")
+    frappe.db.set_value("DragonPay Payment Request", txnid, "collection_request_status", STATUS_CODES[status] if status in STATUS_CODES.keys() else "")
     frappe.db.set_value("DragonPay Payment Request", txnid, "payment_completion_message", message)
     frappe.db.set_value("DragonPay Payment Request", txnid, "amount", amount)
     frappe.db.set_value("DragonPay Payment Request", txnid, "currency", ccy)
