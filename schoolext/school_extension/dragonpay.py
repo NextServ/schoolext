@@ -76,7 +76,7 @@ def dragonpay_postback(
     digest=None
 ):
     dp_postback_params = "txnid: {0} refno: {1} status: {2} message: {3} amount: {4} ccy: {5} procid: {6} digest: {7} ".format(txnid, refno, status, message, amount, ccy, procid, digest)
-    frappe.log_error(dp_postback_params, title="dp_postback_params")
+    frappe.log_error(message=dp_postback_params, title="dp_postback_params")
     settings = frappe.get_doc("DragonPay Settings")
 
     sha1_input = "{0}:{1}:{2}:{3}:{4}".format(txnid, refno, status, message, (settings.test_password if settings.test_mode else settings.password))
