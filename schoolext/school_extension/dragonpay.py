@@ -95,16 +95,23 @@ def dragonpay_postback(
         "V": "Void",
         "A": "Authorized"
     }
-    dppr = frappe.get_doc("DragonPay Payment Request", txnid)
-    dppr.reference_no = refno
-    dppr.collection_request_status = status_codes[status]
-    dppr.payment_completion_message = message
-    dppr.amount = amount
-    # PHP, USD, CAD
-    dppr.currency = ccy
-    dppr.proc_id = procid
+    # dppr = frappe.get_doc("DragonPay Payment Request", txnid)
+    # dppr.reference_no = refno
+    # dppr.collection_request_status = status_codes[status]
+    # dppr.payment_completion_message = message
+    # dppr.amount = amount
+    # # PHP, USD, CAD
+    # dppr.currency = ccy
+    # dppr.proc_id = procid
 
-    dppr.save(ignore_permissions=True)
+    # dppr.save(ignore_permissions=True)
+
+    frappe.db.set_value("DragonPay Payment Request", txnid, "reference_no", refno)
+    frappe.db.set_value("DragonPay Payment Request", txnid, "collection_request_status", status_codes[status])
+    frappe.db.set_value("DragonPay Payment Request", txnid, "payment_completion_message", message)
+    frappe.db.set_value("DragonPay Payment Request", txnid, "amount", amount)
+    frappe.db.set_value("DragonPay Payment Request", txnid, "currency", ccy)
+    frappe.db.set_value("DragonPay Payment Request", txnid, "proc_id", procid)
 
     response = Response()
     response.mimetype = "text/plain"

@@ -85,7 +85,8 @@ class DragonPayPaymentRequest(Document):
             frappe.throw(_("Could not create DragonPay payment request"))
     
     def update_ps_reply(self, payment_request_response):
-        frappe.db.set_value("DragonPay Payment Request", self.name, "reference_no", payment_request_response["RefNo"])
+        # RefNo is on v2 only
+        # frappe.db.set_value("DragonPay Payment Request", self.name, "reference_no", payment_request_response["RefNo"])
         payment_initiation_request_status = ("Successful" if payment_request_response["Status"] == "S" else "Failed")
         frappe.db.set_value("DragonPay Payment Request", self.name, "payment_initiation_request_status", payment_initiation_request_status)
         frappe.db.set_value("DragonPay Payment Request", self.name, "payment_initiation_request_message", payment_request_response["Message"])
