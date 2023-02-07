@@ -81,7 +81,7 @@ class DragonPayPaymentRequest(Document):
 
             return payment_request_response
         except Exception:
-            frappe.log(frappe.get_traceback())
+            frappe.log_error(frappe.get_traceback())
             frappe.throw(_("Could not create DragonPay payment request"))
     
     def update_ps_reply(self, payment_request_response):
