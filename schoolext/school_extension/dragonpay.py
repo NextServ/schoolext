@@ -109,7 +109,7 @@ def dragonpay_postback(
     # dppr.save(ignore_permissions=True)
 
     frappe.db.set_value("DragonPay Payment Request", txnid, "reference_no", refno)
-    frappe.db.set_value("DragonPay Payment Request", txnid, "collection_request_status", status_codes[status] if status in status_codes.keys else "")
+    frappe.db.set_value("DragonPay Payment Request", txnid, "collection_request_status", status_codes[status] if status in status_codes.keys() else "")
     frappe.db.set_value("DragonPay Payment Request", txnid, "payment_completion_message", message)
     frappe.db.set_value("DragonPay Payment Request", txnid, "amount", amount)
     frappe.db.set_value("DragonPay Payment Request", txnid, "currency", ccy)
