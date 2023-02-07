@@ -122,8 +122,7 @@
    "allow_on_submit": 1,
    "fieldname": "reference_no",
    "fieldtype": "Data",
-   "label": "Reference No",
-   "length": 10
+   "label": "Reference No"
   },
   {
    "fieldname": "payment_initiation_request_status",
@@ -154,7 +153,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-02-01 15:50:17.282424",
+ "modified": "2023-02-08 01:58:22.463875",
  "modified_by": "Administrator",
  "module": "School Extension",
  "name": "DragonPay Payment Request",
