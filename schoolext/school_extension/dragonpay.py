@@ -64,7 +64,7 @@ def dragonpay_get_available_processors(amount):
         frappe.log_error(frappe.get_traceback())
         frappe.throw(_("Error in GetAvailableProcessors request"))
 
-@frappe.whitelist(allow_guest=True, methods=["GET"])
+@frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
 def dragonpay_postback(
     txnid=None,
     refno=None,
@@ -161,11 +161,12 @@ def create_dragonpay_payment_request(amount, proc_id):
 
     dppr.submit()
     # run DragonPayPaymentRequest on_submit
-    payment_request_response = dppr.create_payment_request()
+
+    dppr.reload()
 
     result = {
         "dragonpay_payment_request": dppr.name,
-        "url": payment_request_response["Url"]
+        "url": dppr.url
     }
 
     return result

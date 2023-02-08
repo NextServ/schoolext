@@ -2,6 +2,7 @@ frappe.ready(function() {
     $("#enroll-now").click(function(event){
         let amount = $("#amount").val();
         let proc_id = $("#proc-id").val();
+        
         create_dragonpay_payment_request(amount, proc_id);
     });
 

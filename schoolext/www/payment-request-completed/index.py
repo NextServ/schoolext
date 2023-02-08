@@ -49,10 +49,19 @@ def get_context(context):
     else:
         pass
 
-    if txnid:
-        print("update dppr attempt")
-        frappe.db.set_value("DragonPay Payment Request", txnid, "reference_no", refno)
-        frappe.db.set_value("DragonPay Payment Request", txnid, "collection_request_status", STATUS_CODES[status] if status in STATUS_CODES.keys() else "")
-        frappe.db.set_value("DragonPay Payment Request", txnid, "payment_completion_message", message)
+    # if txnid:
+    #     print("update dppr attempt")
+    #     frappe.db.set_value("DragonPay Payment Request", txnid, "reference_no", refno)
+    #     frappe.db.set_value("DragonPay Payment Request", txnid, "collection_request_status", (STATUS_CODES[status] if status in STATUS_CODES.keys() else ""))
+    #     frappe.db.set_value("DragonPay Payment Request", txnid, "payment_completion_message", message)
+    #     print("refno {0} status {1} message {2} txnid {3}".format(refno, STATUS_CODES[status] if status in STATUS_CODES.keys() else "", message, txnid))
+    #     print("completed update dppr attempt")
+
+    #     frappe.db.commit()
+
+    #     d = frappe.get_doc("DragonPay Payment Request", txnid)
+    #     print(d)
+    #     print("payment_completion_message: {} reference_no: {}".format(d.payment_completion_message, d.reference_no))
 
     context.params = params
+    # context.doc = d

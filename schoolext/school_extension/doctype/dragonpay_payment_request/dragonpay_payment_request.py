@@ -19,7 +19,7 @@ precision = cint(frappe.db.get_default("currency_precision")) or 2
 
 class DragonPayPaymentRequest(Document):
     def on_submit(self):
-        pass
+        self.create_payment_request()
 
     def get_payment_url(self, **kwargs):
         integration_request = create_request_log(kwargs, service_name="DragonPay")
@@ -50,8 +50,6 @@ class DragonPayPaymentRequest(Document):
             }
         )
 
-        integration_request = create_request_log(data=data, service_name="DragonPay", **payment_options)
-
 
         if settings.test_mode:
             url = "{0}/{1}/post".format(SERVICE_TEST_BASE_URL, self.name)
@@ -64,11 +62,16 @@ class DragonPayPaymentRequest(Document):
         #     "Content-Type": "application/json",
         #     "Authorization": get_authorization_string()
         #     }
+
+        
         headers = {
             "Content-Type": "application/json"
             }
+
         username, password = get_username_and_password()
         auth = (username, password)
+
+        integration_request = create_request_log(data=data, service_name="DragonPay", request_headers=headers, url=url)
         try:
             payment_request_response = make_post_request(
                 url,
@@ -79,9 +82,30 @@ class DragonPayPaymentRequest(Document):
             
             self.update_ps_reply(payment_request_response)
 
+            if payment_request_response["Status"] == "S":
+                integration_request.db_set("status", "Completed", update_modified=False)
+                
+                integration_request.db_set(
+                    "output", payment_request_response["Message"][:140], update_modified=False
+                )
+            else:
+                integration_request.db_set("status", "Failed", update_modified=False)
+                
+                integration_request.db_set(
+                    "output", payment_request_response["Message"][:140], update_modified=False
+                )
+
+                error_log = frappe.log_error(
+                    payment_request_response["Message"],
+                    "DragonPay Payment Request Error",
+                )
+                integration_request.db_set("error", error_log.error, update_modified=False)
+
             return payment_request_response
         except Exception:
-            frappe.log_error(frappe.get_traceback())
+            integration_request.db_set("status", "Failed", update_modified=False)
+            error_log = frappe.log_error(frappe.get_traceback())
+            integration_request.db_set("error", error_log.error, update_modified=False)
             frappe.throw(_("Could not create DragonPay payment request"))
     
     def update_ps_reply(self, payment_request_response):
