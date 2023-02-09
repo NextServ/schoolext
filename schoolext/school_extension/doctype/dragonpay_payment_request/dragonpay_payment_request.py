@@ -96,15 +96,15 @@ class DragonPayPaymentRequest(Document):
                 )
 
                 error_log = frappe.log_error(
-                    payment_request_response["Message"],
-                    "DragonPay Payment Request Error",
+                    title="DragonPay Payment Request Error",
+                    message=payment_request_response["Message"],
                 )
                 integration_request.db_set("error", error_log.error, update_modified=False)
 
             return payment_request_response
-        except Exception:
+        except Exception as e:
             integration_request.db_set("status", "Failed", update_modified=False)
-            error_log = frappe.log_error(frappe.get_traceback())
+            error_log = frappe.log_error(title="create_payment_request", message=frappe.get_traceback())
             integration_request.db_set("error", error_log.error, update_modified=False)
             frappe.throw(_("Could not create DragonPay payment request"))
     

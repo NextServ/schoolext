@@ -38,14 +38,14 @@ def get_context(context):
     
     # frappe.msgprint("Payment Request Completed. {0}".format(frappe.as_json(frappe.form_dict)))
     dp_returnurl_params = "txnid: {0} refno: {1} status: {2} message: {3} digest: {4} ".format(txnid, refno, status, message, digest)
-    frappe.log_error(message=dp_returnurl_params, title="dp_postback_params")
     settings = frappe.get_doc("DragonPay Settings")
 
     sha1_input = "{0}:{1}:{2}:{3}:{4}".format(txnid, refno, status, message, (settings.test_password if settings.test_mode else settings.password))
     generated_digest = hashlib.sha1(sha1_input.encode()).hexdigest()
 
     if digest != generated_digest:
-        frappe.log_error(message="dp_returnurl_params message {0} Invalid digest {1} generated digest {2} hexdigest {3}".format(message, digest, generated_digest.digest(), generated_digest.hexdigest()), title="dp_returnurl_params message {0} Invalid digest".format(txnid))
+        frappe.log_error(title="DragonPay Return URL {0} Invalid digest".format(txnid), message="dp_returnurl_params message {0} Invalid digest {1} generated digest {2} hexdigest {3}".format(message, digest, generated_digest.digest(), generated_digest.hexdigest()))
+        frappe.throw("Invalid digest {}".format(txnid))
     else:
         pass
 
