@@ -1,0 +1,22 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ _("Fee Payment") }}{% endblock %} 
+{% block header %}
+    <!-- override -->
+    <span>My Students</span>
+{% endblock %} 
+
+{% block page_content %}
+<div class="list-group mt-4" style="max-width: 400px;">
+{% for student in students -%}
+    <a href="/fee-payment/student?student_name={{ student.name }}" data-name="{{ student.name }}" class="list-group-item list-group-item-action">
+        {% if student.gender == 'Female' %}
+            <img src="/assets/schoolext/img/icons8-school-girl-85.png" style="height: 40px; width: auto;">
+        {% else %}
+            <img src="/assets/schoolext/img/icons8-school-boy-85.png" style="height: 40px; width: auto;">
+        {% endif %}
+        {{ student.student_name }}
+    </a>
+{%- endfor %}
+</div>
+{% endblock %}

@@ -22,7 +22,7 @@ app_include_js = "/assets/schoolext/js/schoolext.js"
 # web_include_js = "/assets/schoolext/js/schoolext.js"
 
 web_include_css = "/assets/schoolext/css/schoolext.css"
-web_include_js = "/assets/schoolext/js/schoolext.js"
+web_include_js = ["/assets/schoolext/js/schoolext.js", "https://kit.fontawesome.com/db14e72d6e.js"]
 
 # include custom scss in every website theme (without file extension ".scss")
 # website_theme_scss = "schoolext/public/scss/website"
