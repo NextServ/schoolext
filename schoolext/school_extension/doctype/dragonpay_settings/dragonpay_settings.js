@@ -2,7 +2,13 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('DragonPay Settings', {
-	// refresh: function(frm) {
-
-	// }
+    onload: function(frm) {
+        frm.set_query('company_bank_account', function(){
+            return {
+                filters: {
+                    is_company_account: 1
+                }
+            };
+        });
+    }
 });

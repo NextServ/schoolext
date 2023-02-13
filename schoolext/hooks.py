@@ -36,6 +36,10 @@ web_include_js = "/assets/schoolext/js/schoolext.js"
 
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+    "Fee Category" : "public/js/doctype/fee_category.js",
+    "Fees" : "public/js/doctype/fees.js",
+    }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -103,6 +107,10 @@ web_include_js = "/assets/schoolext/js/schoolext.js"
 # override_doctype_class = {
 #	"ToDo": "custom_app.overrides.CustomToDo"
 # }
+
+override_doctype_class = {
+	"Fees": "schoolext.overrides.fees.CustomFees"
+}
 
 # Document Events
 # ---------------

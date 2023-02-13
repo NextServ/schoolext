@@ -14,7 +14,9 @@
   "test_mode",
   "test_merchant_id",
   "test_password",
-  "test_payout_api_key"
+  "test_payout_api_key",
+  "integration_options_section_section",
+  "company_bank_account"
  ],
  "fields": [
   {
@@ -56,12 +58,23 @@
    "fieldname": "test_payout_api_key",
    "fieldtype": "Data",
    "label": "Test Payout API Key"
+  },
+  {
+   "fieldname": "integration_options_section_section",
+   "fieldtype": "Section Break",
+   "label": "Integration Options"
+  },
+  {
+   "fieldname": "company_bank_account",
+   "fieldtype": "Link",
+   "label": "Company Bank Account",
+   "options": "Bank Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-02-01 02:15:24.575083",
+ "modified": "2023-02-13 12:09:45.241248",
  "modified_by": "Administrator",
  "module": "School Extension",
  "name": "DragonPay Settings",
