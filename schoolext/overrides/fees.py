@@ -37,7 +37,7 @@ class CustomFees(Fees):
                 component_income_entry = self.get_gl_dict(
                     {
                         "account": component.custom_income_account or self.income_account,
-                        "against": self.student,
+                        "against": component.custom_receivable_account or self.receivable_account,
                         "credit": component.amount,
                         "credit_in_account_currency": component.amount,
                         "cost_center": self.cost_center,
