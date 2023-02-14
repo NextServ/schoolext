@@ -6,5 +6,120 @@
 {% endblock %} 
 
 {% block page_content %}
+<style>
+input[type=checkbox] {
+    display: none;
+}
 
+input:checked + label {
+    border: solid 1px green;
+    color: green;
+}
+
+input:checked + label:before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: '\f00c';
+}
+
+
+/* new stuff */
+.check {
+    visibility: hidden;
+}
+
+input:checked + label .check {
+    visibility: visible;
+}
+
+input.checkbox:checked + label:before {
+    content: "";
+}
+</style>
+<!-- <div id="app">
+    <button @click="count++">
+        Count is: [[ count ]]
+    </button>
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
+
+
+
+
+<div class="btn-group-vertical" role="group" aria-label="Basic checkbox toggle button group">
+    <!-- <i class="fa fa-check" aria-hidden="true"></i> -->
+
+    <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off">
+    <label class="btn btn-outline-primary" for="btncheck1">
+        <img src="/assets/schoolext/img/icons8-school-girl-85.png" style="height: 40px; width: auto;">
+        Checkbox 1
+    </label>
+    
+    <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off">
+    <label class="btn btn-outline-primary" for="btncheck2">
+        <div class="card">
+            <div class="card-header">
+                Header
+            </div>
+            <div class="card-body">
+                Body
+            </div>
+        </div>
+    </label>
+    
+    <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off">
+    <label class="btn btn-outline-primary" for="btncheck3">
+        <div>
+
+        </div>
+    </label>
+</div>
+
+
+<div class="card">
+    <div class="card-header">
+        Test
+    </div>
+    <div class="card-body">
+        <div class="form-check-inline">
+            <label class="form-check-label" for="check1">
+                <input type="checkbox" class="form-check-input" id="check1" name="vehicle1" value="something" checked="">Option 1
+            </label>
+        </div>
+        <div class="form-check-inline">
+            <label class="form-check-label" for="check2">
+                <input type="checkbox" class="form-check-input" id="check2" name="vehicle2" value="something">Option 2
+            </label>
+        </div>
+    </div>
+</div>
+
+<input id="lists[Travel]" type="checkbox" name="lists[Travel]" />
+<label for="lists[Travel]">Travel with jump</label>
+
+<!-- alternatively avoid jumps between text of state checked and unchecked -->
+
+<input class="checkbox" id="lists[new]" type="checkbox" name="lists[new]" />
+<label for="lists[new]"><span class="check">✓</span> Travel without jump</label>
+
+<div id="app" v-cloak>
+    <div>
+        [[ message ]]z
+    </div>    
+</div>
+
+<!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
+<!-- <script>
+    const { createApp } = Vue
+
+    createApp({
+        delimeters: ['[[', ']]'],
+        data() {
+            return {
+                message: 'Hello Vue!'
+            }
+        }
+    }).mount('#app')
+</script> -->
 {% endblock %}

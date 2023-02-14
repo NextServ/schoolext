@@ -7,16 +7,55 @@
 {% endblock %} 
 
 {% block page_content %}
-<div class="list-group mt-4" style="max-width: 400px;">
-{% for student in students -%}
-    <a href="/fee-payment/student?student_name={{ student.name }}" data-name="{{ student.name }}" class="list-group-item list-group-item-action">
-        {% if student.gender == 'Female' %}
-            <img src="/assets/schoolext/img/icons8-school-girl-85.png" style="height: 40px; width: auto;">
-        {% else %}
-            <img src="/assets/schoolext/img/icons8-school-boy-85.png" style="height: 40px; width: auto;">
-        {% endif %}
-        {{ student.student_name }}
-    </a>
-{%- endfor %}
+<style>
+    input[type=checkbox] {
+        display: none;
+    }
+    
+    input:checked + label {
+        border: solid 1px green;
+        color: green;
+    }
+    
+    input:checked + label:before {
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        content: '\f00c';
+    }
+    
+    
+    /* new stuff */
+    .check {
+        visibility: hidden;
+    }
+    
+    input:checked + label .check {
+        visibility: visible;
+    }
+    
+    input.checkbox:checked + label:before {
+        content: "";
+    }
+</style>
+
+<div class="text-small" id="my-students">
+    <div class="list-group mt-4" style="max-width: 500px;">
+    {% for student in students -%}
+        <a href="#" data-name="{{ student.name }}" class="fees-link list-group-item list-group-item-action">
+            {% if student.gender == 'Female' %}
+                <img src="/assets/schoolext/img/icons8-school-girl-85.png" style="height: 40px; width: auto;">
+            {% else %}
+                <img src="/assets/schoolext/img/icons8-school-boy-85.png" style="height: 40px; width: auto;">
+            {% endif %}
+            {{ student.student_name }}
+        </a>
+    {%- endfor %}
+    </div>
+</div>
+<div id="my-student-fees">
+    <!-- code to populate in js-->
+</div>
+<div id="my-student-fees-checkout">
+    <!-- code to populate in js-->
 </div>
 {% endblock %}

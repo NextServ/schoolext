@@ -6,6 +6,8 @@ from frappe import _
 import json
 import datetime
 
+from schoolext.utils import get_students
+
 no_cache = 1
 
 def default(o):
@@ -26,21 +28,3 @@ def get_context(context):
     else:
         frappe.throw(_("You do not have permission to access this page."), frappe.PermissionError)
 
-
-def get_students(guardian_name):
-    """Load `students` from the database"""
-    result = []
-    student_guardians = frappe.get_all(
-        "Student Guardian", filters={"guardian": guardian_name}, fields=["parent"]
-    )
-    for student_guardian in student_guardians:
-        student = frappe.get_doc("Student", student_guardian.parent)
-        result.append(
-            {
-                "name": student.name,
-                "student_name": student.student_name,
-                "gender": student.gender
-            },
-        )
-    
-    return result
