@@ -148,6 +148,89 @@ def get_student_fees(student):
     
     return result
 
+@frappe.whitelist(methods=["GET"])
+def get_program_fee_details(student, program_fee_names):
+    validate_current_user_guardian(student)
+
+    result = []
+    program_fee_names = json.loads(program_fee_names)
+
+    for program_fee_name in program_fee_names:
+        program_fees_components = frappe.db.sql("""
+            select
+                pe.name as program_enrollment_name,
+                pe.program as program_name,
+                pe.enrollment_date,
+                pe.program,
+                pe.academic_year,
+                pf.name as program_fees_name,
+                pf.fee_structure as fee_structure,
+                pf.idx as program_fees_index,
+                pf.academic_term,
+                pf.due_date,
+                pf.amount as program_fees_amount,
+                fc.name as fee_component_name,
+                fc.idx as fee_component_index,
+                fc.fees_category,
+                IFNULL(fc.description, '') as description,
+                fc.fee_category_type,
+                fc.amount as component_amount
+            from `tabProgram Enrollment` pe
+            left join `tabProgram Fee` pf
+            on 
+                pe.name = pf.parent
+            left join `tabFee Structure` fs
+            on 
+                pf.fee_structure = fs.name
+            left join `tabFee Component` fc
+            on
+                fs.name = fc.parent
+            where
+                pe.docstatus = 0
+                and pf.name = %s
+        """, (program_fee_name), as_dict=True)
+
+        print("program_fees_components: {}".format(frappe.as_json(program_fees_components)))
+
+        if program_fees_components and program_fees_components[0]:
+            # organize data
+            # program >> program fee >> fee component
+
+            fees_components = []
+
+            for c in program_fees_components:
+                c_line = {
+                    "fee_component_name": c.fee_component_name,
+                    "fee_component_index": c.fee_component_index,
+                    "fees_category": c.fees_category,
+                    "description": c.description,
+                    "fee_category_type": c.fee_category_type,
+                    "component_amount": c.component_amount
+                }
+                fees_components.append(c_line)
+
+            result.append({
+                "program_fee_name": program_fee_name,
+                "details": {
+                    "program_enrollment_name": program_fees_components[0].program_enrollment_name,
+                    "program_name": program_fees_components[0].program_name,
+                    "enrollment_date": program_fees_components[0].enrollment_date,
+                    "program": program_fees_components[0].program,
+                    "academic_year": program_fees_components[0].academic_year,
+
+                    "program_fees_name": program_fees_components[0].program_fees_name,
+                    "fee_structure": program_fees_components[0].fee_structure,
+                    "program_fees_index": program_fees_components[0].program_fees_index,
+                    "academic_term": program_fees_components[0].academic_term,
+                    "due_date": program_fees_components[0].due_date,
+                    "program_fees_amount": program_fees_components[0].program_fees_amount,
+
+                    "program_fees_components": fees_components
+                }
+            })
+    print("result: {}".format(frappe.as_json(result)))
+    return result
+
 def validate_current_user_guardian(student):
     current_user = frappe.session.user
     if frappe.db.exists("Guardian", {'user': current_user}):
