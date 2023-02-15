@@ -420,12 +420,12 @@ frappe.ready(function() {
             },
             callback: function(r) {
                 if(r.message) {
-                    console.log("success dragonpay_get_available_processors");
+                    console.log("success pay_pending_fees");
                     frappe.msgprint("Not yet working!");
                 }
                 else {
-                    console.log("error dragonpay_get_available_processors");
-                    frappe.show_alert({message:__("Error in error dragonpay_get_available_processors."), indicator:'red'});                        
+                    console.log("error pay_pending_fees");
+                    frappe.show_alert({message:__("Error in error pay_pending_fees."), indicator:'red'});                        
                 }
             }
         });        
