@@ -412,7 +412,7 @@ frappe.ready(function() {
         
         frappe.call({
             method: "schoolext.utils.pay_pending_fees",
-            type: "GET",
+            type: "POST",
             args: {
                 "student": selected_student,
                 "fees_to_pay": selected_fees_objects,
@@ -442,7 +442,8 @@ frappe.ready(function() {
         let html = ``;
         html = html +
         `
-        <h4 class="mt-4" id="payment-methods">Payment Method</h4>
+        <hr />
+        <h5 class="mt-4" id="payment-methods">Payment Method</h5>
         <div class="mt-4" id="payment-method-check-group">
             <div id="online-banking-check" class="form-check">
                 <input class="form-check-input" type="radio" name="radio-payment-method-type" id="online-banking" value="online-banking">
