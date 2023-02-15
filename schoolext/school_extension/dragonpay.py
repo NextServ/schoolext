@@ -33,10 +33,12 @@ precision = cint(frappe.db.get_default("currency_precision")) or 2
 
 #     return response
 
-@frappe.whitelist(methods=["GET"])
+# todo: don't fetch all the time?
+@frappe.whitelist(methods=["GET", "POST"])
 def dragonpay_get_available_processors(amount):
     amount = flt(amount, precision)
     settings = frappe.get_doc("DragonPay Settings")
+    enabled_proc_ids = settings.enabled_proc_ids.splitlines()
 
     url = ""
 
@@ -59,7 +61,13 @@ def dragonpay_get_available_processors(amount):
             headers=headers
         )
 
-        return response        
+        result = []
+
+        for item in response:
+            if item["procId"] in enabled_proc_ids:
+                result.append(item)
+
+        return result
     except Exception as e:
         frappe.log_error(title="dragonpay_get_available_processors", message=str(e))
         frappe.throw(_("Error in GetAvailableProcessors request"))

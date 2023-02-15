@@ -4,6 +4,16 @@ let selected_student = '';
 frappe.ready(function() {
     add_student_bindings();
 
+    function add_payment_method_type_binding() {
+        $("input[name=radio-payment-method-type]").change(function(){
+            let $this = $(this); 
+            console.log("add_payment_method_type_binding");
+            console.log(`payment method: ${$this.val()}`);
+            
+            load_payment_methods_by_type($this.val());
+        });
+    }
+
     function add_student_bindings() {
         let student_links = $("a.fees-link");
         selected_student = '';
@@ -238,8 +248,6 @@ frappe.ready(function() {
                     for(var i=0;i<r.message.length;i++) {
                         let program_fee = r.message[i].details;
                         
-                        console.log(`program_fee: ${program_fee}`);
-
                         let fees_component_html = ``;
                         for (var k=0; k<program_fee.program_fees_components.length; k++) {
                             let fees_component = program_fee.program_fees_components[k];
@@ -287,7 +295,6 @@ frappe.ready(function() {
                         `
                         ;
                         total_amount_due_checkout = total_amount_due_checkout + parseFloat(program_fee.program_fees_amount);
-                        console.log(items);                            
                     }
 
                     let previous_button = 
@@ -308,7 +315,6 @@ frappe.ready(function() {
                     html = html + 
                     `
                         <div style="max-width: 500px;">
-
                             <div class="mt-4">
                                 <img src="/assets/schoolext/img/icons8-advertising-85.png" style="height: 40px; width: auto;">
                                 Checkout
@@ -324,15 +330,7 @@ frappe.ready(function() {
                                 </div>
                             </div>
 
-                            <div class="mt-4">                                
-                                <h5>Payment Method</h5>
-                                <div>
-                                    Bank
-                                    <br />
-                                    Over the counter
-                                    <br />
-                                    GCASH
-                                </div>
+                            <div id="payment-method-section" class="mt-4">
                             </div>
 
                             ${button_group}
@@ -340,6 +338,7 @@ frappe.ready(function() {
                     `;
 
                     $("#my-student-fees-checkout").html(html);
+                    load_payment_methods();                        
         
                     $('#my-student-fees').fadeOut('fast', function() {
                         $('#my-student-fees-checkout').fadeIn('slow');
@@ -361,5 +360,147 @@ frappe.ready(function() {
                 }
             },
         });
+    }
+
+    function load_payment_methods() {
+        let html = ``;
+        html = html +
+        `
+        <h5 class="mt-4">Payment Methods</h5>
+        <div id="online-banking-check" class="form-check">
+            <input class="form-check-input" type="radio" name="radio-payment-method-type" id="online-banking" value="online-banking">
+            <label class="form-check-label" for="online-banking">
+                Online banking
+            </label>
+            <div class="card d-flex justify-content-center" id="online-banking-proc-ids">
+        
+            </div>
+        </div>
+        <div id="over-the-counter-check" class="form-check">
+            <input class="form-check-input" type="radio" name="radio-payment-method-type" id="over-the-counter" value="over-the-counter">
+            <label class="form-check-label" for="over-the-counter">
+                Over the counter
+            </label>
+            <div class="card d-flex justify-content-center" id="over-the-counter-proc-ids">
+        
+            </div>
+        </div>
+        <div id="gcash-check" class="form-check">
+            <input class="form-check-input" type="radio" name="radio-payment-method-type" id="gcash" value="gcash">
+            <label class="form-check-label" for="gcash">
+                GCash
+            </label>
+        </div>
+        <div id="credit-card-check" class="form-check">
+            <input class="form-check-input" type="radio" name="radio-payment-method-type" id="credit-card" value="credit-card">
+            <label class="form-check-label" for="credit-card">
+                Credit Card
+            </label>
+        </div>
+        `;
+        // html = html + spinner_loader();
+
+        $("#payment-method-section").html(html);
+
+        add_payment_method_type_binding();
+    }
+
+    function load_payment_methods_by_type(payment_method_type){
+        if (payment_method_type == "online-banking") {
+            $("#online-banking-proc-ids").html(spinner_loader());
+        }
+        else if (payment_method_type == "over-the-counter") {
+            $("#over-the-counter-proc-ids").html(spinner_loader());
+        }
+
+        frappe.call({
+            method: "schoolext.school_extension.dragonpay.dragonpay_get_available_processors",
+            type: "GET",
+            args: {
+                "amount": -1000,
+            },
+            callback: function(r) {
+                if(r.message) {
+                    console.log("success dragonpay_get_available_processors");
+                    let online_banking_html = ``;
+                    let over_the_counter_html = ``;
+                    for(var i=0;i<r.message.length;i++) {
+                        let item = r.message[i];
+                        // type == 1: online banking
+                        if (item.type == 1 && payment_method_type == "online-banking") {
+                            online_banking_html = online_banking_html + `
+                            <div id="${item.procId.toLowerCase()}-check" class="form-check">
+                                <input class="form-check-input" data-proc-id="${item.procId}" type="radio" 
+                                    name="radio-payment-method-subtype" 
+                                    id="${item.procId.toLowerCase()}" value="${item.procId}">
+                                <label class="form-check-label" for="${item.shortName.toLowerCase()}">
+                                    ${item.shortName}
+                                </label>
+                            </div>
+                            `;
+
+                            $("#online-banking-proc-ids").html(online_banking_html);
+                        }
+                        else if (item.type == 2 && payment_method_type == "over-the-counter") {
+                            over_the_counter_html = over_the_counter_html + `
+                            <div id="${item.procId.toLowerCase()}-check" class="form-check">
+                                <input class="form-check-input" data-proc-id="${item.procId}" type="radio" 
+                                    name="radio-payment-method-subtype" 
+                                    id="${item.procId.toLowerCase()}" value="${item.procId}">
+                                <label class="form-check-label" for="${item.shortName.toLowerCase()}">
+                                    ${item.shortName}
+                                </label>
+                            </div>
+                            `;
+                            $("#over-the-counter-proc-ids").html(over_the_counter_html);
+                        }
+                    
+                    }
+                }
+                else {
+                    console.log("error dragonpay_get_available_processors");
+                    frappe.show_alert({message:__("Error in error dragonpay_get_available_processors."), indicator:'red'});                    
+                }
+
+                remove_spinner_loader();
+            }
+        });
+    }
+
+    function spinner_loader() {
+        let html = `
+        <div class="spinner-loader spinner-border text-info" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        `;
+        return html;
+    }
+
+    function remove_spinner_loader() {
+        $(".spinner-loader").remove();
+    }
+
+    function frappe_call_template() {
+        if (true) {
+            throw "don't use this!";
+        }
+        else {        
+            frappe.call({
+                method: "schoolext.school_extension.dragonpay.dragonpay_get_available_processors",
+                type: "GET",
+                args: {
+                    "amount": -1000,
+                },
+                callback: function(r) {
+                    if(r.message) {
+                        console.log("success dragonpay_get_available_processors");
+                    }
+                    else {
+                        console.log("error dragonpay_get_available_processors");
+                        frappe.show_alert({message:__("Error in error dragonpay_get_available_processors."), indicator:'red'});                        
+                    }
+                }
+            });
+        }
     }
 });

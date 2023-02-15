@@ -16,7 +16,11 @@
   "test_password",
   "test_payout_api_key",
   "integration_options_section_section",
-  "company_bank_account"
+  "company_bank_account",
+  "payment_processors_section",
+  "enabled_proc_ids",
+  "fetched_proc_ids",
+  "last_fetch_time"
  ],
  "fields": [
   {
@@ -69,12 +73,33 @@
    "fieldtype": "Link",
    "label": "Company Bank Account",
    "options": "Bank Account"
+  },
+  {
+   "description": "Check available Proc Ids in the Merchant Payment Switch API document",
+   "fieldname": "enabled_proc_ids",
+   "fieldtype": "Small Text",
+   "label": "Enabled Proc Ids"
+  },
+  {
+   "fieldname": "payment_processors_section",
+   "fieldtype": "Section Break",
+   "label": "Payment Processors"
+  },
+  {
+   "fieldname": "fetched_proc_ids",
+   "fieldtype": "Long Text",
+   "label": "Fetched Proc Ids"
+  },
+  {
+   "fieldname": "last_fetch_time",
+   "fieldtype": "Datetime",
+   "label": "Last Fetch Time"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-02-13 12:09:45.241248",
+ "modified": "2023-02-16 01:28:28.467271",
  "modified_by": "Administrator",
  "module": "School Extension",
  "name": "DragonPay Settings",
