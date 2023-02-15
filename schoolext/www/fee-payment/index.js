@@ -1,5 +1,6 @@
 frappe.provide("frappe.form.formatters");
 let selected_student = '';
+let available_processors = [];
 
 frappe.ready(function() {
     add_student_bindings();
@@ -43,7 +44,16 @@ frappe.ready(function() {
         $("#checkout-button").on("click", function () {
             let selected_program_fees = get_selected_program_fees()
 
-            load_checkout(selected_student, selected_program_fees);
+            if (selected_program_fees.length <= 0) {
+                frappe.msgprint({
+                    title: __('Select a fee'),
+                    indicator: 'error',
+                    message: __('You have not selected any fees to pay.')
+                });
+            }
+            else {
+                load_checkout(selected_student, selected_program_fees);
+            }
         });
     }
 
@@ -70,6 +80,29 @@ frappe.ready(function() {
             total_amount_due = total_amount_due + parseFloat($this.attr('data-amount'));
             
             result.push($this.attr('data-name'));
+        });
+
+        return result;
+    }
+
+    function get_selected_program_fees_objects() {
+        let result = [];
+        
+        let checked_program_fee_checkboxes = $("input.program-fee-checkbox:checked");
+
+        let total_amount_due = 0.00;
+        checked_program_fee_checkboxes.each(function () {
+            let $this = $(this);
+            total_amount_due = total_amount_due + parseFloat($this.attr('data-amount'));
+
+            // todo: add other types
+            item = {
+                "fees_doctype": "Program Fee",
+                "name": $this.attr('data-name'),
+                "amount": $this.attr('data-amount')
+            }
+            
+            result.push(item);
         });
 
         return result;
@@ -351,7 +384,7 @@ frappe.ready(function() {
                     });
                     
                     $("#pay-button").on("click", function () {
-                        frappe.msgprint("Not yet working!");
+                        process_payment()
                     });
                 }
                 else {
@@ -362,109 +395,213 @@ frappe.ready(function() {
         });
     }
 
+    function process_payment() {
+        let selected_fees_objects = get_selected_program_fees_objects();
+        let temp_selected_proc_id = $("input[name=radio-payment-method-type]:checked").val();
+        let selected_proc_id = '';
+
+        if (["online-banking", "over-the-counter"].includes(temp_selected_proc_id)) {
+            selected_proc_id = $("input[name=radio-payment-method-subtype]:checked").val();
+        }
+        else if (temp_selected_proc_id=="gcash") {
+            selected_proc_id = "GCSH";
+        }
+        else if (temp_selected_proc_id=="credit-card") {
+            selected_proc_id = "CC";
+        }
+        
+        frappe.call({
+            method: "schoolext.utils.pay_pending_fees",
+            type: "GET",
+            args: {
+                "student": selected_student,
+                "fees_to_pay": selected_fees_objects,
+                "proc_id": selected_proc_id
+            },
+            callback: function(r) {
+                if(r.message) {
+                    console.log("success dragonpay_get_available_processors");
+                    frappe.msgprint("Not yet working!");
+                }
+                else {
+                    console.log("error dragonpay_get_available_processors");
+                    frappe.show_alert({message:__("Error in error dragonpay_get_available_processors."), indicator:'red'});                        
+                }
+            }
+        });        
+    }
+
+    function get_selected_proc_id() {
+
+    }
+
     function load_payment_methods() {
+        selected_proc_id = '';
+
+        available_processors = [];
         let html = ``;
         html = html +
         `
-        <h5 class="mt-4">Payment Methods</h5>
-        <div id="online-banking-check" class="form-check">
-            <input class="form-check-input" type="radio" name="radio-payment-method-type" id="online-banking" value="online-banking">
-            <label class="form-check-label" for="online-banking">
-                Online banking
-            </label>
-            <div class="card d-flex justify-content-center" id="online-banking-proc-ids">
-        
+        <h4 class="mt-4" id="payment-methods">Payment Method</h4>
+        <div class="mt-4" id="payment-method-check-group">
+            <div id="online-banking-check" class="form-check">
+                <input class="form-check-input" type="radio" name="radio-payment-method-type" id="online-banking" value="online-banking">
+                <label class="form-check-label" role="button" for="online-banking">
+                    Online banking
+                </label>
+                <div class="card d-flex justify-content-center" id="online-banking-proc-ids">
+            
+                </div>
             </div>
-        </div>
-        <div id="over-the-counter-check" class="form-check">
-            <input class="form-check-input" type="radio" name="radio-payment-method-type" id="over-the-counter" value="over-the-counter">
-            <label class="form-check-label" for="over-the-counter">
-                Over the counter
-            </label>
-            <div class="card d-flex justify-content-center" id="over-the-counter-proc-ids">
-        
+            <div id="over-the-counter-check" class="form-check">
+                <input class="form-check-input" type="radio" name="radio-payment-method-type" id="over-the-counter" value="over-the-counter">
+                <label class="form-check-label" role="button" for="over-the-counter">
+                    Over the counter
+                </label>
+                <div class="card d-flex justify-content-center" id="over-the-counter-proc-ids">
+            
+                </div>
             </div>
-        </div>
-        <div id="gcash-check" class="form-check">
-            <input class="form-check-input" type="radio" name="radio-payment-method-type" id="gcash" value="gcash">
-            <label class="form-check-label" for="gcash">
-                GCash
-            </label>
-        </div>
-        <div id="credit-card-check" class="form-check">
-            <input class="form-check-input" type="radio" name="radio-payment-method-type" id="credit-card" value="credit-card">
-            <label class="form-check-label" for="credit-card">
-                Credit Card
-            </label>
+            <div id="gcash-check" class="form-check">
+                <input class="form-check-input" type="radio" name="radio-payment-method-type" id="gcash" value="gcash">
+                <label class="form-check-label" role="button" for="gcash">
+                    <span clas="d-none">GCash</span>
+                </label>
+            </div>
+            <div id="credit-card-check" class="form-check">
+                <input class="form-check-input" type="radio" name="radio-payment-method-type" id="credit-card" value="credit-card">
+                <label class="form-check-label" role="button" for="credit-card">
+                    <span clas="">Credit Card</span>
+                </label>
+            </div>
         </div>
         `;
         // html = html + spinner_loader();
 
-        $("#payment-method-section").html(html);
-
-        add_payment_method_type_binding();
-    }
-
-    function load_payment_methods_by_type(payment_method_type){
-        if (payment_method_type == "online-banking") {
-            $("#online-banking-proc-ids").html(spinner_loader());
-        }
-        else if (payment_method_type == "over-the-counter") {
-            $("#over-the-counter-proc-ids").html(spinner_loader());
-        }
-
+        $("#payment-method-section").html(spinner_loader());
+        
         frappe.call({
             method: "schoolext.school_extension.dragonpay.dragonpay_get_available_processors",
-            type: "GET",
+            type: "POST",
             args: {
                 "amount": -1000,
             },
             callback: function(r) {
                 if(r.message) {
                     console.log("success dragonpay_get_available_processors");
-                    let online_banking_html = ``;
-                    let over_the_counter_html = ``;
-                    for(var i=0;i<r.message.length;i++) {
-                        let item = r.message[i];
-                        // type == 1: online banking
-                        if (item.type == 1 && payment_method_type == "online-banking") {
-                            online_banking_html = online_banking_html + `
-                            <div id="${item.procId.toLowerCase()}-check" class="form-check">
-                                <input class="form-check-input" data-proc-id="${item.procId}" type="radio" 
-                                    name="radio-payment-method-subtype" 
-                                    id="${item.procId.toLowerCase()}" value="${item.procId}">
-                                <label class="form-check-label" for="${item.shortName.toLowerCase()}">
-                                    ${item.shortName}
-                                </label>
-                            </div>
-                            `;
-
-                            $("#online-banking-proc-ids").html(online_banking_html);
-                        }
-                        else if (item.type == 2 && payment_method_type == "over-the-counter") {
-                            over_the_counter_html = over_the_counter_html + `
-                            <div id="${item.procId.toLowerCase()}-check" class="form-check">
-                                <input class="form-check-input" data-proc-id="${item.procId}" type="radio" 
-                                    name="radio-payment-method-subtype" 
-                                    id="${item.procId.toLowerCase()}" value="${item.procId}">
-                                <label class="form-check-label" for="${item.shortName.toLowerCase()}">
-                                    ${item.shortName}
-                                </label>
-                            </div>
-                            `;
-                            $("#over-the-counter-proc-ids").html(over_the_counter_html);
-                        }
-                    
-                    }
+                    available_processors = r.message;
                 }
                 else {
                     console.log("error dragonpay_get_available_processors");
                     frappe.show_alert({message:__("Error in error dragonpay_get_available_processors."), indicator:'red'});                    
                 }
 
+                $("#payment-method-section").html(html);
+
+                // console.log(`available_processors: ${JSON.stringify(available_processors)}`);
+
+                let has_gcash = available_processors.filter(function(item){ 
+                    if (item.hasOwnProperty("type")) { 
+                        // console.log(`${item["procId"]} ${item["type"]}`);
+                        return item["procId"] === "GCSH"; //gcash 128
+                    } 
+                        return false;   
+                });
+
+                // console.log(`has_gcash ${JSON.stringify(has_gcash)}`);
+                
+                if (has_gcash && has_gcash.length>0) {
+                    $("#gcash-check").removeClass("d-none");
+                    $("#gcash-check label").prepend(
+                        `<img src="${has_gcash[0].logo}" style="height: 40px; width: auto;"
+                        onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';"
+                        >`
+                        );
+                }
+                else {
+                    $("#gcash-check").addClass("d-none");
+                }
+
+                let has_credit_card = available_processors.filter(function(item){ 
+                    if (item.hasOwnProperty("type")) { 
+                        return item["procId"] === "CC"; //credit card 64
+                    } 
+                        return false;   
+                });
+                
+                if (has_credit_card && has_credit_card.length>0) {
+                    $("#credit-card-check").removeClass("d-none");
+                    $("#credit-card-check label").prepend(
+                        `<img src="${has_credit_card[0].logo}" style="height: 40px; width: auto;" alt="Credit Card"
+                        onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';"                        
+                        >`
+                        );
+                }
+                else {
+                    $("#credit-card-check").addClass("d-none");
+                }
+
+                add_payment_method_type_binding();
                 remove_spinner_loader();
             }
         });
+
+    }
+
+    function load_payment_methods_by_type(payment_method_type, amount){
+        $("#online-banking-proc-ids").html("");
+        $("#over-the-counter-proc-ids").html("");
+
+        if (payment_method_type == "online-banking") {
+            $("#online-banking-proc-ids").html(spinner_loader());
+        }
+        else if (payment_method_type == "over-the-counter") {
+            $("#over-the-counter-proc-ids").html(spinner_loader());
+        }
+        else if (payment_method_type == "gcash") {
+            
+        }
+        else if (payment_method_type == "credit-card") {
+            
+        }
+        
+        let online_banking_html = ``;
+        let over_the_counter_html = ``;
+        for(var i=0;i<available_processors.length;i++) {
+            let item = available_processors[i];
+            // type == 1: online banking
+            if (item.type == 1 && payment_method_type == "online-banking") {
+                online_banking_html = online_banking_html + `
+                <div id="${item.procId.toLowerCase()}-check" class="form-check">
+                    <label class="form-check-label" role="button" for="${item.procId.toLowerCase()}">
+                        <input class="form-check-input" data-proc-id="${item.procId}" type="radio" 
+                            name="radio-payment-method-subtype" 
+                            id="${item.procId.toLowerCase()}" value="${item.procId}">
+                        <img src="${item.logo}" style="height: 40px; width: auto;"
+                        onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';">                        
+                    </label>
+                </div>
+                `;
+
+                $("#online-banking-proc-ids").html(online_banking_html);
+                $("#over-the-counter-proc-ids").html("");
+            }
+            else if (item.type == 2 && payment_method_type == "over-the-counter") {
+                over_the_counter_html = over_the_counter_html + `
+                <div id="${item.procId.toLowerCase()}-check" class="form-check">
+                    <label class="form-check-label" role="button" for="${item.procId.toLowerCase()}">
+                        <input class="form-check-input" data-proc-id="${item.procId}" type="radio" 
+                            name="radio-payment-method-subtype" 
+                            id="${item.procId.toLowerCase()}" value="${item.procId}">
+                        <img src="${item.logo}" style="height: 40px; width: auto;"
+                        onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';">
+                    </label>
+                </div>
+                `;
+                $("#over-the-counter-proc-ids").html(over_the_counter_html);
+                $("#online-banking-proc-ids").html("");
+            }
+        }
     }
 
     function spinner_loader() {

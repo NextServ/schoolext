@@ -1,4 +1,5 @@
 import frappe
+import json
 from frappe import _
 from frappe.utils import getdate, now, flt, cint
 from frappe.model.document import Document
@@ -34,7 +35,7 @@ precision = cint(frappe.db.get_default("currency_precision")) or 2
 #     return response
 
 # todo: don't fetch all the time?
-@frappe.whitelist(methods=["GET", "POST"])
+@frappe.whitelist(methods=["POST"])
 def dragonpay_get_available_processors(amount):
     amount = flt(amount, precision)
     settings = frappe.get_doc("DragonPay Settings")
@@ -56,14 +57,35 @@ def dragonpay_get_available_processors(amount):
             }
         
     try:
-        response = make_get_request(
-            url,
-            headers=headers
-        )
+        retrieve_current = False
+
+        available_processors = []
+        if settings.last_fetch_time:
+            # settings.last_fetch_time is yesterday or earlier, fetch again
+            # todo: fetch per hour
+            if getdate(now()) > getdate(settings.last_fetch_time):
+                retrieve_current = True
+            # latest fetch is today
+            else:
+                if settings.fetched_proc_ids:
+                    available_processors = json.loads(settings.fetched_proc_ids)
+                else:
+                    retrieve_current = True
+        else:
+            retrieve_current = True
+        
+        if retrieve_current:
+            available_processors = make_get_request(
+                url,
+                headers=headers
+            )
+            print("save procid")
+            frappe.db.set_value("DragonPay Settings", "DragonPay Settings", "fetched_proc_ids", json.dumps(available_processors))
+            frappe.db.set_value("DragonPay Settings", "DragonPay Settings", "last_fetch_time", now())
 
         result = []
 
-        for item in response:
+        for item in available_processors:
             if item["procId"] in enabled_proc_ids:
                 result.append(item)
 
@@ -72,7 +94,7 @@ def dragonpay_get_available_processors(amount):
         frappe.log_error(title="dragonpay_get_available_processors", message=str(e))
         frappe.throw(_("Error in GetAvailableProcessors request"))
 
-@frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
+@frappe.whitelist(allow_guest=True, methods=["POST"])
 def dragonpay_postback(
     txnid=None,
     refno=None,
@@ -91,6 +113,7 @@ def dragonpay_postback(
 
     if digest != generated_digest:
         frappe.log_error(title="dragonpay_postback", message="Invalid digest {}".format(message))
+        frappe.throw("Invalid digest")
     else:
         pass
 

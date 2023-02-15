@@ -6,6 +6,8 @@ from frappe import _
 import json
 import datetime
 
+from schoolext.school_extension.dragonpay import create_dragonpay_payment_request
+
 def get_students(guardian_name):
     """Load `students` from the database"""
     result = []
@@ -190,7 +192,7 @@ def get_program_fee_details(student, program_fee_names):
                 and pf.name = %s
         """, (program_fee_name), as_dict=True)
 
-        print("program_fees_components: {}".format(frappe.as_json(program_fees_components)))
+        # print("program_fees_components: {}".format(frappe.as_json(program_fees_components)))
 
         if program_fees_components and program_fees_components[0]:
             # organize data
@@ -228,7 +230,7 @@ def get_program_fee_details(student, program_fee_names):
                     "program_fees_components": fees_components
                 }
             })
-    print("result: {}".format(frappe.as_json(result)))
+    # print("result: {}".format(frappe.as_json(result)))
     return result
 
 def validate_current_user_guardian(student):
@@ -246,3 +248,9 @@ def validate_current_user_guardian(student):
 
     if not student_found:
         frappe.throw(_("You do not have permission to access this resource."), frappe.PermissionError)
+
+
+@frappe.whitelist(methods=["POST"])
+def pay_pending_fees(student, fees_to_pay, proc_id):
+    validate_current_user_guardian(student)
+    pass

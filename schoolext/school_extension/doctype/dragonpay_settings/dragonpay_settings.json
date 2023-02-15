@@ -88,7 +88,8 @@
   {
    "fieldname": "fetched_proc_ids",
    "fieldtype": "Long Text",
-   "label": "Fetched Proc Ids"
+   "label": "Fetched Proc Ids",
+   "read_only": 1
   },
   {
    "fieldname": "last_fetch_time",
@@ -99,7 +100,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-02-16 01:28:28.467271",
+ "modified": "2023-02-16 02:29:32.276840",
  "modified_by": "Administrator",
  "module": "School Extension",
  "name": "DragonPay Settings",
