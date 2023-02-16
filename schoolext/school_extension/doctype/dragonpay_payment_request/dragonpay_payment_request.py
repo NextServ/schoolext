@@ -169,3 +169,4 @@ class DragonPayPaymentRequest(Document):
             print("error in create_documents")
             print(frappe.get_traceback())
             frappe.log_error(title="dppr: create_documents", message=frappe.get_traceback())
+            frappe.throw(e)
