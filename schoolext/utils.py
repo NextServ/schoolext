@@ -52,6 +52,9 @@ def get_student_program_fees(student):
             pe.program
     """, (student), as_dict=True)
 
+    # get only first program fee from the schedule (pre-enrollment fee)
+    # the next program fees after the first will already be created as fees
+    
     program_fees = frappe.db.sql("""
         select
             pe.name as program_enrollment_name,
@@ -68,6 +71,7 @@ def get_student_program_fees(student):
             pe.name = pf.parent
         where
             pe.docstatus = 0
+            and pf.idx = 1
             and pe.student = %s
         order by
             pe.program, pf.idx
@@ -99,6 +103,7 @@ def get_student_program_fees(student):
             fs.name = fc.parent
         where
             pe.docstatus = 0
+            and fc.idx = 1
             and pe.student = %s
         order by
             pe.program, pf.idx, fc.idx
@@ -126,7 +131,7 @@ def get_student_program_fees(student):
 
         for pf in program_fees:
             if pf.program_enrollment_name == program_enrollment_line["program_enrollment_name"]:
-                pfcs = [pfc for pfc in program_fees_components if pfc.fees_name == pf.fees_name]
+                pfcs = [pfc for pfc in program_fees_components if pfc.program_fees_name == pf.program_fees_name]
                 pf["program_fees_components"] = pfcs
                 program_fees_lines.append(pf)
 
@@ -201,12 +206,13 @@ def get_student_fees(student):
         # find program item
         program = next((program for program in result if program["program_name"] == f.program_name), None)
         
-        program["fees"] = []
+        if "fees" not in program:
+            program["fees"] = []
 
         # add fee components to the fees record
         fee_components = [fc for fc in fees_components if fc.fees_name == f.fees_name]
         f["fee_components"] = fee_components
-        
+
         # add fees to the program item
         program["fees"].append(f)
     

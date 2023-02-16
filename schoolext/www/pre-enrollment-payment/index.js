@@ -140,7 +140,11 @@ frappe.ready(function() {
                     // $("#my-student-fees").load("/fee-payment/my_student_fees.html", {data: r.message});
 
                     // let html = frappe.render("/fee-payment/my_student_fees.html", {data: r.message});
-                    let items_html = ``;
+                    let items_html = `
+                    <div>
+                        <h6>Pre-enrollment Fees</h6>
+                    </div>
+                    `;
                     for (var i=0; i<programs.length; i++) {
                         let prog_en = programs[i];
 
