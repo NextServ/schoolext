@@ -1,13 +1,36 @@
 import frappe
+from erpnext.accounts.doctype.payment_request.payment_request import \
+    make_payment_request
 from frappe import _
 from frappe.model.document import Document
 from education.education.doctype.fees.fees import Fees
+from frappe.utils import money_in_words
+from frappe.utils.csvutils import getlink
 
 
 class CustomFees(Fees):
+    # override
     def validate(self):
         super().validate()
     
+    def on_submit(self):
+        self.make_gl_entries()
+
+        if self.send_payment_request and self.student_email:
+            pr = make_payment_request(
+                party_type="Student",
+                party=self.student,
+                dt="Fees",
+                dn=self.name,
+                recipient_id=self.student_email,
+                submit_doc=True,
+                use_dummy_message=True,
+            )
+            frappe.msgprint(
+                _("Payment request {0} created").format(getlink("Payment Request", pr.name))
+            )
+    
+    # override    
     def make_gl_entries(self):
         # this is called on_submit
         if self.grand_total <= 0:

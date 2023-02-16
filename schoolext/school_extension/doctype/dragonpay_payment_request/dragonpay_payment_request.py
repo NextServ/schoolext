@@ -5,6 +5,7 @@ import json
 import frappe
 from schoolext.school_extension.dragonpay import get_authorization_string, get_username_and_password
 from frappe import _
+from frappe.utils import getdate
 from frappe.model.document import Document
 from frappe.integrations.utils import (
     create_request_log,
@@ -13,7 +14,7 @@ from frappe.integrations.utils import (
 )
 from frappe.utils import call_hook_method, cint, get_timestamp, get_url, flt
 from schoolext.school_extension.doctype.dragonpay_settings.dragonpay_settings import SERVICE_PRODUCTION_BASE_URL, SERVICE_TEST_BASE_URL
-
+from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
 
 precision = cint(frappe.db.get_default("currency_precision")) or 2
 
@@ -117,6 +118,54 @@ class DragonPayPaymentRequest(Document):
         frappe.db.set_value("DragonPay Payment Request", self.name, "url", payment_request_response["Url"])
 
     def create_documents(self):
-        for item in self.items:
-            if item.reference_doctype == "Program Fee":
-                pass
+        try:
+            company_bank_acocunt = frappe.db.get_value("DragonPay Settings", "DragonPay Settings", "company_bank_acocunt")
+            if self.collection_request_status == "Success":            
+                for item in self.items:
+                    # program fee was paid, submit the program enrollment document and create the fees (draft)
+                    # items should always be only 1 line for program fee (first fee pre-enrollment)
+                    if item.reference_doctype == "Program Fee":
+                        program_enrollment_name = frappe.db.get_value("Program Fee", item.reference_name, "parent")
+                        program_enrollment_doc = frappe.get_doc("Program Enrollment", program_enrollment_name)
+
+                        if program_enrollment_doc.docstatus == 0:
+                            program_enrollment_doc.auto_create_fees = 1
+                            program_enrollment_doc.submit()
+                            print("program_enrollment_doc.submit()")
+                        
+                        # find the created fee
+                        fees = None
+                        if frappe.db.exists("Fees", {'program_fee_name': item.reference_name}):
+                            fees = frappe.get_last_doc("Fees", filters={"program_fee_name": item.reference_name})
+                            # fees_name = frappe.db.sql(
+                            #     """
+                            #         select name 
+                            #         from `tabFees`
+                            #         where 
+                            #             program_fee_name = %s
+                            #         order by 
+                            #             creation desc
+                            #         limit 1
+                            #     """, (item.reference_name), as_dict=True
+                            # )
+
+                            # fees_name = fees_name[0].name if (fees_name and fees_name[0]) else None
+                            # print("fees_name {}".format(fees_name))
+                            # if fees_name:
+                            #     fees = frappe.get_doc("Fees", fees_name)
+                        
+                        if fees:
+                            fees.submit()
+                            pe = get_payment_entry("Fees", fees.name, 
+                                bank_account=company_bank_acocunt, bank_amount=None, party_type="Student", payment_type="Receive")
+                            
+                            pe.reference_no = self.name
+                            pe.reference_date = getdate()
+                            pe.save()
+                            print("pe.save()")
+            else:
+                print("not success")
+        except Exception as e:
+            print("error in create_documents")
+            print(frappe.get_traceback())
+            frappe.log_error(title="dppr: create_documents", message=frappe.get_traceback())

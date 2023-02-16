@@ -224,17 +224,12 @@ def dragonpay_postback1():
     return "result=OK"
 
 # @frappe.whitelist()
-def create_dragonpay_payment_request(party_type, party, proc_id, fees_to_pay, amount, email, mobile_no):
+def create_dragonpay_payment_request(party_type, party, proc_id, fees_to_pay, amount, email, mobile_no, description):
     settings = frappe.get_doc("DragonPay Settings")
 
     if settings.test_mode:
         if proc_id not in ["BOG", "BOGX"]:
             frappe.throw("Invalid test payment processor")
-
-    description = ""
-
-    # build description
-    description = ', '.join([fee["reference_name"] for fee in fees_to_pay])
 
     amount = flt(amount, precision)
 

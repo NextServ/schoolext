@@ -109,7 +109,8 @@ doctype_js = {
 # }
 
 override_doctype_class = {
-	"Fees": "schoolext.overrides.fees.CustomFees"
+	"Fees": "schoolext.overrides.fees.CustomFees",
+    "Program Enrollment": "schoolext.overrides.program_enrollment.CustomProgramEnrollment"
 }
 
 # Document Events

@@ -16,6 +16,16 @@ def default(o):
 
 def get_context(context):
     context.show_sidebar = 1
+
+    
+    current_user = frappe.session.user
+    
+    guardian_doc = None
+    if frappe.db.exists("Guardian", {'user': current_user}):
+        guardian_doc = frappe.get_last_doc("Guardian", filters={"user": current_user})
+
+    else:
+        frappe.throw(_("You do not have permission to access this page."), frappe.PermissionError)
     
     params = frappe.form_dict
 

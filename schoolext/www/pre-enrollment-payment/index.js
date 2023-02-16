@@ -140,11 +140,16 @@ frappe.ready(function() {
                     // $("#my-student-fees").load("/fee-payment/my_student_fees.html", {data: r.message});
 
                     // let html = frappe.render("/fee-payment/my_student_fees.html", {data: r.message});
-                    let items_html = `
-                    <div>
-                        <h6>Pre-enrollment Fees</h6>
-                    </div>
-                    `;
+                    let items_html = ``;
+
+                    if (programs.length > 0) {
+                        items_html = `
+                        <div>
+                            <h6>Pre-enrollment Fees</h6>
+                        </div>
+                        `;
+                    }
+
                     for (var i=0; i<programs.length; i++) {
                         let prog_en = programs[i];
 
@@ -484,7 +489,7 @@ frappe.ready(function() {
                     pay_button.html(spinner_loader()); 
                     
                     frappe.call({
-                        method: "schoolext.utils.pay_pending_fees",
+                        method: "schoolext.utils.pay_pending_enrollment_fees",
                         type: "POST",
                         args: {
                             "student": selected_student,
@@ -493,13 +498,13 @@ frappe.ready(function() {
                         },
                         callback: function(r) {
                             if(r.message) {
-                                console.log("success pay_pending_fees");
+                                console.log("success pay_pending_enrollment_fees");
             
                                 window.location.href = r.message.url;
                             }
                             else {
-                                console.log("error pay_pending_fees");
-                                frappe.show_alert({message:__("Error in error pay_pending_fees."), indicator:'red'});                        
+                                console.log("error pay_pending_enrollment_fees");
+                                frappe.show_alert({message:__("Error in error pay_pending_enrollment_fees."), indicator:'red'});                        
                             }
                             pay_button.prop('disabled', false);
                             remove_spinner_loader();

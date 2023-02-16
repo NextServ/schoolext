@@ -103,7 +103,7 @@ def get_student_program_fees(student):
             fs.name = fc.parent
         where
             pe.docstatus = 0
-            and fc.idx = 1
+            and pf.idx = 1
             and pe.student = %s
         order by
             pe.program, pf.idx, fc.idx
@@ -322,11 +322,13 @@ def validate_current_user_guardian(student):
 
 
 @frappe.whitelist(methods=["POST"])
-def pay_pending_fees(student, proc_id, fees_to_pay):
+def pay_pending_enrollment_fees(student, proc_id, fees_to_pay):
     guardian_doc = validate_current_user_guardian(student)
 
     fees_to_pay = json.loads(fees_to_pay)
     total_amount = 0
+
+    program_details = []
 
     # refetch updated amounts
     for fee in fees_to_pay:
@@ -335,11 +337,19 @@ def pay_pending_fees(student, proc_id, fees_to_pay):
         if fee["reference_doctype"] == "Program Fee":
             # amount is the fieldname in program fee
             fee["amount"] = fee_doc.amount
+
+            program_enrollment = frappe.db.get_value("Program Enrollment", fee_doc.parent, ["program", "academic_year"], as_dict=True)
+            program_details.append(program_enrollment)
         
         total_amount = total_amount + fee["amount"]
     
+    description = ''
+
+    # build description
+    description = ', '.join(["{0}-{1}".format(p.program, p.academic_year) for p in program_details])
+    
     result = create_dragonpay_payment_request("Student", student, proc_id, 
         fees_to_pay, total_amount, guardian_doc.email_address, 
-        guardian_doc.mobile_number)
+        guardian_doc.mobile_number, description)
 
     return result
