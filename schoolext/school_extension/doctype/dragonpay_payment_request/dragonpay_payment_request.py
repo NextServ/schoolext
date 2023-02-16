@@ -115,3 +115,8 @@ class DragonPayPaymentRequest(Document):
         frappe.db.set_value("DragonPay Payment Request", self.name, "payment_initiation_request_status", payment_initiation_request_status)
         frappe.db.set_value("DragonPay Payment Request", self.name, "payment_initiation_request_message", payment_request_response["Message"])
         frappe.db.set_value("DragonPay Payment Request", self.name, "url", payment_request_response["Url"])
+
+    def create_documents(self):
+        for item in self.items:
+            if item.reference_doctype == "Program Fee":
+                pass

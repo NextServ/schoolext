@@ -234,6 +234,7 @@ def get_program_fee_details(student, program_fee_names):
     return result
 
 def validate_current_user_guardian(student):
+    guardian_doc = None
     current_user = frappe.session.user
     if frappe.db.exists("Guardian", {'user': current_user}):
         guardian_doc = frappe.get_last_doc("Guardian", filters={"user": current_user})
@@ -248,9 +249,29 @@ def validate_current_user_guardian(student):
 
     if not student_found:
         frappe.throw(_("You do not have permission to access this resource."), frappe.PermissionError)
+    
+    return guardian_doc
 
 
 @frappe.whitelist(methods=["POST"])
-def pay_pending_fees(student, fees_to_pay, proc_id):
-    validate_current_user_guardian(student)
-    pass
+def pay_pending_fees(student, proc_id, fees_to_pay):
+    guardian_doc = validate_current_user_guardian(student)
+
+    fees_to_pay = json.loads(fees_to_pay)
+    total_amount = 0
+
+    # refetch updated amounts
+    for fee in fees_to_pay:
+        fee_doc = frappe.get_doc(fee["reference_doctype"], fee["reference_name"])
+
+        if fee["reference_doctype"] == "Program Fee":
+            # amount is the fieldname in program fee
+            fee["amount"] = fee_doc.amount
+        
+        total_amount = total_amount + fee["amount"]
+    
+    result = create_dragonpay_payment_request("Student", student, proc_id, 
+        fees_to_pay, total_amount, guardian_doc.email_address, 
+        guardian_doc.mobile_number)
+
+    return result

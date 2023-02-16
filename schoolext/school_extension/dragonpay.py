@@ -37,6 +37,8 @@ precision = cint(frappe.db.get_default("currency_precision")) or 2
 # todo: don't fetch all the time?
 @frappe.whitelist(methods=["POST"])
 def dragonpay_get_available_processors(amount):
+    company_currency = frappe.get_cached_value('Company',  frappe.db.get_default("Company"),  "default_currency")
+
     amount = flt(amount, precision)
     settings = frappe.get_doc("DragonPay Settings")
     enabled_proc_ids = settings.enabled_proc_ids.splitlines()
@@ -86,7 +88,7 @@ def dragonpay_get_available_processors(amount):
         result = []
 
         for item in available_processors:
-            if item["procId"] in enabled_proc_ids:
+            if item["procId"] in enabled_proc_ids and item["currencies"] == company_currency:
                 result.append(item)
 
         return result
@@ -128,12 +130,17 @@ def dragonpay_postback(
 
     # dppr.save(ignore_permissions=True)
 
-    frappe.db.set_value("DragonPay Payment Request", txnid, "reference_no", refno)
-    frappe.db.set_value("DragonPay Payment Request", txnid, "collection_request_status", STATUS_CODES[status] if status in STATUS_CODES.keys() else "")
-    frappe.db.set_value("DragonPay Payment Request", txnid, "payment_completion_message", message)
-    frappe.db.set_value("DragonPay Payment Request", txnid, "amount", amount)
-    frappe.db.set_value("DragonPay Payment Request", txnid, "currency", ccy)
-    frappe.db.set_value("DragonPay Payment Request", txnid, "proc_id", procid)
+    dppr_doc = frappe.get_doc("DragonPay Payment Request", txnid)
+    dppr_doc.reference_no = refno
+    dppr_doc.collection_request_status = (STATUS_CODES[status] if status in STATUS_CODES.keys() else "")
+    dppr_doc.payment_completion_message = message
+    dppr_doc.amount = amount
+    dppr_doc.currency = ccy
+    dppr_doc.proc_id = procid
+
+    dppr_doc.save()
+
+    dppr_doc.create_documents()
 
     response = Response()
     response.mimetype = "text/plain"
@@ -162,8 +169,19 @@ def dragonpay_postback1():
     # frappe.local.response["location"] = "https://www.google.com"
     return "result=OK"
 
-@frappe.whitelist()
-def create_dragonpay_payment_request(amount, proc_id):
+# @frappe.whitelist()
+def create_dragonpay_payment_request(party_type, party, proc_id, fees_to_pay, amount, email, mobile_no):
+    settings = frappe.get_doc("DragonPay Settings")
+
+    if settings.test_mode:
+        if proc_id not in ["BOG", "BOGX"]:
+            frappe.throw("Invalid test payment processor")
+
+    description = ""
+
+    # build description
+    description = ', '.join([fee["reference_name"] for fee in fees_to_pay])
+
     amount = flt(amount, precision)
 
     if amount <= 0.00:
@@ -176,11 +194,22 @@ def create_dragonpay_payment_request(amount, proc_id):
     dppr.request_time = now()
     dppr.amount = amount
     dppr.currency = company_currency
-    dppr.description = "Test only"
-    dppr.email = "robert@serviotech.com"
-    dppr.mobile_no = "09173049388"
+    dppr.description = description
+    dppr.email = email
+    dppr.mobile_no = mobile_no
     dppr.proc_id = proc_id
     dppr.ip_address = frappe.local.request_ip
+
+    dppr.party_type = party_type
+    dppr.party = party
+
+    dppr.items = []
+    for fee in fees_to_pay:
+        dppr.append("items", {
+            "reference_doctype": fee["reference_doctype"],
+            "reference_name": fee["reference_name"],
+            "amount": fee["amount"]
+        })
 
     request_dict = frappe.request.__dict__
     user_agent = request_dict.get("environ", {}).get("HTTP_USER_AGENT")

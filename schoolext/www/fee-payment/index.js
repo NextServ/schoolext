@@ -1,6 +1,7 @@
 frappe.provide("frappe.form.formatters");
 let selected_student = '';
 let available_processors = [];
+let total_amount_due_checkout = 0.00;
 
 frappe.ready(function() {
     add_student_bindings();
@@ -41,7 +42,7 @@ frappe.ready(function() {
     }
 
     function add_checkout_binding() {
-        $("#checkout-button").on("click", function () {
+        $("#btn-checkout").on("click", function () {
             let selected_program_fees = get_selected_program_fees()
 
             if (selected_program_fees.length <= 0) {
@@ -97,8 +98,8 @@ frappe.ready(function() {
 
             // todo: add other types
             item = {
-                "fees_doctype": "Program Fee",
-                "name": $this.attr('data-name'),
+                "reference_doctype": "Program Fee",
+                "reference_name": $this.attr('data-name'),
                 "amount": $this.attr('data-amount')
             }
             
@@ -109,10 +110,6 @@ frappe.ready(function() {
     }
 
     function load_student_selection() {
-        // $("#my-student-fees").addClass("d-none");
-        // $('#my-student-fees').fadeIn('slow');
-        // $("#my-students").fadeIn('slow');
-
         $('#my-student-fees').fadeOut('fast', function() {
             $('#my-students').fadeIn('slow');
         });
@@ -166,7 +163,8 @@ frappe.ready(function() {
                                 <div class="mt-2 card" style="">
                                     <label class="d-inline" role="button" style="" for="chk-${program_fee.program_fees_name}">
                                         <div class="p-4 card-header bg-light border-bottom">
-                                            <input type="checkbox" class="program-fee-checkbox" data-amount="${program_fee.program_fees_amount}" 
+                                            <input type="checkbox" class="program-fee-checkbox" 
+                                                data-amount="${program_fee.program_fees_amount}" 
                                                 id="chk-${program_fee.program_fees_name}" 
                                                 data-name="${program_fee.program_fees_name}"
                                                 autocomplete="off">
@@ -216,7 +214,7 @@ frappe.ready(function() {
                     <button class="btn btn-outline-secondary" id="btn-student-selection">Previous</button>
                     `;
                     let checkout_button = `
-                    <button id="checkout-button" class="btn btn-primary" type="button">Checkout</button>
+                    <button id="btn-checkout" class="btn btn-primary" type="button">Checkout</button>
                     `;
 
                     let button_group = 
@@ -231,9 +229,13 @@ frappe.ready(function() {
                         <img src="/assets/schoolext/img/icons8-business-85.png" style="height: 40px; width: auto;">
                         Fees - ${student_name}
                         </div>
+                        <hr />
+                        <div id="no-fees-message">
+                            You have no oustanding fees. Thank you for paying on time.
+                        </div>
                         ${items_html}
 
-                        <div class="mt-4 pr-4 card-footer d-flex justify-content-between">
+                        <div class="mt-4 pr-4 card-footer justify-content-between ${((programs.length == 0) ? "d-none" : "d-flex")}">
                             <div class="d-inline">
                                 <span class="font-weight-bold">Total</span>
                             </div>
@@ -246,6 +248,15 @@ frappe.ready(function() {
                     `;                    
                     
                     $("#my-student-fees").html(html);
+                    
+                    if (programs.length == 0) {
+                        $('#no-fees-message').removeClass("d-none");
+                        $('#btn-checkout').prop('disabled', true);
+                    }
+                    else {
+                        $('#no-fees-message').addClass("d-none");
+                        $('#btn-checkout').prop('disabled', false);
+                    }
 
                     $("#btn-student-selection").on("click", function () {
                         load_student_selection();
@@ -264,10 +275,10 @@ frappe.ready(function() {
         });
     }
 
-    function load_checkout(selected_student, program_fee_names) {
+    function load_checkout(selected_student, program_fee_names) {        
         let html = ``;
         let items = ``;
-        let total_amount_due_checkout = 0.00;
+        total_amount_due_checkout = 0.00;
 
         frappe.call({
             method: "schoolext.utils.get_program_fee_details",
@@ -335,7 +346,7 @@ frappe.ready(function() {
                     <button class="btn btn-outline-secondary" id="btn-fees-selection">Previous</button>
                     `;
                     let pay_button = `
-                    <button id="pay-button" class="btn btn-primary" type="button">Pay</button>
+                    <button id="btn-pay" class="btn btn-primary" type="button">Pay</button>
                     `;
 
                     let button_group = 
@@ -352,6 +363,7 @@ frappe.ready(function() {
                                 <img src="/assets/schoolext/img/icons8-advertising-85.png" style="height: 40px; width: auto;">
                                 Checkout
                             </div>
+                            <hr />
                             ${items}
 
                             <div class="mt-4 pr-4 card-footer d-flex justify-content-between">
@@ -359,7 +371,7 @@ frappe.ready(function() {
                                     <span class="font-weight-bold">Total</span>
                                 </div>
                                 <div class="d-inline">
-                                    <span id="total-amount-due-checkout" class="font-weight-bold text-info">${total_amount_due_checkout.toLocaleString()}</span>
+                                    <span id="total-amount-due-checkout" class="font-weight-bold text-info" data-value="${total_amount_due_checkout}">${total_amount_due_checkout.toLocaleString()}</span>
                                 </div>
                             </div>
 
@@ -383,7 +395,7 @@ frappe.ready(function() {
                         });
                     });
                     
-                    $("#pay-button").on("click", function () {
+                    $("#btn-pay").on("click", function () {
                         process_payment()
                     });
                 }
@@ -396,39 +408,101 @@ frappe.ready(function() {
     }
 
     function process_payment() {
+        let confirm_message = ``;
+        let pay_button = $("#btn-pay")
+        let fees_selection_button = $("#btn-fees-selection")
+
         let selected_fees_objects = get_selected_program_fees_objects();
         let temp_selected_proc_id = $("input[name=radio-payment-method-type]:checked").val();
         let selected_proc_id = '';
+        let selected_procid_remarks = '';
+        let proc_id_logo = '';
 
         if (["online-banking", "over-the-counter"].includes(temp_selected_proc_id)) {
-            selected_proc_id = $("input[name=radio-payment-method-subtype]:checked").val();
+            let subtype_checked = $("input[name=radio-payment-method-subtype]:checked");
+
+            if (subtype_checked.length > 0) {
+                selected_proc_id = $("input[name=radio-payment-method-subtype]:checked").val();
+                selected_procid_remarks = $("input[name=radio-payment-method-subtype]:checked").attr('data-remarks');
+    
+                proc_id_logo = $(`#${selected_proc_id.toLowerCase()}-check label img`).prop("src");
+            }
         }
         else if (temp_selected_proc_id=="gcash") {
             selected_proc_id = "GCSH";
+            selected_procid_remarks = $("input[name=radio-payment-method-type]:checked").attr('data-remarks');
+
+            proc_id_logo = $("#gcash-check label img").prop("src");
         }
         else if (temp_selected_proc_id=="credit-card") {
             selected_proc_id = "CC";
+            selected_procid_remarks = $("input[name=radio-payment-method-type]:checked").attr('data-remarks');
+
+            proc_id_logo = $("#credit-card-check label img").prop("src");
         }
+
+        if (selected_proc_id==="") {
+            frappe.msgprint({
+                title: __('Payment method'),
+                indicator: 'error',
+                message: __('Please select a payment method.')
+            });
+
+            return;
+        }
+
+        confirm_message = `
+        You are about to process payment of <strong>PHP ${total_amount_due_checkout}</strong>. Do you want to continue?
+        <br />
+        <div class="align-center">
+            <img src="${proc_id_logo}" "this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';" style="height: 40px; width: auto;">
+        <div>
+        <br />
+        <div class="font-italic" style="font-size: 0.8em">
+            <span>${selected_procid_remarks}</span>
+        </div>
+        `
         
-        frappe.call({
-            method: "schoolext.utils.pay_pending_fees",
-            type: "POST",
-            args: {
-                "student": selected_student,
-                "fees_to_pay": selected_fees_objects,
-                "proc_id": selected_proc_id
-            },
-            callback: function(r) {
-                if(r.message) {
-                    console.log("success pay_pending_fees");
-                    frappe.msgprint("Not yet working!");
-                }
-                else {
-                    console.log("error pay_pending_fees");
-                    frappe.show_alert({message:__("Error in error pay_pending_fees."), indicator:'red'});                        
-                }
-            }
-        });        
+        frappe.confirm(confirm_message, 
+            function() {
+                    pay_button.prop('disabled', true);
+                    fees_selection_button.prop('disabled', true);
+            
+                    pay_button.html(spinner_loader()); 
+                    
+                    frappe.call({
+                        method: "schoolext.utils.pay_pending_fees",
+                        type: "POST",
+                        args: {
+                            "student": selected_student,
+                            "proc_id": selected_proc_id,
+                            "fees_to_pay": selected_fees_objects
+                        },
+                        callback: function(r) {
+                            if(r.message) {
+                                console.log("success pay_pending_fees");
+            
+                                window.location.href = r.message.url;
+                            }
+                            else {
+                                console.log("error pay_pending_fees");
+                                frappe.show_alert({message:__("Error in error pay_pending_fees."), indicator:'red'});                        
+                            }
+                            pay_button.prop('disabled', false);
+                            remove_spinner_loader();
+                        }
+                    }).fail(function() {
+                        pay_button.prop('disabled', false);
+                        fees_selection_button.prop('disabled', false);
+                        remove_spinner_loader();
+            
+                        pay_button.html("Pay");
+                    });                
+                },
+            function() {
+                return;    
+                },
+            );      
     }
 
     function get_selected_proc_id() {
@@ -443,7 +517,10 @@ frappe.ready(function() {
         html = html +
         `
         <hr />
-        <h5 class="mt-4" id="payment-methods">Payment Method</h5>
+        <h5 class="mt-4" id="payment-methods">
+            <img src="/assets/schoolext/img/icons8-business-85-box.png" style="height: 40px; width: auto;">
+            Payment Method
+        </h5>
         <div class="mt-4" id="payment-method-check-group">
             <div id="online-banking-check" class="form-check">
                 <input class="form-check-input" type="radio" name="radio-payment-method-type" id="online-banking" value="online-banking">
@@ -466,13 +543,13 @@ frappe.ready(function() {
             <div id="gcash-check" class="form-check">
                 <input class="form-check-input" type="radio" name="radio-payment-method-type" id="gcash" value="gcash">
                 <label class="form-check-label" role="button" for="gcash">
-                    <span clas="d-none">GCash</span>
+                    <span id="gcash-label" class=""></span>
                 </label>
             </div>
             <div id="credit-card-check" class="form-check">
                 <input class="form-check-input" type="radio" name="radio-payment-method-type" id="credit-card" value="credit-card">
                 <label class="form-check-label" role="button" for="credit-card">
-                    <span clas="">Credit Card</span>
+                    <span id="cc-label" class=""></span>
                 </label>
             </div>
         </div>
@@ -513,11 +590,13 @@ frappe.ready(function() {
                 
                 if (has_gcash && has_gcash.length>0) {
                     $("#gcash-check").removeClass("d-none");
+                    
                     $("#gcash-check label").prepend(
                         `<img src="${has_gcash[0].logo}" style="height: 40px; width: auto;"
-                        onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';"
+                        onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';$('#gcash-label').html('GCash');"
                         >`
                         );
+                    $("#gcash-check input").attr('data-remarks', `${has_gcash[0].remarks}`)
                 }
                 else {
                     $("#gcash-check").addClass("d-none");
@@ -534,9 +613,10 @@ frappe.ready(function() {
                     $("#credit-card-check").removeClass("d-none");
                     $("#credit-card-check label").prepend(
                         `<img src="${has_credit_card[0].logo}" style="height: 40px; width: auto;" alt="Credit Card"
-                        onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';"                        
+                        onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';$('#cc-label').html('Credit Card');"
                         >`
                         );
+                    $("#credit-card-check input").attr('data-remarks', `${has_credit_card[0].remarks}`)
                 }
                 else {
                     $("#credit-card-check").addClass("d-none");
@@ -574,9 +654,10 @@ frappe.ready(function() {
             if (item.type == 1 && payment_method_type == "online-banking") {
                 online_banking_html = online_banking_html + `
                 <div id="${item.procId.toLowerCase()}-check" class="form-check">
-                    <label class="form-check-label" role="button" for="${item.procId.toLowerCase()}">
+                    <label class="form-check-label" role="button" data-proc-id="${item.procId}" for="${item.procId.toLowerCase()}">
                         <input class="form-check-input" data-proc-id="${item.procId}" type="radio" 
                             name="radio-payment-method-subtype" 
+                            data-remarks="${item.remarks}"
                             id="${item.procId.toLowerCase()}" value="${item.procId}">
                         <img src="${item.logo}" style="height: 40px; width: auto;"
                         onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';">                        
@@ -590,9 +671,10 @@ frappe.ready(function() {
             else if (item.type == 2 && payment_method_type == "over-the-counter") {
                 over_the_counter_html = over_the_counter_html + `
                 <div id="${item.procId.toLowerCase()}-check" class="form-check">
-                    <label class="form-check-label" role="button" for="${item.procId.toLowerCase()}">
+                    <label class="form-check-label" role="button" data-proc-id="${item.procId}" for="${item.procId.toLowerCase()}">
                         <input class="form-check-input" data-proc-id="${item.procId}" type="radio" 
                             name="radio-payment-method-subtype" 
+                            data-remarks="${item.remarks}"
                             id="${item.procId.toLowerCase()}" value="${item.procId}">
                         <img src="${item.logo}" style="height: 40px; width: auto;"
                         onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';">
@@ -607,7 +689,7 @@ frappe.ready(function() {
 
     function spinner_loader() {
         let html = `
-        <div class="spinner-loader spinner-border text-info" role="status">
+        <div class="spinner-loader spinner-border spinner-border-sm text-info" role="status">
             <span class="sr-only">Loading...</span>
         </div>
         `;

@@ -81,6 +81,7 @@
    "label": "Enabled Proc Ids"
   },
   {
+   "collapsible": 1,
    "fieldname": "payment_processors_section",
    "fieldtype": "Section Break",
    "label": "Payment Processors"
@@ -100,7 +101,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-02-16 02:29:32.276840",
+ "modified": "2023-02-16 10:39:50.657673",
  "modified_by": "Administrator",
  "module": "School Extension",
  "name": "DragonPay Settings",
@@ -119,5 +120,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }
