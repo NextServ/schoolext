@@ -77,7 +77,7 @@
    "fieldname": "proc_id",
    "fieldtype": "Select",
    "label": "Proc ID",
-   "options": "\nBAYD\nBDO\nCC\nCEBL\nDPAY\nECPY\nGCSH\nLBC\nPYPL\nMLH\nRDS\nSMR\n711\nINPY\nBOG\nBOGX"
+   "options": "\nBAYD\nBDO\nCC\nCEBL\nDPAY\nECPY\nGCSH\nLBC\nPYPL\nMLH\nRDS\nSMR\n711\nINPY\nBOG\nBOGX\nCBCX"
   },
   {
    "fieldname": "ip_address",
