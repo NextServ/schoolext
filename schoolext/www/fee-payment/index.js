@@ -2,6 +2,7 @@ frappe.provide("frappe.form.formatters");
 let selected_student = '';
 let available_processors = [];
 let total_amount_due_checkout = 0.00;
+const sleep = m => new Promise(r => setTimeout(r, m));
 
 frappe.ready(function() {
     add_student_bindings();
@@ -114,17 +115,26 @@ frappe.ready(function() {
             $('#my-students').fadeIn('slow');
         });
     }
+    
+    async function load_fees(student, student_name, gender) {
+        $('#my-students').fadeOut('fast', function() {
+            $('#my-student-fees').fadeIn('slow');
+        });
 
-    function load_fees(student, student_name, gender) {
+        $("#my-student-fees").html(spinner_loader());
+
+        let html = '';
+
         frappe.call({
-            method: "schoolext.utils.get_student_fees",
+            method: "schoolext.utils.get_student_program_fees",
             type: "GET",
+            async: false,
             args: {
                 "student": student
             },
             callback: function(r) {
                 if(r.message) {
-                    console.log("success get_student_fees");
+                    console.log("success get_student_program_fees");
                     let programs = r.message;
 
                     // $("#my-student-fees").load("/fee-payment/my_student_fees.html", {data: r.message});
@@ -223,7 +233,7 @@ frappe.ready(function() {
                         ${previous_button}${checkout_button}
                     </div>
                     `;
-                    let html = `
+                    html = `
                     <div style="max-width: 500px;">
                         <div class="mt-4">
                         <img src="/assets/schoolext/img/icons8-business-85.png" style="height: 40px; width: auto;">
@@ -262,17 +272,16 @@ frappe.ready(function() {
                         load_student_selection();
                     });
 
-                    $('#my-students').fadeOut('fast', function() {
-                        $('#my-student-fees').fadeIn('slow');
-                    });
                     add_program_fee_checkbox_bindings();
                     add_checkout_binding();
                 } else {
-                    console.log("error get_student_fees");
-                    frappe.show_alert({message:__("Error in error get_student_fees."), indicator:'red'});
+                    console.log("error get_student_program_fees");
+                    frappe.show_alert({message:__("Error in error get_student_program_fees."), indicator:'red'});
                 }
             }
         });
+
+        remove_spinner_loader()
     }
 
     function load_checkout(selected_student, program_fee_names) {        
@@ -400,8 +409,8 @@ frappe.ready(function() {
                     });
                 }
                 else {
-                    console.log("error get_student_fees");
-                    frappe.show_alert({message:__("Error in error get_student_fees."), indicator:'red'});
+                    console.log("error get_program_fee_details");
+                    frappe.show_alert({message:__("Error in error get_program_fee_details."), indicator:'red'});
                 }
             },
         });
@@ -689,8 +698,10 @@ frappe.ready(function() {
 
     function spinner_loader() {
         let html = `
-        <div class="spinner-loader spinner-border spinner-border-sm text-info" role="status">
-            <span class="sr-only">Loading...</span>
+        <div class="w-100 align-center">
+            <div class="spinner-loader spinner-border spinner-border-sm text-info" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
         </div>
         `;
         return html;

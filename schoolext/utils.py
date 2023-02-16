@@ -27,7 +27,7 @@ def get_students(guardian_name):
     return result
 
 @frappe.whitelist(methods=["GET"])
-def get_student_fees(student):
+def get_student_program_fees(student):
     result = []
 
     validate_current_user_guardian(student)
@@ -48,6 +48,8 @@ def get_student_fees(student):
         where
             pe.docstatus = 0
             and pe.student = %s
+        order by
+            pe.program
     """, (student), as_dict=True)
 
     program_fees = frappe.db.sql("""
@@ -67,6 +69,8 @@ def get_student_fees(student):
         where
             pe.docstatus = 0
             and pe.student = %s
+        order by
+            pe.program, pf.idx
     """, (student), as_dict=True)
 
     program_fees_components = frappe.db.sql("""
@@ -96,57 +100,115 @@ def get_student_fees(student):
         where
             pe.docstatus = 0
             and pe.student = %s
+        order by
+            pe.program, pf.idx, fc.idx
     """, (student), as_dict=True)
 
     for pe in pending_program_enrollments:
-        pf_lines = []
-        for pf in program_fees:
-            if pf.program_enrollment_name == pe.program_enrollment_name:
-                c_lines = []
-                for c in program_fees_components:
-                    if c.program_enrollment_name == pe.program_enrollment_name and c.program_fees_name == pf.program_fees_name:
-                        c_line = {
-                            "program_enrollment_name": c.program_enrollment_name,
-                            "program_name": c.program_name,
-                            "enrollment_date": c.enrollment_date,
-                            "program": c.program,
-                            "academic_year": c.academic_year,
-                            "program_fees_name": c.program_fees_name,
-                            "fee_component_name": c.fee_component_name,
-                            "fee_component_index": c.fee_component_index,
-                            "fees_category": c.fees_category,
-                            "description": c.description,
-                            "fee_category_type": c.fee_category_type,
-                            "component_amount": c.component_amount
-                        }
-                        c_lines.append(c_line)
-                
-                pf_line = {
-                    "program_enrollment_name": pf.program_enrollment_name,
-                    "program_name": pf.program_name,
-                    "program_fees_name": pf.program_fees_name,
-                    "fee_structure": pf.fee_structure,
-                    "program_fees_index": pf.program_fees_index,
-                    "academic_term": pf.academic_term,
-                    "due_date": pf.due_date,
-                    "program_fees_amount": pf.program_fees_amount,
-                    "program_fees_components": c_lines
+        if not result or (pe.program_enrollment_name not in [pe1["program_enrollment_name"] for pe1 in result]):
+            result.append(
+                {
+                    "program_enrollment_name": pe["program_enrollment_name"],
+                    "program_name": pe["program_name"],
+                    "enrollment_date": pe.enrollment_date,
+                    "program": pe.program,
+                    "academic_year": pe.academic_year,
+                    "academic_term": pe.academic_term,
+                    "student_category": pe.student_category,
+                    "student_batch_name": pe.student_batch_name,
+                    "program_fees": []
                 }
-                pf_lines.append(pf_line)
+            )
         
-        pe_line = {
-            "program_enrollment_name": pe.program_enrollment_name,
-            "program_name": pe.program_name,
-            "enrollment_date": pe.enrollment_date,
-            "program": pe.program,
-            "academic_year": pe.academic_year,
-            "academic_term": pe.academic_term,
-            "student_category": pe.student_category,
-            "student_batch_name": pe.student_batch_name,
-            "program_fees": pf_lines
-        }
+        program_enrollment_line = next((program for program in result if program["program_enrollment_name"] == pe.program_enrollment_name), None)
 
-        result.append(pe_line)
+        program_fees_lines = []
+
+        for pf in program_fees:
+            if pf.program_enrollment_name == program_enrollment_line["program_enrollment_name"]:
+                pfcs = [pfc for pfc in program_fees_components if pfc.fees_name == pf.fees_name]
+                pf["program_fees_components"] = pfcs
+                program_fees_lines.append(pf)
+
+        program_enrollment_line["program_fees"] = program_fees_lines
+
+    return result
+
+@frappe.whitelist(methods=["GET"])
+def get_student_fees(student):
+    result = []
+
+    validate_current_user_guardian(student)
+
+    current_academic_year = frappe.defaults.get_defaults().academic_year
+
+    fees = frappe.db.sql("""
+        select
+            pe.name as program_enrollment_name,
+            f.program as program_name,
+            f.student,
+            f.student_name,
+            f.name as fees_name,
+            f.fee_structure as fee_structure,
+            f.academic_year,
+            f.academic_term,
+            f.due_date,
+            f.grand_total,
+            f.outstanding_amount
+        from `tabProgram Enrollment` pe
+        left join `tabFees` f
+        on 
+            pe.program = f.program
+        where
+            f.docstatus in (0, 1)
+            and f.student = %s
+    """, (student), as_dict=True)
+
+    fees_components = frappe.db.sql("""
+        select
+            pe.name as program_enrollment_name,
+            f.program as program_name,
+            pe.enrollment_date,
+            pe.program,
+            pe.academic_year,
+            f.name as fees_name,
+            fc.name as fee_component_name,
+            fc.idx as fee_component_index,
+            fc.fees_category,
+            IFNULL(fc.description, '') as description,
+            fc.fee_category_type,
+            fc.amount as component_amount
+        from `tabProgram Enrollment` pe
+        left join `tabFees` f
+        on 
+            pe.program = f.program
+        left join `tabFee Component` fc
+        on
+            fc.parent = f.name
+        where
+            f.docstatus in (0, 1)
+            and pe.student = %s
+    """, (student), as_dict=True)
+
+    for f in fees:
+        if not result or (f.program_name not in [f1["program_name"] for f1 in result]):
+            result.append(
+                {
+                    "program_name": f.program_name
+                }
+            )
+
+        # find program item
+        program = next((program for program in result if program["program_name"] == f.program_name), None)
+        
+        program["fees"] = []
+
+        # add fee components to the fees record
+        fee_components = [fc for fc in fees_components if fc.fees_name == f.fees_name]
+        f["fee_components"] = fee_components
+        
+        # add fees to the program item
+        program["fees"].append(f)
     
     return result
 
