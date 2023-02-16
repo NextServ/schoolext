@@ -452,7 +452,7 @@ frappe.ready(function() {
         }
 
         confirm_message = `
-        You are about to process payment of <strong>PHP ${total_amount_due_checkout}</strong>. Do you want to continue?
+        You are about to process payment of <strong>PHP ${total_amount_due_checkout.toLocaleString()}</strong>. Do you want to continue?
         <br />
         <div class="align-center">
             <img src="${proc_id_logo}" "this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';" style="height: 40px; width: auto;">

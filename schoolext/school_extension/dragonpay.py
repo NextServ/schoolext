@@ -140,7 +140,8 @@ def dragonpay_postback(
 
     dppr_doc.save()
 
-    dppr_doc.create_documents()
+    if STATUS_CODES[status] == "Success":
+        dppr_doc.create_documents()
 
     response = Response()
     response.mimetype = "text/plain"
