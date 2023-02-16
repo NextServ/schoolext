@@ -21,11 +21,9 @@ class CustomProgramEnrollment(ProgramEnrollment):
     
     # override
     def make_fee_records(self):
-        from education.education.api import get_fee_components
-
         fee_list = []
         for d in self.fees:
-            fee_components = get_fee_components(d.fee_structure)
+            fee_components = custom_get_fee_components(d.fee_structure)
             if fee_components:
                 fees = frappe.new_doc("Fees")
                 fees.update(
@@ -55,3 +53,17 @@ class CustomProgramEnrollment(ProgramEnrollment):
                 for fee in fee_list
             ]
             msgprint(_("Fee Records Created - {0}").format(comma_and(fee_list)))
+
+def custom_get_fee_components(fee_structure):
+    """Returns Fee Components.
+
+    :param fee_structure: Fee Structure.
+    """
+    if fee_structure:
+        fs = frappe.get_all(
+            "Fee Component",
+            fields=["fees_category", "description", "amount"],
+            filters={"parent": fee_structure},
+            order_by="idx",
+        )
+        return fs
