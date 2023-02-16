@@ -138,7 +138,60 @@ def dragonpay_postback(
     dppr_doc.currency = ccy
     dppr_doc.proc_id = procid
 
-    dppr_doc.save()
+    dppr_doc.save(ignore_permissions=True)
+
+    if STATUS_CODES[status] == "Success":
+        dppr_doc.create_documents()
+
+    response = Response()
+    response.mimetype = "text/plain"
+    response.data = "result=OK"
+
+    return response
+
+@frappe.whitelist(allow_guest=True, methods=["POST"])
+def dragonpay_postback_test(
+    txnid=None,
+    refno=None,
+    status=None,
+    message=None,
+    amount=None,
+    ccy=None,
+    procid=None,
+    digest=None
+):
+    dp_postback_params = "txnid: {0} refno: {1} status: {2} message: {3} amount: {4} ccy: {5} procid: {6} digest: {7} ".format(txnid, refno, status, message, amount, ccy, procid, digest)
+    settings = frappe.get_doc("DragonPay Settings")
+
+    sha1_input = "{0}:{1}:{2}:{3}:{4}".format(txnid, refno, status, message, (settings.test_password if settings.test_mode else settings.password))
+    generated_digest = hashlib.sha1(sha1_input.encode()).hexdigest()
+
+    # if digest != generated_digest:
+    #     frappe.log_error(title="dragonpay_postback", message="Invalid digest {}".format(message))
+    #     frappe.throw("Invalid digest")
+    # else:
+    #     pass
+
+    # dppr = frappe.get_doc("DragonPay Payment Request", txnid)
+    # dppr.reference_no = refno
+    # dppr.collection_request_status = status_codes[status]
+    # dppr.payment_completion_message = message
+    # dppr.amount = amount
+    # # PHP, USD, CAD
+    # dppr.currency = ccy
+    # dppr.proc_id = procid
+
+    # dppr.save(ignore_permissions=True)
+
+    dppr_doc = frappe.get_doc("DragonPay Payment Request", txnid)
+    dppr_doc.reference_no = refno
+    dppr_doc.collection_request_status = (STATUS_CODES[status] if status in STATUS_CODES.keys() else "")
+    dppr_doc.payment_completion_message = message
+    dppr_doc.amount = amount
+    dppr_doc.currency = ccy
+    dppr_doc.proc_id = procid
+
+    dppr_doc.save(ignore_permissions=True)
 
     if STATUS_CODES[status] == "Success":
         dppr_doc.create_documents()
