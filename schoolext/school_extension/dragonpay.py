@@ -5,6 +5,7 @@ from frappe.utils import getdate, now, flt, cint
 from frappe.model.document import Document
 from werkzeug.wrappers import Response
 from schoolext.school_extension.doctype.dragonpay_settings.dragonpay_settings import SERVICE_PRODUCTION_BASE_URL, SERVICE_TEST_BASE_URL, STATUS_CODES
+from datetime import datetime
 
 from frappe.integrations.utils import (
     create_request_log,
@@ -65,7 +66,12 @@ def dragonpay_get_available_processors(amount):
         if settings.last_fetch_time:
             # settings.last_fetch_time is yesterday or earlier, fetch again
             # todo: fetch per hour
-            if getdate(now()) > getdate(settings.last_fetch_time):
+            current_time = datetime.strptime(now(), "%Y-%m-%d %H:%M:%S.%f")
+            last_fetch_time = datetime.strptime(settings.last_fetch_time, "%Y-%m-%d %H:%M:%S.%f")
+
+            delta = current_time - last_fetch_time
+            # if getdate(now()) > getdate(settings.last_fetch_time):
+            if delta.total_seconds() >= 3600:
                 retrieve_current = True
             # latest fetch is today
             else:

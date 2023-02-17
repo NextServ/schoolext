@@ -19,8 +19,8 @@
   "company_bank_account",
   "payment_processors_section",
   "enabled_proc_ids",
-  "fetched_proc_ids",
-  "last_fetch_time"
+  "last_fetch_time",
+  "fetched_proc_ids"
  ],
  "fields": [
   {
@@ -101,7 +101,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-02-16 10:39:50.657673",
+ "modified": "2023-02-17 14:42:10.151939",
  "modified_by": "Administrator",
  "module": "School Extension",
  "name": "DragonPay Settings",

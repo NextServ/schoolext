@@ -9,26 +9,28 @@
  "engine": "InnoDB",
  "field_order": [
   "collection_request_status",
-  "request_time",
+  "processed",
+  "party_type",
+  "party",
   "payment_entry",
   "amount",
   "currency",
   "items",
   "description",
+  "meta_tab",
+  "request_time",
   "email",
   "mobile_no",
   "proc_id",
   "ip_address",
   "user_agent",
-  "party_type",
-  "party",
+  "column_break_qc1kp",
   "reference_no",
   "payment_initiation_request_status",
   "payment_initiation_request_message",
   "payment_completion_message",
   "url",
   "time_processed",
-  "processed",
   "amended_from"
  ],
  "fields": [
@@ -126,13 +128,15 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Collection Request Status",
-   "options": "\nSuccess\nFailure\nPending\nUnknown\nRefund\nChargeback\nVoid\nAuthorized"
+   "options": "\nSuccess\nFailure\nPending\nUnknown\nRefund\nChargeback\nVoid\nAuthorized",
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
    "fieldname": "reference_no",
    "fieldtype": "Data",
-   "label": "Reference No"
+   "label": "Reference No",
+   "read_only": 1
   },
   {
    "fieldname": "payment_initiation_request_status",
@@ -144,7 +148,8 @@
    "allow_on_submit": 1,
    "fieldname": "url",
    "fieldtype": "Small Text",
-   "label": "URL"
+   "label": "URL",
+   "read_only": 1
   },
   {
    "fieldname": "payment_initiation_request_message",
@@ -156,7 +161,8 @@
    "allow_on_submit": 1,
    "fieldname": "payment_completion_message",
    "fieldtype": "Data",
-   "label": "Payment Completion Message"
+   "label": "Payment Completion Message",
+   "read_only": 1
   },
   {
    "fieldname": "items",
@@ -178,13 +184,22 @@
    "fieldtype": "Check",
    "label": "Processed",
    "read_only": 1
+  },
+  {
+   "fieldname": "meta_tab",
+   "fieldtype": "Tab Break",
+   "label": "Meta"
+  },
+  {
+   "fieldname": "column_break_qc1kp",
+   "fieldtype": "Column Break"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-02-17 11:13:36.168586",
+ "modified": "2023-02-17 14:52:11.646713",
  "modified_by": "Administrator",
  "module": "School Extension",
  "name": "DragonPay Payment Request",

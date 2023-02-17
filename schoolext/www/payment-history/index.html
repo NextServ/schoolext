@@ -1,17 +1,14 @@
 {% extends "templates/web.html" %}
 
-{% block title %}{{ _("Pre-enrollment Fee Payment") }}{% endblock %} 
+{% block title %}{{ _("Payment History") }}{% endblock %} 
 {% block header %}
     <!-- override -->
-    <span>Pre-enrollment Fee Payment</span>
+    <span>Payment History</span>
 {% endblock %} 
 
 {% block page_content %}
 <style>
-    #payment-method-check-group div#gcash-check, 
-    #payment-method-check-group div#credit-card-check{
-        min-height: 60px !important;
-    }
+    
 </style>
 
 <div class="text-small" id="my-students">

@@ -12,6 +12,9 @@
         {% if params.status=="S" %}
             <img src="/assets/schoolext/img/icons8-approve-85.png" style="height: 40px; width: auto;">
             Payment Request Successful
+        {% elif params.status=="P" %}
+            <img src="/assets/schoolext/img/icons8-browser-85-process.png" style="height: 40px; width: auto;">
+            Payment Pending
         {% elif params.status=="F" %}
             <img src="/assets/schoolext/img/icons8-browser-85-eks.png" style="height: 40px; width: auto;">
             Payment Request Failed
@@ -28,8 +31,10 @@
         <div>Message: {{ params.message }}</div>
     </div>
     <hr>
-    {% if params.status in ["S", "P"] %}
+    {% if params.status in ["S"] %}
         <span class="text-primary font-weight-bold" style="font-size: 0.8em">Thank you for processing your payment!</span>
+    {% elif params.status=="P" %}
+        <span class="text-primary font-weight-bold" style="font-size: 0.8em">Thank you! Please proceed with the steps to complete your payment.</span>
     {% elif params.status=="F" %}
         <span class="text-danger font-weight-bold" style="font-size: 0.8em">The payment request failed. Please try again. Thanks!</span>
     {% endif %}

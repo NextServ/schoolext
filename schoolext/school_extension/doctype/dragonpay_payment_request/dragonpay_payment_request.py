@@ -169,6 +169,8 @@ class DragonPayPaymentRequest(Document):
                             pe.reference_no = self.name
                             pe.reference_date = getdate()
                             pe.save()
+
+                            frappe.db.set_value("DragonPay Payment Request", self.name, "payment_entry", pe.name)
                             print("pe.save()")
             else:
                 print("not success")
