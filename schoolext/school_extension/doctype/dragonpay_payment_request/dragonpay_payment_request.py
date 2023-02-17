@@ -120,7 +120,7 @@ class DragonPayPaymentRequest(Document):
     def create_documents(self):
         try:
             if self.collection_request_status == "Success":
-                company_bank_account = frappe.db.get_value("DragonPay Settings", "DragonPay Settings", "company_bank_acocunt")
+                company_bank_account = frappe.db.get_single_value("DragonPay Settings", "company_bank_account")
                 if not company_bank_account:
                     frappe.throw("Set Company Bank Account in DragonPay Settings.")
                 paid_to_account = frappe.db.get_value("Bank Account", company_bank_account, "account")
