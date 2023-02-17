@@ -165,7 +165,7 @@ class DragonPayPaymentRequest(Document):
                                 bank_account=None, bank_amount=None, party_type="Student", payment_type="Receive")
                             
                             pe.bank_account = company_bank_account
-                            pe.paid_to_account = paid_to_account
+                            pe.paid_to = paid_to_account
                             pe.reference_no = self.name
                             pe.reference_date = getdate()
                             pe.save()
