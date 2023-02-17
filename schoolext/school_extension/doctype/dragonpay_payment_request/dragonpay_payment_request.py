@@ -130,7 +130,7 @@ class DragonPayPaymentRequest(Document):
                     if item.reference_doctype == "Program Fee":
                         program_enrollment_name = frappe.db.get_value("Program Fee", item.reference_name, "parent")
 
-                        if frappe.db.exists("Program Enrollment", {'name': item.program_enrollment_name}):
+                        if frappe.db.exists("Program Enrollment", {'name': program_enrollment_name}):
                             program_enrollment_doc = frappe.get_doc("Program Enrollment", program_enrollment_name)
 
                             if program_enrollment_doc.docstatus == 0:
