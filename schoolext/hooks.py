@@ -146,6 +146,12 @@ override_doctype_class = {
 #	],
 # }
 
+scheduler_events = {
+	"hourly_long": [
+		"schoolext.school_extension.dragonpay.dragonpay_create_documents"
+	],
+}
+
 # Testing
 # -------
 
