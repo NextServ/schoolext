@@ -121,6 +121,9 @@ class DragonPayPaymentRequest(Document):
         try:
             if self.collection_request_status == "Success":
                 company_bank_account = frappe.db.get_value("DragonPay Settings", "DragonPay Settings", "company_bank_acocunt")
+                if not company_bank_account:
+                    frappe.throw("Set Company Bank Account in DragonPay Settings.")
+                paid_to_account = frappe.db.get_value("Bank Account", company_bank_account, "account")
                 for item in self.items:
                     # program fee was paid, submit the program enrollment document and create the fees (draft)
                     # items should always be only 1 line for program fee (first fee pre-enrollment)
@@ -160,6 +163,7 @@ class DragonPayPaymentRequest(Document):
                                 bank_account=None, bank_amount=None, party_type="Student", payment_type="Receive")
                             
                             pe.bank_account = company_bank_account
+                            pe.paid_to_account = paid_to_account
                             pe.reference_no = self.name
                             pe.reference_date = getdate()
                             pe.save()

@@ -30,6 +30,7 @@ frappe.ui.form.on('DragonPay Payment Request', {
                                         indicator: indicator
                                     });
                                 }
+                                frm.reload_doc();
                             }
                         }).fail(function() {
                             frappe.msgprint({
