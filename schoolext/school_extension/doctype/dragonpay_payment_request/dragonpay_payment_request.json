@@ -27,6 +27,8 @@
   "payment_initiation_request_message",
   "payment_completion_message",
   "url",
+  "time_processed",
+  "processed",
   "amended_from"
  ],
  "fields": [
@@ -49,6 +51,7 @@
    "allow_on_submit": 1,
    "fieldname": "amount",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Amount",
    "options": "currency"
   },
@@ -97,12 +100,16 @@
   {
    "fieldname": "party_type",
    "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Party Type",
    "options": "Customer\nStudent"
   },
   {
    "fieldname": "party",
    "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Party",
    "options": "party_type"
   },
@@ -116,6 +123,8 @@
    "allow_on_submit": 1,
    "fieldname": "collection_request_status",
    "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Collection Request Status",
    "options": "\nSuccess\nFailure\nPending\nUnknown\nRefund\nChargeback\nVoid\nAuthorized"
   },
@@ -154,13 +163,28 @@
    "fieldtype": "Table",
    "label": "Items",
    "options": "DragonPay Payment Request Item"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "time_processed",
+   "fieldtype": "Datetime",
+   "label": "Time Processed",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "processed",
+   "fieldtype": "Check",
+   "label": "Processed",
+   "read_only": 1
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-02-16 14:24:10.880436",
+ "modified": "2023-02-17 11:13:36.168586",
  "modified_by": "Administrator",
  "module": "School Extension",
  "name": "DragonPay Payment Request",
@@ -194,6 +218,13 @@
    "report": 1,
    "role": "Accounts User",
    "share": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "role": "Guest",
+   "submit": 1,
+   "write": 1
   }
  ],
  "sort_field": "modified",
