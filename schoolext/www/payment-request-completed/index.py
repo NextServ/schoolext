@@ -29,8 +29,6 @@ def get_context(context):
     
     params = frappe.form_dict
 
-    print("params: {}".format(params))
-
     txnid = ""
     refno = ""
     status = ""
@@ -54,24 +52,10 @@ def get_context(context):
     generated_digest = hashlib.sha1(sha1_input.encode()).hexdigest()
 
     if digest != generated_digest:
-        frappe.log_error(title="DragonPay Return URL {0} Invalid digest".format(txnid), message="dp_returnurl_params message {0} Invalid digest {1} generated digest {2} hexdigest {3}".format(message, digest, generated_digest.digest(), generated_digest.hexdigest()))
+        frappe.log_error(title="DragonPay Return URL {0} Invalid digest".format(txnid), message="dp_returnurl_params message {0} Invalid digest {1}".format(message, digest))
         frappe.throw("Invalid digest {}".format(txnid))
     else:
         pass
-
-    # if txnid:
-    #     print("update dppr attempt")
-    #     frappe.db.set_value("DragonPay Payment Request", txnid, "reference_no", refno)
-    #     frappe.db.set_value("DragonPay Payment Request", txnid, "collection_request_status", (STATUS_CODES[status] if status in STATUS_CODES.keys() else ""))
-    #     frappe.db.set_value("DragonPay Payment Request", txnid, "payment_completion_message", message)
-    #     print("refno {0} status {1} message {2} txnid {3}".format(refno, STATUS_CODES[status] if status in STATUS_CODES.keys() else "", message, txnid))
-    #     print("completed update dppr attempt")
-
-    #     frappe.db.commit()
-
-    #     d = frappe.get_doc("DragonPay Payment Request", txnid)
-    #     print(d)
-    #     print("payment_completion_message: {} reference_no: {}".format(d.payment_completion_message, d.reference_no))
 
     context.params = params
     # context.doc = d

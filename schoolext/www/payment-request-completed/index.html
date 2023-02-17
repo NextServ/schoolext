@@ -6,9 +6,33 @@
 {% endblock %} 
 
 {% block page_content %}
-<b>Payment Request Completed</b>
-Success!
 
-{{ params }}
+<div class="w-100" style="max-width: 500px;">
+    <div class="">
+        {% if params.status=="S" %}
+            <img src="/assets/schoolext/img/icons8-approve-85.png" style="height: 40px; width: auto;">
+            Payment Request Successful
+        {% elif params.status=="F" %}
+            <img src="/assets/schoolext/img/icons8-browser-85-eks.png" style="height: 40px; width: auto;">
+            Payment Request Failed
+        {% else %}
+            <img src="/assets/schoolext/img/icons8-browser-85-process.png" style="height: 40px; width: auto;">
+            Payment Request Successfully Submitted
+        {% endif %}
+    </div>
+    <hr>
+    <div style="font-size: 0.8em;">
+        <div class="font-weight-bold mb-2">Details</div>
+        <div>Transaction ID: {{ params.txnid }}</div>
+        <div>Reference No.: {{ params.refno }}</div>
+        <div>Message: {{ params.message }}</div>
+    </div>
+    <hr>
+    {% if params.status in ["S", "P"] %}
+        <span class="text-primary font-weight-bold" style="font-size: 0.8em">Thank you for processing your payment!</span>
+    {% elif params.status=="F" %}
+        <span class="text-danger font-weight-bold" style="font-size: 0.8em">The payment request failed. Please try again. Thanks!</span>
+    {% endif %}
+</div>
 
 {% endblock %}
