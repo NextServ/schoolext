@@ -129,12 +129,14 @@ class DragonPayPaymentRequest(Document):
                     # items should always be only 1 line for program fee (first fee pre-enrollment)
                     if item.reference_doctype == "Program Fee":
                         program_enrollment_name = frappe.db.get_value("Program Fee", item.reference_name, "parent")
-                        program_enrollment_doc = frappe.get_doc("Program Enrollment", program_enrollment_name)
 
-                        if program_enrollment_doc.docstatus == 0:
-                            program_enrollment_doc.auto_create_fees = 1
-                            program_enrollment_doc.submit()
-                            print("program_enrollment_doc.submit()")
+                        if frappe.db.exists("Program Enrollment", {'name': item.program_enrollment_name}):
+                            program_enrollment_doc = frappe.get_doc("Program Enrollment", program_enrollment_name)
+
+                            if program_enrollment_doc.docstatus == 0:
+                                program_enrollment_doc.auto_create_fees = 1
+                                program_enrollment_doc.submit()
+                                print("program_enrollment_doc.submit()")
                         
                         # find the created fee
                         fees = None
