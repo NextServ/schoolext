@@ -34,6 +34,9 @@ class CustomProgramEnrollment(ProgramEnrollment):
                         "fee_structure": d.fee_structure,
                         "program": self.program,
                         "due_date": d.due_date,
+                        # custom
+                        "posting_date": d.due_date,
+                        "posting_time": "00:00:00",
                         "student_name": self.student_name,
                         "program_enrollment": self.name,
                         "components": fee_components,

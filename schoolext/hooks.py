@@ -39,6 +39,8 @@ web_include_js = ["/assets/schoolext/js/schoolext.js", "https://unpkg.com/vue@3/
 doctype_js = {
     "Fee Category" : "public/js/doctype/fee_category.js",
     "Fees" : "public/js/doctype/fees.js",
+    "Program Enrollment" : "public/js/doctype/program_enrollment.js",
+    "Payment Entry" : "public/js/doctype/payment_entry.js",
     }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
