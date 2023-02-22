@@ -1,6 +1,6 @@
 frappe.ui.form.on('Fee Category', {
     onload: function(frm) {
-		frm.set_query("custom_receivable_account", function(doc) {
+		frm.set_query("default_receivable_account", "fee_category_defaults", function(doc) {
 			return {
 				filters: {
 					'account_type': 'Receivable',
@@ -9,7 +9,7 @@ frappe.ui.form.on('Fee Category', {
 				}
 			};
 		});
-		frm.set_query("custom_income_account", function(doc) {
+		frm.set_query("default_income_account", "fee_category_defaults", function(doc) {
 			return {
 				filters: {
 					'account_type': 'Income Account',

@@ -353,3 +353,16 @@ def pay_pending_enrollment_fees(student, proc_id, fees_to_pay):
         guardian_doc.mobile_number, description)
 
     return result
+
+
+@frappe.whitelist(methods=["GET"])
+def get_fee_category_default_accounts(fee_category, company):
+    fee_category_company_default = None
+    fee_category_doc = frappe.get_doc("Fee Category", fee_category)
+    if fee_category_doc.fee_category_defaults:
+        for r in fee_category_doc.fee_category_defaults:
+            if r.company == company:
+                fee_category_company_default = r
+                break
+    
+    return fee_category_company_default
