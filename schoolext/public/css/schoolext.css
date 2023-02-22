@@ -66,3 +66,8 @@
 .navbar-school svg use {
     --icon-stroke: white;
 } */
+
+[v-cloak] {
+    display: none;
+}
+  

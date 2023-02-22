@@ -7,31 +7,95 @@
 {% endblock %} 
 
 {% block page_content %}
+<style>
+input[type=checkbox] {
+    display: none;
+}
+
+input:checked + label {
+    border: solid 1px green;
+    color: green;
+}
+
+input:checked + label:after {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: '\f00c';
+}
+
+
+/* new stuff */
+.check {
+    visibility: hidden;
+}
+
+input:checked + label .check {
+    visibility: visible;
+}
+
+input.checkbox:checked + label:after {
+    content: "";
+}
+
+.fade-enter-active
+{
+    transition: opacity 1.0s ease;
+}
+.fade-leave-active 
+{
+    transition: opacity 0.0s ease;
+}
+
+.fade-enter-from
+{
+    opacity: 0;
+}
+.fade-leave-to {
+    opacity: -1.0;
+}
+</style>
 <div class="mt-4">
     <img src="/assets/schoolext/img/icons8-backpack-85.png" style="height: 40px; width: auto;"> Coming soon!
 </div>
-<div class="d-none">
-<div class="col grid-static-col col-xs-2 text-right bold" data-fieldname="amount" data-fieldtype="Currency">
-    <div class="field-area" style=""><div class="form-group frappe-control input-max-width" data-fieldtype="Currency" data-fieldname="amount" title="amount">
-        <input type="text" autocomplete="off" class="input-with-feedback form-control bold input-sm" 
-            data-fieldtype="Currency" data-fieldname="amount" placeholder="amount (PHP)" data-col-idx="2"
-            id="amount">
+
+<div id="app" v-cloak>
+    
+    <div style="max-width: 500px;">
+        <Transition name="fade">
+            <!-- <div class="text-small" id="my-students"> -->
+            <div class="text-small" v-if="tabs['0'].active" v-bind:id="tabs['1'].id">
+                <div class="list-group mt-4" style="max-width: 500px;">
+                {% for student in students -%}
+                    <div class="mb-2">
+                        <a href="#" data-name="{{ student.name }}" data-gender="{{ student.gender }}" data-student-name="{{ student.student_name }}" 
+                            class="fees-link list-group-item list-group-item-action" style="width: 100% !important;"
+                            @click="select_student($event)">
+                            {% if student.gender == 'Female' %}
+                                <img src="/assets/schoolext/img/icons8-school-girl-85.png" style="height: 40px; width: auto;">
+                            {% else %}
+                                <img src="/assets/schoolext/img/icons8-school-boy-85.png" style="height: 40px; width: auto;">
+                            {% endif %}
+                            {{ student.student_name }}
+                        </a>
+                    </div>
+                {%- endfor %}
+                </div>
+            </div>
+            <div v-if="tabs['1'].active" v-bind:id="tabs['1'].id">
+                [[ selected_student_name ]]
+            </div>
+            <div v-if="tabs['2'].active" v-bind:id="tabs['2'].id">
+                
+            </div>
+            <div v-if="tabs['3'].active" v-bind:id="tabs['3'].id">
+                
+            </div>
+        </Transition>
+        <div class="btn-group mt-4 d-flex justify-content-end" role="group" aria-label="buttons" v-if="!tabs['0'].active">
+            <button class="btn btn-secondary" @click="previous" :disabled="(active_tab_index <= 0)">Previous</button>
+            <button class="btn btn-primary" @click="next" :disabled="(active_tab_index >= tabs.length - 1)">Next</button>
+        </div>
     </div>
 </div>
-<input type="text" autocomplete="off" class="input-with-feedback form-control bold input-sm" 
-            data-fieldtype="Data" data-fieldname="proc-id" placeholder="Proc ID" data-col-idx="18"
-            id="proc-id">
-<!-- <div class="static-area ellipsis reqd" style="display: none;"><div style="text-align: right">₱ 0.00</div></div></div> -->
-<br>
-<button class="btn btn-primary btn-sm btn-new-doc hidden-xs" id="enroll-now">
-    Enroll now!
-</button>
-<button class="btn btn-primary btn-sm btn-new-doc hidden-xs" id="test">
-    Test
-</button>
-<div id="proc-ids"></div>
-</div>
-<!-- <button class="btn btn-primary btn-sm btn-new-doc hidden-xs" id="get-proc-ids">
-    Get Proc Ids
-</button> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 {% endblock %}

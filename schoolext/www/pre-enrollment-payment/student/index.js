@@ -1,10 +1,10 @@
 const app = Vue.createApp({
     delimiters: ['[[', ']]'],
     data() {
-      return {
-        message: 'Hello Vue!',
+    return {
+        message: 'Hello Vuedsafsadf!',
         is_loaded: false
-      }
+    }
     },
     // computed: {
     //   joinName() {
@@ -35,10 +35,10 @@ const app = Vue.createApp({
     mounted(){
         // this.getProperties();
     }
-  })
-  
-app.mount('#app')
+})
 
+app.mount('#app')
+    
 frappe.ready(function() {
     
 });
