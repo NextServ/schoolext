@@ -122,6 +122,10 @@ override_doctype_class = {
     "Program Enrollment": "schoolext.overrides.program_enrollment.CustomProgramEnrollment"
 }
 
+accounting_dimension_doctypes = [
+    "Program Enrollment"
+]
+
 # Document Events
 # ---------------
 # Hook on document methods and events
