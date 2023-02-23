@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:campus_name",
  "creation": "2023-02-23 19:49:39.266309",
@@ -35,7 +36,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-23 19:49:39.266309",
+ "modified": "2023-02-23 19:55:21.982127",
  "modified_by": "Administrator",
  "module": "School Extension",
  "name": "Campus",
