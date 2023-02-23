@@ -1,16 +1,23 @@
+// const app = Vue.createApp
+//const sleep = m => new Promise(r => setTimeout(r, m));
+// var vm = new Vue
 const app = Vue.createApp({
+// var vm = new Vue({
     delimiters: ['[[', ']]'],
-    data() {
+    el: '#app',
+    data() {        
         return {
-            message: 'Hello Vuedsafsadf!',
+            message: 'Hello Vue!',
             is_loaded: false,
-            tabs: [
+            is_loading: false,
+            academic_year: '',
+            tabs: [                
                 {
                     id: 'my-students',
                     active: true
                 },
                 {
-                    id: 'tab2',
+                    id: 'enroll-my-student',
                     active: false
                 },
                 {
@@ -24,16 +31,15 @@ const app = Vue.createApp({
             ],
             active_tab_index: 0,
             selected_student_name: '',
+            selected_fees_due_schedule: '',
+            fees_due_schedule_templates: [],
+            program_enrollment: {}
         }
     },
-    // computed: {
-    //   joinName() {
-    //       return this.name + ' - ' + this.property_name;
-    //   }
-    // },
     methods: {
-        loaded() {
-            this.is_loaded = true;
+        loaded: async function () {
+            // this.is_loaded = true;
+            // this.is_loading = false;
         },
 
         next() {
@@ -76,33 +82,64 @@ const app = Vue.createApp({
             }
         },
 
-        select_student(e) {
+        select_student: async function(e) {
             this.selected_student_name = e.target.getAttribute('data-name');
             this.next();
-        }
-        // async getProperties(){
-        //     let res = await $.ajax({
-        //           url:"/api/method/estate_app.www.vue.index.get_properties",
-        //           type: "GET"
-        //     })
-        //     this.properties = res.message;
-        // },
-        // getRandomProperty(){
-        //     let property = this.properties[Math.floor(Math.random() * 99)];
-        //     this.name= property.name
-        //     this.property_name= property.property_name
-        //     this.property_type= property.property_type
-        //     this.image= property.image
-        //     this.address= property.address
-        //     this.city= property.city
-        // }
-    },
-    mounted(){
-        // this.getProperties();
-    }
-})
+            this.is_loading = true;
+            this.reset_enrollment_data()
 
-app.mount('#app')
+            this.academic_year = await this.get_active_enrollment_academic_year();
+            this.fees_due_schedule_templates = await this.get_fees_due_schedule_templates();
+            this.program_enrollment = await this.get_academic_year_program_enrollment();
+
+            this.is_loading = false;
+        },
+
+        reset_enrollment_data: function() {
+            this.academic_year = "";
+            this.fees_due_schedule_templates = "";
+            this.program_enrollment = "";
+            this.selected_fees_due_schedule = "";
+        },
+
+        get_fees_due_schedule_templates: async function() {
+            const r = await frappe.call({
+                method: "schoolext.utils.get_fees_due_schedule_templates",
+                type: "GET",
+                args: {
+                    'academic_year': this.academic_year
+                },
+            });
+
+            return r.message;
+        },
+
+        get_active_enrollment_academic_year: async function() {
+            const r = await frappe.call({
+                method: "schoolext.utils.get_active_enrollment_academic_year",
+                type: "GET",
+            });
+            return r.message;
+        },
+
+        get_academic_year_program_enrollment: async function() {
+            const r = await frappe.call({
+                method: "schoolext.utils.get_academic_year_program_enrollment",
+                type: "GET",
+                args: {
+                    'academic_year': this.academic_year,
+                    'student': this.selected_student_name
+                },
+            });
+            return r.message;
+        }
+    },
+    mounted: async function (){
+        this.academic_year = await this.get_active_enrollment_academic_year();
+    }
+});
+
+app.mount('#app');
     
 frappe.ready(function() {
     

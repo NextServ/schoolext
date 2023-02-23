@@ -4,7 +4,8 @@ frappe.ui.form.on('Program Enrollment', {
             return {
                 filters: {
                     'academic_year': frm.doc.academic_year,
-                    'program': ['in', ['', frm.doc.program]]
+                    'program': ['in', ['', frm.doc.program]],
+                    'enabled': 1
                 }
             };
         });

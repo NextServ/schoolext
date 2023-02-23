@@ -1,0 +1,50 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-02-22 23:31:01.594113",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "active_enrollment_academic_year",
+  "allow_enrollment_date_not_within_the_academic_year"
+ ],
+ "fields": [
+  {
+   "fieldname": "active_enrollment_academic_year",
+   "fieldtype": "Link",
+   "label": "Active Enrollment Academic Year",
+   "options": "Academic Year"
+  },
+  {
+   "default": "1",
+   "fieldname": "allow_enrollment_date_not_within_the_academic_year",
+   "fieldtype": "Check",
+   "label": "Allow Enrollment Date Not Within the Academic Year"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2023-02-22 23:46:47.443408",
+ "modified_by": "Administrator",
+ "module": "School Extension",
+ "name": "Education Custom Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

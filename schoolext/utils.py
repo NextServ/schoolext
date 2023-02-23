@@ -366,3 +366,31 @@ def get_fee_category_default_accounts(fee_category, company):
                 break
     
     return fee_category_company_default
+
+
+@frappe.whitelist(methods=["GET"])
+def get_fees_due_schedule_templates(academic_year):
+    result = frappe.get_all("Fees Due Schedule Template", 
+        {
+            "academic_year": academic_year,
+            "enabled": 1
+        },
+        ["name", "template_name", "academic_year", "portal_label"]
+    )
+
+    return result
+
+@frappe.whitelist(methods=["GET"])
+def get_active_enrollment_academic_year():
+    education_custom_settings = frappe.get_doc("Education Custom Settings")
+
+    return education_custom_settings.active_enrollment_academic_year
+
+
+@frappe.whitelist(methods=["GET"])
+def get_academic_year_program_enrollment(academic_year, student):
+    result = None
+    if frappe.db.exists("Program Enrollment", {"academic_year": academic_year, "student": student}):
+        result = frappe.get_last_doc("Program Enrollment", {"academic_year": academic_year, "student": student})
+
+    return result

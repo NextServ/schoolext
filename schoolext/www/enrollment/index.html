@@ -8,19 +8,21 @@
 
 {% block page_content %}
 <style>
-input[type=checkbox] {
+input[type=radio] {
     display: none;
 }
 
 input:checked + label {
-    border: solid 1px green;
+    border-color: green !important;
+    border-width: 4px;
     color: green;
+    font-weight: bold;
 }
 
-input:checked + label:after {
+input:checked + label::after {
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
-    content: '\f00c';
+    content: ' \f00c';
 }
 
 
@@ -33,9 +35,11 @@ input:checked + label .check {
     visibility: visible;
 }
 
-input.checkbox:checked + label:after {
+input.radio:checked + label::after {
     content: "";
 }
+
+
 
 .fade-enter-active
 {
@@ -54,17 +58,20 @@ input.checkbox:checked + label:after {
     opacity: -1.0;
 }
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 <div class="mt-4">
     <img src="/assets/schoolext/img/icons8-backpack-85.png" style="height: 40px; width: auto;"> Coming soon!
 </div>
 
-<div id="app" v-cloak>
-    
+<div id="app" v-cloak>    
     <div style="max-width: 500px;">
         <Transition name="fade">
             <!-- <div class="text-small" id="my-students"> -->
             <div class="text-small" v-if="tabs['0'].active" v-bind:id="tabs['1'].id">
-                <div class="list-group mt-4" style="max-width: 500px;">
+                <div class="list-group" style="max-width: 500px;">
+                <div>
+                    Academic Year: [[ academic_year ]]
+                </div>
                 {% for student in students -%}
                     <div class="mb-2">
                         <a href="#" data-name="{{ student.name }}" data-gender="{{ student.gender }}" data-student-name="{{ student.student_name }}" 
@@ -81,21 +88,64 @@ input.checkbox:checked + label:after {
                 {%- endfor %}
                 </div>
             </div>
+        </Transition>
+        <Transition name="fade">
             <div v-if="tabs['1'].active" v-bind:id="tabs['1'].id">
-                [[ selected_student_name ]]
+                <div class="card" style="font-size: 0.8em;">
+                    <div class="card-header">
+                        <div>
+                            Academic Year: <span class="font-weight-bold">[[ academic_year ]]</span>
+                        </div>
+                        <div>
+                            Student: <span class="font-weight-bold">[[ selected_student_name ]]</span>
+                        </div>
+                    </div>
+                    <div class="card-body" v-if="program_enrollment">
+                        <div class="">
+                            Program: <span class="font-weight-bold">[[ program_enrollment.program ]]</span>
+                        </div>
+                        <div class="pt-2">
+                            <div class="mb-2">Fees Due Schedule:</div>
+                            <div class="ml-2 mr-2" v-for="fee in fees_due_schedule_templates">
+                                <input class="form-radio-input" type="radio" 
+                                    name="radio-fees-due-schedule-type" :id="fee.name" :value="fee.name"
+                                    v-model="selected_fees_due_schedule">
+                                <label class="border rounded-pill p-3 text-muted text-center w-100" :for="fee.name" role="button">
+                                    [[ fee.portal_label ]]
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body" v-else>
+                        You are not qualified to enroll in a program for this academic year.
+                    </div>
+                    <!-- <div class="card-footer">
+
+                    </div> -->
+                </div>
             </div>
+        </Transition>
+        <Transition name="fade">
             <div v-if="tabs['2'].active" v-bind:id="tabs['2'].id">
                 
             </div>
+        </Transition>
+        <Transition name="fade">
             <div v-if="tabs['3'].active" v-bind:id="tabs['3'].id">
                 
             </div>
         </Transition>
+        <div class="w-100 text-center" v-if="is_loading">
+            <div class="spinner-loader spinner-border spinner-border-sm text-info" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
         <div class="btn-group mt-4 d-flex justify-content-end" role="group" aria-label="buttons" v-if="!tabs['0'].active">
             <button class="btn btn-secondary" @click="previous" :disabled="(active_tab_index <= 0)">Previous</button>
             <button class="btn btn-primary" @click="next" :disabled="(active_tab_index >= tabs.length - 1)">Next</button>
+            <button class="btn btn-primary" @click="is_loading = !is_loading">Toggle Loading</button>
         </div>
     </div>
 </div>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
 {% endblock %}
