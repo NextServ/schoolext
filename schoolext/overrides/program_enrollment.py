@@ -41,6 +41,7 @@ class CustomProgramEnrollment(ProgramEnrollment):
                         "program_enrollment": self.name,
                         "components": fee_components,
                         "program_fee_name": d.name,
+                        "campus": self.campus,
                     }
                 )
 

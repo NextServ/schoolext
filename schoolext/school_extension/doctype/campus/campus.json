@@ -10,6 +10,8 @@
  "engine": "InnoDB",
  "field_order": [
   "campus_name",
+  "enabled",
+  "column_break_1yypz",
   "campus_head",
   "address"
  ],
@@ -32,11 +34,22 @@
    "fieldtype": "Link",
    "label": "Address",
    "options": "Address"
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "column_break_1yypz",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-23 19:55:21.982127",
+ "modified": "2023-02-23 22:00:34.379615",
  "modified_by": "Administrator",
  "module": "School Extension",
  "name": "Campus",
