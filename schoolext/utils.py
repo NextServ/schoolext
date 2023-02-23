@@ -304,8 +304,9 @@ def get_program_fee_details(student, program_fee_names):
 def validate_current_user_guardian(student):
     guardian_doc = None
     current_user = frappe.session.user
-    if frappe.db.exists("Guardian", {'user': current_user}):
-        guardian_doc = frappe.get_last_doc("Guardian", filters={"user": current_user})
+    # todo: change to user later
+    if frappe.db.exists("Guardian", {'email_address': current_user}):
+        guardian_doc = frappe.get_last_doc("Guardian", filters={"email_address": current_user})
 
         student_guardians = frappe.get_all(
             "Student Guardian", filters={"guardian": guardian_doc.name}, fields=["parent"]
