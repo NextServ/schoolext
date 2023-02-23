@@ -395,3 +395,9 @@ def get_academic_year_program_enrollment(academic_year, student):
         result = frappe.get_last_doc("Program Enrollment", {"academic_year": academic_year, "student": student})
 
     return result
+
+@frappe.whitelist(methods=["GET"])
+def get_fees_due_schedule_template(fees_due_schedule_template):
+    result = frappe.get_doc("Fees Due Schedule Template", fees_due_schedule_template)
+
+    return result

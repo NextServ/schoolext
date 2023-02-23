@@ -31,6 +31,8 @@ const app = Vue.createApp({
             ],
             active_tab_index: 0,
             selected_student_name: '',
+            selected_student_student_name: '',
+            selected_student_student_gender: '',
             selected_fees_due_schedule: '',
             fees_due_schedule_templates: [],
             program_enrollment: {}
@@ -84,6 +86,8 @@ const app = Vue.createApp({
 
         select_student: async function(e) {
             this.selected_student_name = e.target.getAttribute('data-name');
+            this.selected_student_gender = e.target.getAttribute('data-gender');
+            this.selected_student_student_name = e.target.getAttribute('data-student-name');
             this.next();
             this.is_loading = true;
             this.reset_enrollment_data()
@@ -93,6 +97,10 @@ const app = Vue.createApp({
             this.program_enrollment = await this.get_academic_year_program_enrollment();
 
             this.is_loading = false;
+        },
+
+        select_fees_due_schedule: async function() {
+            this.next();
         },
 
         reset_enrollment_data: function() {

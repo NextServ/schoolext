@@ -171,6 +171,8 @@ class DragonPayPaymentRequest(Document):
                             pe.save()
                             pe.reload()
 
+                            pe.submit()
+
                             frappe.db.set_value("DragonPay Payment Request", self.name, "payment_entry", pe.name)
                             print("pe.save()")
             else:

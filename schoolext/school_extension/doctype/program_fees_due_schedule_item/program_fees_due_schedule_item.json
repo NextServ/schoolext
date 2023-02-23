@@ -1,0 +1,41 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-02-23 18:20:57.380696",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "schedule_name",
+  "fee_structure"
+ ],
+ "fields": [
+  {
+   "fieldname": "schedule_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Schedule Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "fee_structure",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Fee Structure",
+   "options": "Fee Structure",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-02-23 18:20:57.380696",
+ "modified_by": "Administrator",
+ "module": "School Extension",
+ "name": "Program Fees Due Schedule Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

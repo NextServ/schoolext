@@ -8,8 +8,7 @@ frappe.ui.form.on('Program Enrollment', {
                     'enabled': 1
                 }
             };
-        });
-        
+        });        
     },
 
     setup: function(frm) {        
@@ -24,23 +23,22 @@ frappe.ui.form.on('Program Enrollment', {
             frappe.confirm(confirm_message, 
                 function() {
                     console.log(frm.doc.fees_due_schedule_template);
-
                     
                     frappe.db.get_list("Fees Due Schedule Template Item", { filters: { parent: frm.doc.fees_due_schedule_template }, fields: ['due_date'] }).then((data) => {
                         if (data && data.length) {
-                            $.each(data, function(idx, due_date) {
+                            $.each(data, function(idx, item) {
         
-                                if (frm.doc.fees[idx]) {
-                                    frappe.model.set_value("Program Fee", frm.doc.fees[idx].name, "due_date", due_date.due_date);
+                                if (frm.doc.fees && frm.doc.fees[idx]) {
+                                    frappe.model.set_value("Program Fee", frm.doc.fees[idx].name, "due_date", item.due_date);
                                     console.log("set");
                                 }
                                 else {
                                     let d = frm.add_child("fees");
-                                    d.due_date = due_date.due_date;
+                                    d.due_date = item.due_date;
                                     console.log("new");
                                 }
                             });      
-                            frm.refresh_fields("fees");                      
+                            frm.refresh_fields("fees");
                         }
                     });
 
