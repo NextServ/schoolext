@@ -109,11 +109,11 @@ input.radio:checked + label::after {
                         </div>
                         <div class="pt-2">
                             <div class="mb-2">Fees Due Schedule:</div>
-                            <div class="ml-2 mr-2" v-for="fee in fees_due_schedule_templates">
+                            <div class="ml-2 mr-2 d-flex justify-content-center" v-for="fee in fees_due_schedule_templates">
                                 <input class="form-radio-input" type="radio" 
                                     name="radio-fees-due-schedule-type" :id="fee.name" :value="fee.name"
                                     v-model="selected_fees_due_schedule">
-                                <label class="border rounded-pill p-3 text-muted text-center w-100" :for="fee.name" role="button">
+                                <label class="border rounded-pill p-3 text-muted text-center" style="width: 60%;" :for="fee.name" role="button">
                                     [[ fee.portal_label ]]
                                 </label>
                             </div>
