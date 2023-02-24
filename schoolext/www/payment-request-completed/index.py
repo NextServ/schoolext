@@ -21,8 +21,8 @@ def get_context(context):
     current_user = frappe.session.user
     
     guardian_doc = None
-    if frappe.db.exists("Guardian", {'user': current_user}):
-        guardian_doc = frappe.get_last_doc("Guardian", filters={"user": current_user})
+    if frappe.db.exists("Guardian", {'email_address': current_user}):
+        guardian_doc = frappe.get_last_doc("Guardian", filters={"email_address": current_user})
 
     else:
         frappe.throw(_("You do not have permission to access this page."), frappe.PermissionError)

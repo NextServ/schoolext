@@ -19,8 +19,8 @@ def get_context(context):
 
     current_user = frappe.session.user
 
-    if frappe.db.exists("Guardian", {'user': current_user}):
-        guardian_doc = frappe.get_last_doc("Guardian", filters={"user": current_user})
+    if frappe.db.exists("Guardian", {'email_address': current_user}):
+        guardian_doc = frappe.get_last_doc("Guardian", filters={"email_address": current_user})
 
         students = get_students(guardian_doc.name)
 

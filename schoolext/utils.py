@@ -43,7 +43,8 @@ def get_student_program_fees(student):
             pe.academic_year,
             pe.academic_term,
             pe.student_category,
-            pe.student_batch_name
+            pe.student_batch_name,
+            pe.campus
         from `tabProgram Enrollment` pe
         where
             pe.docstatus = 0
@@ -121,6 +122,7 @@ def get_student_program_fees(student):
                     "academic_term": pe.academic_term,
                     "student_category": pe.student_category,
                     "student_batch_name": pe.student_batch_name,
+                    "campus": pe.campus,
                     "program_fees": []
                 }
             )
@@ -150,6 +152,7 @@ def get_student_fees(student):
     fees = frappe.db.sql("""
         select
             pe.name as program_enrollment_name,
+            pe.campus as campus,
             f.program as program_name,
             f.student,
             f.student_name,
@@ -233,6 +236,7 @@ def get_program_fee_details(student, program_fee_names):
                 pe.enrollment_date,
                 pe.program,
                 pe.academic_year,
+                pe.campus,
                 pf.name as program_fees_name,
                 pf.fee_structure as fee_structure,
                 pf.idx as program_fees_index,
@@ -287,6 +291,7 @@ def get_program_fee_details(student, program_fee_names):
                     "enrollment_date": program_fees_components[0].enrollment_date,
                     "program": program_fees_components[0].program,
                     "academic_year": program_fees_components[0].academic_year,
+                    "campus": program_fees_components[0].campus,
 
                     "program_fees_name": program_fees_components[0].program_fees_name,
                     "fee_structure": program_fees_components[0].fee_structure,

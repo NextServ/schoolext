@@ -219,7 +219,8 @@ frappe.ready(function() {
                         <div class="mb-3 mt-4" style="">
                             <div class="">
                                 <div>
-                                    <h5>${prog_en.program_name}: ${prog_en.academic_year}</h5>
+                                    <h5>${prog_en.campus}</h5>
+                                    <h6>${prog_en.program_name}: ${prog_en.academic_year}</h6>
                                 </div>
                                 <div>
                                 ${fees_html}
