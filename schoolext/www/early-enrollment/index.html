@@ -32,6 +32,11 @@
 </style>
 <div id="app" v-cloak>    
     <div style="max-width: 500px;">
+        <div class="w-100 text-center" v-if="is_loading">
+            <div class="spinner-loader spinner-border spinner-border-sm text-info" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
         <Transition name="fade">
             <!-- <div class="text-small" id="my-students"> -->
             <div class="text-small" v-if="tabs[0].active" v-bind:id="tabs[0].id">
@@ -50,6 +55,10 @@
                                 <img src="/assets/schoolext/img/icons8-school-boy-85.png" style="height: 40px; width: auto;">
                             {% endif %}
                             {{ student.student_name }}
+
+                            <span class="float-right mt-2">
+                                <i class="fa-solid fa-caret-right"></i>
+                            </span>
                         </a>
                     </div>
                 {%- endfor %}
@@ -75,8 +84,13 @@
                                     <h5>[[ prog_en.campus ]]</h5>
                                     <h6>[[ prog_en.program_name ]] : [[ prog_en.academic_year ]]</h6>
                                 </div>
+                                
                                 <div class="mt-2 card" style="" v-for="program_fee in prog_en.program_fees">
-                                    <label class="d-inline" role="button" style="" :for="'chk-'+[[ program_fee.program_fees_name ]]">
+                                    <label class="d-inline" 
+                                    role="button" 
+                                    style="" 
+                                    :for="'chk-'+[[ program_fee.program_fees_name ]]"
+                                    >
                                         <div class="p-4 card-header bg-light border-bottom">
                                             <input type="checkbox" class="program-fee-checkbox"                                                 
                                                 :id="'chk-'+[[ program_fee.program_fees_name ]]" 
@@ -85,10 +99,11 @@
                                                 :value="program_fee.program_fees_name"
                                                 :data-amount="program_fee.program_fees_amount" 
                                                 v-model="selected_program_fees"
-                                                autocomplete="off">
+                                                autocomplete="off"
+                                                @change="get_subtotal_checkout"
+                                                >
                                             <div class="d-inline">
                                                 <span class="font-weight-bold">
-                                                    <!-- ${program_fee.fee_structure} -->
                                                     [[ program_fee.fee_structure ]]
                                                 </span>
                                             </div>
@@ -131,10 +146,12 @@
 
                         <div class="mt-4 pr-4 card-footer justify-content-between d-flex">
                             <div class="d-inline">
-                                <span class="font-weight-bold">Total</span>
+                                <span class="font-weight-bold">Subtotal</span>
                             </div>
                             <div class="d-inline">
-                                <span id="total-amount-due" class="font-weight-bold text-info">0.00</span>
+                                <span id="total-amount-due" class="font-weight-bold text-info">
+                                    [[ subtotal_checkout.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                </span>
                             </div>
                         </div>
                         <div class="btn-group mt-4 d-flex justify-content-end" role="group" aria-label="buttons">
@@ -229,6 +246,39 @@
                     </div>
 
                     <div id="payment-method-section" class="mt-4">
+                        <h5 class="mt-4" id="payment-methods">
+                            <img src="/assets/schoolext/img/icons8-business-85-box.png" style="height: 40px; width: auto;">
+                            Payment Method
+                        </h5>
+                        <div class="mt-4" id="payment-method-check-group">
+                            <div id="online-banking-check" class="form-check">
+                                <input class="form-check-input" type="radio" name="radio-payment-method-type" id="online-banking" value="online-banking">
+                                <label class="form-check-label" role="button" for="online-banking">
+                                    Online banking
+                                </label>
+                                <div class="card d-flex justify-content-center" id="online-banking-proc-ids">
+                            
+                                </div>
+                            </div>
+                            <div id="over-the-counter-check" class="form-check">
+                                <input class="form-check-input" type="radio" name="radio-payment-method-type" id="over-the-counter" value="over-the-counter">
+                                <label class="form-check-label" role="button" for="over-the-counter">
+                                    Over the counter
+                                </label>
+                                <div class="card d-flex justify-content-center" id="over-the-counter-proc-ids">
+                            
+                                </div>
+                            </div>
+                            <!-- <div id="credit-card-check" class="form-check" v-if="has_credit_card">
+                                <input class="form-check-input" type="radio" name="radio-payment-method-type" id="credit-card" value="credit-card">
+                                <label class="form-check-label" role="button" for="credit-card">
+                                    <img :src="has_credit_card[0].logo" style="height: 40px; width: auto;" alt="Credit Card"
+                                        onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';$('#cc-label').html('Credit Card');"
+                                    >
+                                    <span id="cc-label" class=""></span>
+                                </label>
+                            </div> -->
+                        </div>
                     </div>
 
                     <div class="btn-group mt-4 d-flex justify-content-end" role="group" aria-label="buttons">

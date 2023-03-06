@@ -36,6 +36,8 @@ const app = Vue.createApp({
                 subtotal_checkout: 0,
                 total_amount_due_checkout: 0,
 
+                available_processors: 0,
+
                 program_fees_details: [],
             }
         },
@@ -115,20 +117,32 @@ const app = Vue.createApp({
             },
 
             checkout: async function(e) {
+                if (this.selected_program_fees.length <= 0) {
+                    frappe.throw({
+                        title: __('Select a fee'),
+                        indicator: 'error',
+                        message: __('You have not selected any fees to pay.')
+                    });
+                }
                 this.next();
                 this.is_loading = true;
 
                 this.program_fees_details = await this.get_program_fee_details();
-                this.selected_fees_objects = this.get_selected_program_fees_objects();
-
-                this.subtotal_checkout = 
-                    this.selected_fees_objects.reduce(function(sum, current) {
-                        return sum + parseFloat(current['amount'] ? current['amount'] : 0);
-                    }, 0);
+                this.get_subtotal_checkout();
                 this.payment_method_charge_amount = await this.get_default_payment_method_charge_amount();
 
                 this.total_amount_due_checkout = this.subtotal_checkout + this.payment_method_charge_amount;
+
+                this.available_processors = await this.dragonpay_get_available_processors();
                 this.is_loading = false;
+            },
+
+            get_subtotal_checkout: function() {
+                this.selected_fees_objects = this.get_selected_program_fees_objects();                
+                
+                this.subtotal_checkout = this.selected_fees_objects.reduce(function(sum, current) {
+                    return sum + parseFloat(current['amount'] ? current['amount'] : 0);
+                }, 0);
             },
 
             get_selected_program_fees_objects: function() {
@@ -171,6 +185,27 @@ const app = Vue.createApp({
                 const r = await frappe.call({
                     method: "schoolext.school_extension.dragonpay.get_default_payment_method_charge_amount",
                     type: "GET",
+                });
+    
+                return r.message;
+            },
+
+            has_credit_card: async function() {
+                return this.available_processors.filter(function(item){ 
+                    if (item.hasOwnProperty("type")) { 
+                        return item["procId"] === "CC"; //credit card 64
+                    } 
+                        return false;   
+                });
+            },
+
+            dragonpay_get_available_processors: async function() {
+                const r = await frappe.call({
+                    method: "schoolext.school_extension.dragonpay.dragonpay_get_available_processors",
+                    type: "POST",
+                    args: {
+                        "amount": -1000,
+                    },
                 });
     
                 return r.message;
