@@ -1,0 +1,243 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ _("Early Enrollment") }}{% endblock %} 
+{% block header %}
+    <!-- override -->
+    <span>Early Enrollment</span>
+{% endblock %} 
+
+{% block page_content %}
+<style>
+    #payment-method-check-group div#gcash-check, 
+    #payment-method-check-group div#credit-card-check{
+        min-height: 60px !important;
+    }
+
+.fade-enter-active
+{
+    transition: opacity 1.0s ease;
+}
+.fade-leave-active 
+{
+    transition: opacity 0.0s ease;
+}
+
+.fade-enter-from
+{
+    opacity: 0;
+}
+.fade-leave-to {
+    opacity: -1.0;
+}
+</style>
+<div id="app" v-cloak>    
+    <div style="max-width: 500px;">
+        <Transition name="fade">
+            <!-- <div class="text-small" id="my-students"> -->
+            <div class="text-small" v-if="tabs[0].active" v-bind:id="tabs[0].id">
+                <div class="list-group" style="max-width: 500px;">
+                <div>
+                    Academic Year: [[ academic_year ]]
+                </div>
+                {% for student in students -%}
+                    <div class="mb-2">
+                        <a href="#" data-name="{{ student.name }}" data-gender="{{ student.gender }}" data-student-name="{{ student.student_name }}" 
+                            class="fees-link list-group-item list-group-item-action" style="width: 100% !important;"
+                            @click="select_student($event)">
+                            {% if student.gender == 'Female' %}
+                                <img src="/assets/schoolext/img/icons8-school-girl-85.png" style="height: 40px; width: auto;">
+                            {% else %}
+                                <img src="/assets/schoolext/img/icons8-school-boy-85.png" style="height: 40px; width: auto;">
+                            {% endif %}
+                            {{ student.student_name }}
+                        </a>
+                    </div>
+                {%- endfor %}
+                </div>
+            </div>
+        </Transition>
+        <Transition name="fade">
+            <div v-if="tabs[1].active" v-bind:id="tabs[1].id">
+                <div>
+                    <h6>Pre-enrollment Fees</h6>
+                    <div style="max-width: 500px;">
+                        <div class="mt-4">
+                        <img src="/assets/schoolext/img/icons8-business-85.png" style="height: 40px; width: auto;">
+                        Fees - [[ selected_student_student_name ]]
+                        </div>
+                        <hr />
+                        <div id="no-fees-message" v-if="programs.length == 0">
+                            You have no oustanding fees. Thank you for paying on time.
+                        </div>
+                        <div class="mb-3 mt-4" style="">
+                            <div v-for="prog_en in programs">
+                                <div>
+                                    <h5>[[ prog_en.campus ]]</h5>
+                                    <h6>[[ prog_en.program_name ]] : [[ prog_en.academic_year ]]</h6>
+                                </div>
+                                <div class="mt-2 card" style="" v-for="program_fee in prog_en.program_fees">
+                                    <label class="d-inline" role="button" style="" :for="'chk-'+[[ program_fee.program_fees_name ]]">
+                                        <div class="p-4 card-header bg-light border-bottom">
+                                            <input type="checkbox" class="program-fee-checkbox"                                                 
+                                                :id="'chk-'+[[ program_fee.program_fees_name ]]" 
+                                                data-reference-doctype="Program Fee"
+                                                :data-name="program_fee.program_fees_name"
+                                                :value="program_fee.program_fees_name"
+                                                :data-amount="program_fee.program_fees_amount" 
+                                                v-model="selected_program_fees"
+                                                autocomplete="off">
+                                            <div class="d-inline">
+                                                <span class="font-weight-bold">
+                                                    <!-- ${program_fee.fee_structure} -->
+                                                    [[ program_fee.fee_structure ]]
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <ul class="mb-0" style="font-size: 0.8em;">
+                                                    <li v-for="fees_component in program_fee.program_fees_components">
+                                                        <div class="d-flex justify-content-between">
+                                                            <div>
+                                                                [[ fees_component.fees_category ]]:[[ fees_component.description ]]
+                                                            </div>
+                                                            <div>
+                                                                [[ fees_component.component_amount.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer p-4 bg-light d-flex justify-content-between">
+                                            <div class="">
+                                                <small>
+                                                    <i class="fa fa-clock text-small"></i><span class="ml-2">
+                                                        [[ program_fee.due_date ]]
+                                                    </span>
+                                                    <span class="blockquote-footer">
+                                                        due [[ moment_from_now(program_fee.due_date) ]]
+                                                    </span>
+                                                </small>
+                                            </div>
+                                            <div class="">
+                                                <span class="font-weight-bold">
+                                                    [[ program_fee.program_fees_amount.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>                                
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pr-4 card-footer justify-content-between d-flex">
+                            <div class="d-inline">
+                                <span class="font-weight-bold">Total</span>
+                            </div>
+                            <div class="d-inline">
+                                <span id="total-amount-due" class="font-weight-bold text-info">0.00</span>
+                            </div>
+                        </div>
+                        <div class="btn-group mt-4 d-flex justify-content-end" role="group" aria-label="buttons">
+                            <button class="btn btn-outline-secondary" id="btn-student-selection" @click="previous">Previous</button>
+                            <button id="btn-checkout" class="btn btn-primary" type="button" :disabled="programs.length == 0" @click="checkout">Checkout</button>
+                        </div>
+                    </div>
+                
+                </div>
+            </div>
+        </Transition>
+        <Transition name="fade">
+            <div v-if="tabs[2].active" v-bind:id="tabs[2].id">
+                <div style="max-width: 500px;">
+                    <div class="mt-4">
+                        <img src="/assets/schoolext/img/icons8-advertising-85.png" style="height: 40px; width: auto;">
+                        Checkout
+                    </div>
+                    <hr />
+                    
+                    <div class="mt-2 card" style="min-width: 300px;" v-for="program_fee in program_fees_details">
+                        <div class="p-4 card-header bg-light border-bottom">
+                            <div class="d-inline">
+                                <span class="font-weight-bold">
+                                    [[ program_fee.details.fee_structure ]]
+                                </span>
+                            </div>
+                            <div>
+                                <ul class="mb-0" style="font-size: 0.8em;">
+                                    <li v-for="fees_component in program_fee.details.program_fees_components">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                [[ fees_component.fees_category ]]:[[ fees_component.description ]]
+                                            </div>
+                                            <div>
+                                                [[ fees_component.component_amount.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-footer p-4 bg-light d-flex justify-content-between">
+                            <div class="">
+                                <small>
+                                    <i class="fa fa-clock text-small"></i><span class="ml-2">[[ program_fee.details.due_date ]]</span>
+                                    <span class="blockquote-footer">due [[ moment_from_now(program_fee.details.due_date) ]]</span>
+                                </small>
+                            </div>
+                            <div class="">
+                                <span class="font-weight-bold"> 
+                                    [[ program_fee.details.program_fees_amount.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pr-4 card-footer border-bottom">
+                        <div class="d-flex justify-content-between">
+                            <div class="d-inline">
+                                <span class="font-weight-bold">Subtotal</span>
+                            </div>
+                            <div class="d-inline">
+                                <span id="subtotal-checkout" class="font-weight-bold text-info">
+                                    [[ subtotal_checkout.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-2 border-top d-flex justify-content-between">
+                            <div class="d-inline">
+                                <span class="">Online Payment Charge</span>
+                            </div>
+                            <div class="d-inline">
+                                <span id="payment-method-charge-amount" class="font-weight-bold text-secondary">
+                                    [[ payment_method_charge_amount.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pr-4 card-footer border-bottom">
+                        <div class="d-flex justify-content-between">
+                            <div class="d-inline">
+                                <span class="font-weight-bold">Total</span>
+                            </div>
+                            <div class="d-inline">
+                                <span id="total-amount-due-checkout" class="font-weight-bold text-info">
+                                    [[ total_amount_due_checkout.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="payment-method-section" class="mt-4">
+                    </div>
+
+                    <div class="btn-group mt-4 d-flex justify-content-end" role="group" aria-label="buttons">
+                        <button class="btn btn-outline-secondary" id="btn-fees-selection" @click="previous">Previous</button>
+                        <button id="btn-pay" class="btn btn-primary" type="button">Pay</button>
+                    </div>
+                </div>
+            </div>
+        </Transition>
+    </div>
+</div>
+{% endblock %}

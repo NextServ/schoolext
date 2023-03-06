@@ -35,6 +35,12 @@ precision = cint(frappe.db.get_default("currency_precision")) or 2
 
 #     return response
 
+@frappe.whitelist(methods=["GET"])
+def get_default_payment_method_charge_amount():
+    settings = frappe.get_doc("DragonPay Settings")
+
+    return settings.default_payment_method_charge_amount
+
 # todo: don't fetch all the time?
 @frappe.whitelist(methods=["POST"])
 def dragonpay_get_available_processors(amount):

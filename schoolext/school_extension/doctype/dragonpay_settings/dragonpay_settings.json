@@ -17,6 +17,7 @@
   "test_payout_api_key",
   "integration_options_section_section",
   "company_bank_account",
+  "default_payment_method_charge_amount",
   "payment_processors_section",
   "enabled_proc_ids",
   "last_fetch_time",
@@ -96,12 +97,18 @@
    "fieldname": "last_fetch_time",
    "fieldtype": "Datetime",
    "label": "Last Fetch Time"
+  },
+  {
+   "fieldname": "default_payment_method_charge_amount",
+   "fieldtype": "Currency",
+   "label": "Default Payment Method Charge Amount",
+   "options": "Company:company:default_currency"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-02-17 14:42:10.151939",
+ "modified": "2023-03-07 02:27:21.307151",
  "modified_by": "Administrator",
  "module": "School Extension",
  "name": "DragonPay Settings",
