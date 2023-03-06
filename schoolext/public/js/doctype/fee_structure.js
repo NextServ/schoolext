@@ -18,6 +18,15 @@ frappe.ui.form.on('Fee Structure', {
 				}
 			};
 		});
+		frm.set_query("custom_unearned_income_account", "components", function(doc) {
+			return {
+				filters: {
+					'root_type': 'Liability',
+					'is_group': 0,
+					'company': doc.company
+				}
+			};
+		});
     }
 });
 
@@ -34,11 +43,10 @@ frappe.ui.form.on('Fee Component', {
                 'company': frm.doc.company
             },
             callback: function(r) {
-                if(r.message) {
-                    console.log("success get_fee_category_default_accounts");
-                    
+                if(r.message) {                    
                     frappe.model.set_value(cdt, cdn, "custom_receivable_account", r.message.default_receivable_account);
                     frappe.model.set_value(cdt, cdn, "custom_income_account", r.message.default_income_account);
+                    frappe.model.set_value(cdt, cdn, "custom_unearned_income_account", r.message.default_unearned_income_account);
                     refresh_field("amount", cdn, "components");
                 } else {
                     console.log("error get_fee_category_default_accounts");

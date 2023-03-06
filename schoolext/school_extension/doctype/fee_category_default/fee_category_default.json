@@ -9,7 +9,8 @@
  "field_order": [
   "company",
   "default_receivable_account",
-  "default_income_account"
+  "default_income_account",
+  "default_unearned_income_account"
  ],
  "fields": [
   {
@@ -33,12 +34,18 @@
    "in_list_view": 1,
    "label": "Default Income Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "default_unearned_income_account",
+   "fieldtype": "Link",
+   "label": "Default Unearned Income Account",
+   "options": "Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-02-22 12:15:15.858978",
+ "modified": "2023-03-06 14:51:04.126759",
  "modified_by": "Administrator",
  "module": "School Extension",
  "name": "Fee Category Default",

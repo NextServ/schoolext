@@ -18,5 +18,14 @@ frappe.ui.form.on('Fee Category', {
 				}
 			};
 		});
+		frm.set_query("default_unearned_income_account", "fee_category_defaults", function(doc) {
+			return {
+				filters: {
+					'root_type': 'Liability',
+					'is_group': 0,
+					'company': doc.company
+				}
+			};
+		});
     }
 });
