@@ -110,6 +110,10 @@ def dragonpay_get_available_processors(amount):
         frappe.log_error(title="dragonpay_get_available_processors", message=str(e))
         frappe.throw(_("Error in GetAvailableProcessors request"))
 
+def dragonpay_payment_request_create_documents(dppr):
+    dppr_doc = frappe.get_doc("DragonPay Payment Request", dppr)
+    dppr_doc.create_documents()    
+
 @frappe.whitelist(allow_guest=True, methods=["POST"])
 def dragonpay_postback(
     txnid=None,
@@ -143,6 +147,8 @@ def dragonpay_postback(
     dppr_doc.proc_id = procid
 
     dppr_doc.save(ignore_permissions=True)
+
+    frappe.enqueue("schoolext.school_extension.dragonpay.dragonpay_payment_request_create_documents", now=now, dppr=dppr_doc.name)
 
     response = Response()
     response.mimetype = "text/plain"
