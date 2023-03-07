@@ -29,6 +29,8 @@
         <div>Transaction ID: {{ params.txnid }}</div>
         <div>Reference No.: {{ params.refno }}</div>
         <div>Message: {{ params.message }}</div>
+        <div>Description: {{ dppr.description }}</div>
+        <div>Amount: {{ dppr.amount }}</div>
     </div>
     <hr>
     {% if params.status in ["S"] %}

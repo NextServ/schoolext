@@ -57,5 +57,8 @@ def get_context(context):
     else:
         pass
 
+    dppr = frappe.get_doc("DragonPay Payment Request", params.txnid)
+
     context.params = params
+    context.dppr = dppr
     # context.doc = d

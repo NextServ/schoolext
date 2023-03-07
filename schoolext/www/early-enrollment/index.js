@@ -40,6 +40,10 @@ const app = Vue.createApp({
                 selected_payment_method_subtype: "",
                 available_processors: 0,
 
+                pay_button_enabled: true,
+
+                confirm_process_payment: false,
+
                 program_fees_details: [],
             }
         },
@@ -47,6 +51,7 @@ const app = Vue.createApp({
             loaded: async function () {
                 // this.is_loaded = true;
                 // this.is_loading = false;
+                this.confirm_process_payment = false;
             },
     
             next() {
@@ -135,7 +140,7 @@ const app = Vue.createApp({
 
                 this.total_amount_due_checkout = this.subtotal_checkout + this.payment_method_charge_amount;
 
-                this.available_processors = await this.dragonpay_get_available_processors();
+                this.available_processors = await this.dragonpay_get_available_processors(this.total_amount_due_checkout);
                 this.is_loading = false;
             },
 
@@ -192,25 +197,90 @@ const app = Vue.createApp({
                 return r.message;
             },
 
-            has_credit_card: async function() {
-                return this.available_processors.filter(function(item){ 
-                    if (item.hasOwnProperty("type")) { 
-                        return item["procId"] === "CC"; //credit card 64
-                    } 
-                        return false;   
-                });
-            },
-
-            dragonpay_get_available_processors: async function() {
+            dragonpay_get_available_processors: async function(amount) {
                 const r = await frappe.call({
                     method: "schoolext.school_extension.dragonpay.dragonpay_get_available_processors",
                     type: "POST",
                     args: {
-                        "amount": -1000,
+                        "amount": amount,
                     },
                 });
     
                 return r.message;
+            },
+
+            pay_pending_enrollment_fees: async function(student, proc_id, fees_to_pay) {
+                const r = await frappe.call({
+                    method: "schoolext.utils.pay_pending_enrollment_fees",
+                    type: "POST",
+                    args: {
+                        "student": student,
+                        "proc_id": proc_id,
+                        "fees_to_pay": fees_to_pay
+                    },
+                    });
+                
+                if(r.message) {
+                    console.log("success pay_pending_enrollment_fees");
+        
+                    window.location.href = r.message.url;
+                }
+                else {
+                    console.log("error pay_pending_enrollment_fees");
+                    frappe.show_alert({message:__("Error in error pay_pending_enrollment_fees."), indicator:'red'});                        
+                }
+        
+                return r.message;
+            },
+
+            process_payment: async function() {
+                this.pay_button_enabled = false;
+
+                if (this.selected_payment_method_subtype==="") {
+                    frappe.msgprint({
+                        title: __('Payment method'),
+                        indicator: 'error',
+                        message: __('Please select a payment method.')
+                    });
+                }
+                else {
+                    let proc_id_item = this.available_processors.find(item => item.procId === this.selected_payment_method_subtype);
+                    let selected_procid_remarks = proc_id_item.remarks;
+                    let proc_id_logo = proc_id_item.logo
+                    let confirm_message = `
+                    You are about to process payment of <strong>PHP ${this.total_amount_due_checkout.toLocaleString(undefined, {minimumFractionDigits: 2})}</strong> 
+                    for ${this.selected_student_name}:${this.selected_student_student_name}.
+                    Do you want to continue?
+                    <br />
+                    <div class="align-center">
+                        <img src="${proc_id_logo}" "this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';" style="height: 40px; width: auto;">
+                    <div>
+                    <br />
+                    <div class="font-italic" style="font-size: 0.8em">
+                        <span>${selected_procid_remarks}</span>
+                    </div>
+                    `;
+                    
+                    let prompt = new Promise((resolve, reject) => {
+                        frappe.confirm(
+                            confirm_message,
+                            () => resolve(),
+                            () => reject()
+                        );
+                    });
+                    
+                    await prompt.then(
+                        () => {
+                            this.pay_pending_enrollment_fees(this.selected_student_name, this.selected_payment_method_subtype, this.selected_fees_objects)
+                        },
+                        () => {
+                        }
+                    );
+                    
+                    this.confirm_process_payment = false;
+                }
+
+                this.pay_button_enabled = true;
             },
             
             moment_from_now: function(date) {

@@ -33,6 +33,7 @@ def get_student_program_fees(student):
     validate_current_user_guardian(student)
 
     current_academic_year = frappe.defaults.get_defaults().academic_year
+    active_enrollment_academic_year = get_active_enrollment_academic_year()
 
     pending_program_enrollments = frappe.db.sql("""
         select
@@ -49,9 +50,10 @@ def get_student_program_fees(student):
         where
             pe.docstatus = 0
             and pe.student = %s
+            and pe.academic_year = %s
         order by
             pe.program
-    """, (student), as_dict=True)
+    """, (student, active_enrollment_academic_year), as_dict=True)
 
     # get only first program fee from the schedule (pre-enrollment fee)
     # the next program fees after the first will already be created as fees
@@ -74,9 +76,10 @@ def get_student_program_fees(student):
             pe.docstatus = 0
             and pf.idx = 1
             and pe.student = %s
+            and pe.academic_year = %s
         order by
             pe.program, pf.idx
-    """, (student), as_dict=True)
+    """, (student, active_enrollment_academic_year), as_dict=True)
 
     program_fees_components = frappe.db.sql("""
         select
@@ -106,9 +109,10 @@ def get_student_program_fees(student):
             pe.docstatus = 0
             and pf.idx = 1
             and pe.student = %s
+            and pe.academic_year = %s
         order by
             pe.program, pf.idx, fc.idx
-    """, (student), as_dict=True)
+    """, (student, active_enrollment_academic_year), as_dict=True)
 
     for pe in pending_program_enrollments:
         if not result or (pe.program_enrollment_name not in [pe1["program_enrollment_name"] for pe1 in result]):
@@ -349,10 +353,10 @@ def pay_pending_enrollment_fees(student, proc_id, fees_to_pay):
         
         total_amount = total_amount + fee["amount"]
     
-    description = ''
+    description = '{0} '.format(student)
 
     # build description
-    description = ', '.join(["{0}-{1}".format(p.program, p.academic_year) for p in program_details])
+    description = description + ', '.join(["{0}-{1}".format(p.program, p.academic_year) for p in program_details])
     
     result = create_dragonpay_payment_request("Student", student, proc_id, 
         fees_to_pay, total_amount, guardian_doc.email_address, 

@@ -190,16 +190,25 @@ def create_dragonpay_payment_request(party_type, party, proc_id, fees_to_pay, am
         if proc_id not in ["BOG", "BOGX"]:
             frappe.throw("Invalid test payment processor")
 
-    amount = flt(amount, precision)
+    applied_amount = flt(amount, precision)
 
-    if amount <= 0.00:
+    if applied_amount <= 0.00:
         frappe.throw("Amount must be valid.")
 
     company_currency = frappe.get_cached_value('Company',  frappe.db.get_default("Company"),  "default_currency")
 
+    # todo: put elsewhere
+    from schoolext.school_extension.dragonpay import get_default_payment_method_charge_amount
+    default_payment_charge_amount = get_default_payment_method_charge_amount()
+    amount = amount + default_payment_charge_amount
+
     dppr = frappe.new_doc("DragonPay Payment Request")
     dppr.request_status = ""
     dppr.request_time = now()
+
+    dppr.payment_method_charge_amount = default_payment_charge_amount
+    dppr.applied_amount = applied_amount
+
     dppr.amount = amount
     dppr.currency = company_currency
     dppr.description = description

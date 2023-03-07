@@ -283,43 +283,51 @@ input.radio:checked + label::after {
                             </div>
                             <div class="d-inline">
                                 <span id="total-amount-due-checkout" class="font-weight-bold text-info">
-                                    [[ total_amount_due_checkout.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                    PHP [[ total_amount_due_checkout.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
                                 </span>
                             </div>
                         </div>
                     </div>
 
-                    <div id="payment-method-section" class="mt-4">
+                    <div id="payment-method-section" class="m-4">
                         <h5 class="mt-4" id="payment-methods">
                             <img src="/assets/schoolext/img/icons8-business-85-box.png" style="height: 40px; width: auto;">
                             Payment Method
                         </h5>
                         
-                        <div class="dropdown text-center mb-2">
+                        <div class="dropdown mb-2">
                             <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
                                 Select Type
                             </button>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" @click="selected_payment_method_type = 1">Online Banking</a>
-                                <a class="dropdown-item" @click="selected_payment_method_type = 2">OTC/Deposit/Transfer</a>
+                                <a class="dropdown-item" @click="selected_payment_method_type = 1; selected_payment_method_subtype='';">Online Banking</a>
+                                <a class="dropdown-item" @click="selected_payment_method_type = 2; selected_payment_method_subtype='';">OTC/Deposit/Transfer</a>
+                            </div>
+                            <div class="d-inline ml-2 text-info" v-if="selected_payment_method_type == 1">
+                                Online Banking
+                            </div>
+                            <div class="d-inline ml-2 text-info" v-if="selected_payment_method_type == 2">
+                                OTC/Deposit/Transfer
                             </div>
                         </div>
                         
                         <div class="row overflow-auto payment-processors" style="max-height: 250px;">
                             <div class="mb-1" v-for="proc in available_processors">
-                                <div class="mr-2" v-if="proc.type == selected_payment_method_type">
-                                    <input class="form-radio-input" type="radio" 
-                                        name="radio-payment-method-subtype"
-                                        :id="proc.procId.toLowerCase()" 
-                                        :value="proc.procId"
-                                        :data-remarks="proc.remarks"
-                                        v-model="selected_payment_method_subtype">
-                                    <label class="border rounded p-3 text-muted text-center" :for="proc.procId.toLowerCase()" role="button">
-                                        <img :src="proc.logo" style="height: 40px; width: auto;"
-                                        onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';">
-                                        <div style="font-size: 0.6em;">[[ proc.shortName ]]</div>
-                                    </label>
-                                </div>
+                                <Transition name="fade">
+                                    <div class="mr-2" v-if="proc.type == selected_payment_method_type && proc.maxAmount >= total_amount_due_checkout">
+                                        <input class="form-radio-input" type="radio" 
+                                            name="radio-payment-method-subtype"
+                                            :id="proc.procId.toLowerCase()" 
+                                            :value="proc.procId"
+                                            :data-remarks="proc.remarks"
+                                            v-model="selected_payment_method_subtype">
+                                        <label class="border rounded p-3 text-muted text-center" :for="proc.procId.toLowerCase()" role="button">
+                                            <img :src="proc.logo" class="mx-auto" style="height: 30px; width: auto;"
+                                            onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';">
+                                            <div style="font-size: 0.6em;">[[ proc.shortName ]]</div>
+                                        </label>
+                                    </div>
+                                </Transition>
                             </div>
                         </div>
                             <!-- <div id="credit-card-check" class="form-check" v-if="has_credit_card">
@@ -336,7 +344,7 @@ input.radio:checked + label::after {
 
                     <div class="btn-group mt-4 d-flex justify-content-end" role="group" aria-label="buttons">
                         <button class="btn btn-outline-secondary" id="btn-fees-selection" @click="previous">Previous</button>
-                        <button id="btn-pay" class="btn btn-primary" type="button">Pay</button>
+                        <button id="btn-pay" class="btn btn-primary" type="button" @click="process_payment" :disabled="!pay_button_enabled">Pay</button>
                     </div>
                 </div>
             </div>
