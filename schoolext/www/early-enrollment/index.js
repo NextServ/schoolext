@@ -10,7 +10,6 @@ const app = Vue.createApp({
             return {
                 is_loaded: false,
                 is_loading: false,
-                academic_year: '',
                 tabs: [                
                     {
                         id: 'my-students',
@@ -35,14 +34,14 @@ const app = Vue.createApp({
                 payment_method_charge_amount: 0,
                 subtotal_checkout: 0,
                 total_amount_due_checkout: 0,
+                active_enrollment_academic_year: "",
 
                 selected_payment_method_type: 0,
                 selected_payment_method_subtype: "",
+                selected_payment_method_subtype_remarks: "",
                 available_processors: 0,
 
                 pay_button_enabled: true,
-
-                confirm_process_payment: false,
 
                 program_fees_details: [],
             }
@@ -51,7 +50,6 @@ const app = Vue.createApp({
             loaded: async function () {
                 // this.is_loaded = true;
                 // this.is_loading = false;
-                this.confirm_process_payment = false;
             },
     
             next() {
@@ -104,7 +102,7 @@ const app = Vue.createApp({
                 this.programs = await this.get_student_program_fees();
                 // this.reset_enrollment_data()
     
-                // this.academic_year = await this.get_active_enrollment_academic_year();
+                // this.active_enrollment_academic_year = await this.get_active_enrollment_academic_year();
                 // this.fees_due_schedule_templates = await this.get_fees_due_schedule_templates();
                 // this.program_enrollment = await this.get_academic_year_program_enrollment();
     
@@ -120,6 +118,15 @@ const app = Vue.createApp({
                     },
                 });
     
+                return r.message;
+            },
+
+            get_active_enrollment_academic_year: async function() {
+                const r = await frappe.call({
+                    method: "schoolext.utils.get_active_enrollment_academic_year",
+                    type: "GET",
+                });
+                
                 return r.message;
             },
 
@@ -202,7 +209,7 @@ const app = Vue.createApp({
                     method: "schoolext.school_extension.dragonpay.dragonpay_get_available_processors",
                     type: "POST",
                     args: {
-                        "amount": amount,
+                        "amount": -1000,
                     },
                 });
     
@@ -210,6 +217,7 @@ const app = Vue.createApp({
             },
 
             pay_pending_enrollment_fees: async function(student, proc_id, fees_to_pay) {
+                this.pay_button_enabled = false;
                 const r = await frappe.call({
                     method: "schoolext.utils.pay_pending_enrollment_fees",
                     type: "POST",
@@ -230,12 +238,22 @@ const app = Vue.createApp({
                     frappe.show_alert({message:__("Error in error pay_pending_enrollment_fees."), indicator:'red'});                        
                 }
         
+                this.pay_button_enabled = true;
                 return r.message;
             },
 
-            process_payment: async function() {
-                this.pay_button_enabled = false;
+            set_selected_payment_method_subtype_remarks: function() {
+                let proc_id_item = this.available_processors.find(item => item.procId === this.selected_payment_method_subtype);
 
+                if (proc_id_item) {
+                    this.selected_payment_method_subtype_remarks = proc_id_item.remarks;
+                }
+                else {
+                    this.selected_payment_method_subtype_remarks = "";
+                }
+            },
+
+            process_payment: async function() {
                 if (this.selected_payment_method_subtype==="") {
                     frappe.msgprint({
                         title: __('Payment method'),
@@ -276,11 +294,7 @@ const app = Vue.createApp({
                         () => {
                         }
                     );
-                    
-                    this.confirm_process_payment = false;
                 }
-
-                this.pay_button_enabled = true;
             },
             
             moment_from_now: function(date) {
@@ -289,7 +303,7 @@ const app = Vue.createApp({
             
         },
         mounted: async function (){
-            
+            this.active_enrollment_academic_year = await this.get_active_enrollment_academic_year();            
         },
         filters: {
             double_quote_to_single: function (str) {

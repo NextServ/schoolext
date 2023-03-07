@@ -15,6 +15,8 @@ def default(o):
         return o.isoformat()
 
 def get_context(context):
+    frappe.throw(_("You do not have permission to access this page."), frappe.PermissionError)
+    
     context.show_sidebar = 1
 
     current_user = frappe.session.user

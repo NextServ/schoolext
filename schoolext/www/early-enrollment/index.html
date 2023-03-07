@@ -13,9 +13,9 @@ input[type=radio] {
 }
 
 input:checked + label {
-    border-color: green !important;
+    border-color: rgb(71, 179, 71) !important;
     border-width: 4px !important;
-    color: green;
+    color: rgb(71, 179, 71);
     font-weight: bold;
 }
 
@@ -83,10 +83,10 @@ input.radio:checked + label::after {
         </div>
         <Transition name="fade">
             <!-- <div class="text-small" id="my-students"> -->
-            <div class="text-small" v-if="tabs[0].active" v-bind:id="tabs[0].id">
-                <div class="list-group" style="max-width: 500px;">
-                <div>
-                    Academic Year: [[ academic_year ]]
+            <div class="text-small" v-if="tabs[0].active && !is_loading" v-bind:id="tabs[0].id">
+                <div style="max-width: 500px;">
+                <div class="mb-2">
+                    Academic Year: [[ active_enrollment_academic_year ]]
                 </div>
                 {% for student in students -%}
                     <div class="mb-2">
@@ -110,7 +110,7 @@ input.radio:checked + label::after {
             </div>
         </Transition>
         <Transition name="fade">
-            <div v-if="tabs[1].active" v-bind:id="tabs[1].id">
+            <div v-if="tabs[1].active && !is_loading" v-bind:id="tabs[1].id">
                 <div>
                     <h6>Pre-enrollment Fees</h6>
                     <div style="max-width: 500px;">
@@ -208,7 +208,7 @@ input.radio:checked + label::after {
             </div>
         </Transition>
         <Transition name="fade">
-            <div v-if="tabs[2].active" v-bind:id="tabs[2].id">
+            <div v-if="tabs[2].active && !is_loading" v-bind:id="tabs[2].id">
                 <div style="max-width: 500px;">
                     <div class="mt-4">
                         <img src="/assets/schoolext/img/icons8-advertising-85.png" style="height: 40px; width: auto;">
@@ -293,8 +293,12 @@ input.radio:checked + label::after {
                         <h5 class="mt-4" id="payment-methods">
                             <img src="/assets/schoolext/img/icons8-business-85-box.png" style="height: 40px; width: auto;">
                             Payment Method
+                            
+                            <div class="d-inline float-right">
+                                <img src="/assets/schoolext/img/dp_logo.png" style="height: 40px; width: auto;">
+                            </div>
                         </h5>
-                        
+                        <hr />
                         <div class="dropdown mb-2">
                             <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
                                 Select Type
@@ -314,13 +318,17 @@ input.radio:checked + label::after {
                         <div class="row overflow-auto payment-processors" style="max-height: 250px;">
                             <div class="mb-1" v-for="proc in available_processors">
                                 <Transition name="fade">
-                                    <div class="mr-2" v-if="proc.type == selected_payment_method_type && proc.maxAmount >= total_amount_due_checkout">
+                                    <div class="mr-2" 
+                                        v-if="proc.type == selected_payment_method_type 
+                                            && proc.maxAmount >= total_amount_due_checkout 
+                                            && total_amount_due_checkout >= proc.minAmount">
                                         <input class="form-radio-input" type="radio" 
                                             name="radio-payment-method-subtype"
                                             :id="proc.procId.toLowerCase()" 
                                             :value="proc.procId"
                                             :data-remarks="proc.remarks"
-                                            v-model="selected_payment_method_subtype">
+                                            v-model="selected_payment_method_subtype"
+                                            @change="set_selected_payment_method_subtype_remarks">
                                         <label class="border rounded p-3 text-muted text-center" :for="proc.procId.toLowerCase()" role="button">
                                             <img :src="proc.logo" class="mx-auto" style="height: 30px; width: auto;"
                                             onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';">
@@ -330,16 +338,13 @@ input.radio:checked + label::after {
                                 </Transition>
                             </div>
                         </div>
-                            <!-- <div id="credit-card-check" class="form-check" v-if="has_credit_card">
-                                <input class="form-check-input" type="radio" name="radio-payment-method-type" id="credit-card" value="credit-card">
-                                <label class="form-check-label" role="button" for="credit-card">
-                                    <img :src="has_credit_card[0].logo" style="height: 40px; width: auto;" alt="Credit Card"
-                                        onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';$('#cc-label').html('Credit Card');"
-                                    >
-                                    <span id="cc-label" class=""></span>
-                                </label>
-                            </div> -->
-                        </div>
+                        <Transition name="fade">
+                            <div class="alert alert-warning mt-4" 
+                                v-if="selected_payment_method_subtype != '' && selected_payment_method_subtype_remarks !=''" 
+                                v-html="selected_payment_method_subtype_remarks">
+                                
+                            </div>
+                        </Transition>
                     </div>
 
                     <div class="btn-group mt-4 d-flex justify-content-end" role="group" aria-label="buttons">
