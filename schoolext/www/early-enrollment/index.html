@@ -8,10 +8,36 @@
 
 {% block page_content %}
 <style>
-    #payment-method-check-group div#gcash-check, 
-    #payment-method-check-group div#credit-card-check{
-        min-height: 60px !important;
-    }
+input[type=radio] {
+    display: none;
+}
+
+input:checked + label {
+    border-color: green !important;
+    border-width: 4px !important;
+    color: green;
+    font-weight: bold;
+}
+
+input:checked + label::after {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: ' \f00c';
+}
+
+
+/* new stuff */
+.check {
+    visibility: hidden;
+}
+
+input:checked + label .check {
+    visibility: visible;
+}
+
+input.radio:checked + label::after {
+    content: "";
+}
 
 .fade-enter-active
 {
@@ -28,6 +54,24 @@
 }
 .fade-leave-to {
     opacity: -1.0;
+}
+
+ 
+.payment-processors::-moz-scrollbar-button:decrement,
+.payment-processors::-moz-scrollbar-button:increment,
+.payment-processors::-webkit-scrollbar-button:decrement,
+.payment-processors::-webkit-scrollbar-button:increment {
+  width: 0px;
+}
+
+.payment-processors::-moz-scrollbar-button, 
+.payment-processors::-webkit-scrollbar-button {
+  width: 0px;
+}
+
+.payment-processors {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255,204,104) transparent;
 }
 </style>
 <div id="app" v-cloak>    
@@ -220,12 +264,12 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="mt-2 border-top d-flex justify-content-between">
+                        <div class="mt-2 pt-2 border-top d-flex justify-content-between">
                             <div class="d-inline">
                                 <span class="">Online Payment Charge</span>
                             </div>
                             <div class="d-inline">
-                                <span id="payment-method-charge-amount" class="font-weight-bold text-secondary">
+                                <span id="payment-method-charge-amount" class="font-weight-bold">
                                     [[ payment_method_charge_amount.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
                                 </span>
                             </div>
@@ -250,25 +294,34 @@
                             <img src="/assets/schoolext/img/icons8-business-85-box.png" style="height: 40px; width: auto;">
                             Payment Method
                         </h5>
-                        <div class="mt-4" id="payment-method-check-group">
-                            <div id="online-banking-check" class="form-check">
-                                <input class="form-check-input" type="radio" name="radio-payment-method-type" id="online-banking" value="online-banking">
-                                <label class="form-check-label" role="button" for="online-banking">
-                                    Online banking
-                                </label>
-                                <div class="card d-flex justify-content-center" id="online-banking-proc-ids">
-                            
+                        
+                        <div class="dropdown text-center mb-2">
+                            <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                                Select Type
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" @click="selected_payment_method_type = 1">Online Banking</a>
+                                <a class="dropdown-item" @click="selected_payment_method_type = 2">OTC/Deposit/Transfer</a>
+                            </div>
+                        </div>
+                        
+                        <div class="row overflow-auto payment-processors" style="max-height: 250px;">
+                            <div class="mb-1" v-for="proc in available_processors">
+                                <div class="mr-2" v-if="proc.type == selected_payment_method_type">
+                                    <input class="form-radio-input" type="radio" 
+                                        name="radio-payment-method-subtype"
+                                        :id="proc.procId.toLowerCase()" 
+                                        :value="proc.procId"
+                                        :data-remarks="proc.remarks"
+                                        v-model="selected_payment_method_subtype">
+                                    <label class="border rounded p-3 text-muted text-center" :for="proc.procId.toLowerCase()" role="button">
+                                        <img :src="proc.logo" style="height: 40px; width: auto;"
+                                        onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';">
+                                        <div style="font-size: 0.6em;">[[ proc.shortName ]]</div>
+                                    </label>
                                 </div>
                             </div>
-                            <div id="over-the-counter-check" class="form-check">
-                                <input class="form-check-input" type="radio" name="radio-payment-method-type" id="over-the-counter" value="over-the-counter">
-                                <label class="form-check-label" role="button" for="over-the-counter">
-                                    Over the counter
-                                </label>
-                                <div class="card d-flex justify-content-center" id="over-the-counter-proc-ids">
-                            
-                                </div>
-                            </div>
+                        </div>
                             <!-- <div id="credit-card-check" class="form-check" v-if="has_credit_card">
                                 <input class="form-check-input" type="radio" name="radio-payment-method-type" id="credit-card" value="credit-card">
                                 <label class="form-check-label" role="button" for="credit-card">

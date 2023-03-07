@@ -36,6 +36,8 @@ const app = Vue.createApp({
                 subtotal_checkout: 0,
                 total_amount_due_checkout: 0,
 
+                selected_payment_method_type: 0,
+                selected_payment_method_subtype: "",
                 available_processors: 0,
 
                 program_fees_details: [],
@@ -220,6 +222,9 @@ const app = Vue.createApp({
             
         },
         filters: {
+            double_quote_to_single: function (str) {
+                return str.replace(/"/g, "'");
+            }
         }
     });
     

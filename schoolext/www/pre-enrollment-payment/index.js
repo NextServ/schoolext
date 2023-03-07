@@ -676,7 +676,7 @@ frappe.ready(function() {
                     <label class="form-check-label" role="button" data-proc-id="${item.procId}" for="${item.procId.toLowerCase()}">
                         <input class="form-check-input" data-proc-id="${item.procId}" type="radio" 
                             name="radio-payment-method-subtype" 
-                            data-remarks="${item.remarks}"
+                            data-remarks="${item.remarks.replace(/"/g, "'")}"
                             id="${item.procId.toLowerCase()}" value="${item.procId}">
                         <img src="${item.logo}" style="height: 40px; width: auto;"
                         onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';">                        
@@ -693,7 +693,7 @@ frappe.ready(function() {
                     <label class="form-check-label" role="button" data-proc-id="${item.procId}" for="${item.procId.toLowerCase()}">
                         <input class="form-check-input" data-proc-id="${item.procId}" type="radio" 
                             name="radio-payment-method-subtype" 
-                            data-remarks="${item.remarks}"
+                            data-remarks="${item.remarks.replace(/"/g, "'")}"
                             id="${item.procId.toLowerCase()}" value="${item.procId}">
                         <img src="${item.logo}" style="height: 40px; width: auto;"
                         onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';">

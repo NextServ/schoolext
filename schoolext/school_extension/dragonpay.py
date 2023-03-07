@@ -101,8 +101,10 @@ def dragonpay_get_available_processors(amount):
 
         for item in available_processors:
             if item["procId"] in enabled_proc_ids and item["currencies"] == company_currency:
+                item["remarks"] = item["remarks"].replace('"', "'")
                 result.append(item)
 
+        result = sorted(result, key=lambda d: d['procId']) 
         return result
     except Exception as e:
         frappe.log_error(title="dragonpay_get_available_processors", message=str(e))
