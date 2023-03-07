@@ -77,7 +77,7 @@ def custom_get_fee_components(fee_structure):
         fs = frappe.get_all(
             "Fee Component",
             fields=["fees_category", "description", "amount", 
-                "enabled_unearned_income", "fee_category_type", "discount_applicable", 
+                "enable_unearned_income", "fee_category_type", "discount_applicable", 
                 "custom_receivable_account", "custom_income_account"],
             filters={"parent": fee_structure},
             order_by="idx",
