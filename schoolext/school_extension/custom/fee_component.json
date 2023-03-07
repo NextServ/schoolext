@@ -277,7 +277,7 @@
    "is_virtual": 0,
    "label": "Unearned Income Account",
    "length": 0,
-   "mandatory_depends_on": "eval:(doc.enable_unearned_income)",
+   "mandatory_depends_on": "eval:(doc.enable_unearned_income==1)",
    "modified": "2023-03-06 15:29:52.479938",
    "modified_by": "Administrator",
    "module": null,
