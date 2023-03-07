@@ -58,7 +58,7 @@ class CustomFees(Fees):
                         "against_voucher": self.name,
                         "against_voucher_type": self.doctype,
                     },
-                    item=self,
+                    item=component,
                 )
 
                 component_income_entry = self.get_gl_dict(
@@ -69,7 +69,7 @@ class CustomFees(Fees):
                         "credit_in_account_currency": component.amount,
                         "cost_center": self.cost_center,
                     },
-                    item=self,
+                    item=component,
                 )
                 gle_map.append(component_receivable_entry)
                 gle_map.append(component_income_entry)
