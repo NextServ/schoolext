@@ -341,7 +341,8 @@ input.radio:checked + label::after {
                         <Transition name="fade">
                             <div class="alert alert-warning mt-4" 
                                 v-if="selected_payment_method_subtype != '' && selected_payment_method_subtype_remarks !=''" 
-                                v-html="selected_payment_method_subtype_remarks">
+                                v-html="selected_payment_method_subtype_remarks"
+                                :key="selected_payment_method_subtype_remarks">
                                 
                             </div>
                         </Transition>
