@@ -148,7 +148,7 @@ def dragonpay_postback(
 
     dppr_doc.save(ignore_permissions=True)
 
-    frappe.enqueue("schoolext.school_extension.dragonpay.dragonpay_payment_request_create_documents", now=now, dppr=dppr_doc.name)
+    # frappe.enqueue("schoolext.school_extension.dragonpay.dragonpay_payment_request_create_documents", now=now, dppr=dppr_doc.name)
 
     response = Response()
     response.mimetype = "text/plain"
