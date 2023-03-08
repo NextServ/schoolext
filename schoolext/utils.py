@@ -142,6 +142,50 @@ def get_student_program_fees(student):
             if pf.program_enrollment_name == program_enrollment_line["program_enrollment_name"]:
                 pfcs = [pfc for pfc in program_fees_components if pfc.program_fees_name == pf.program_fees_name]
                 pf["program_fees_components"] = pfcs
+                
+                pf["has_dppr"] = False
+
+                latest_dppr = frappe.db.sql("""
+                    select 
+                        dppr.name,
+                        dppr.collection_request_status,
+                        dppr.applied_amount,
+                        dppr.payment_method_charge_amount,
+                        dppr.processed,
+                        dppr.description,
+                        dppr.payment_initiation_request_status,
+                        dppr.reference_no,
+                        dppr.payment_completion_message                        
+                    from `tabDragonPay Payment Request` dppr
+                    left join `tabDragonPay Payment Request Item` i
+                    on i.parent = dppr.name
+                    where
+                        dppr.docstatus = 1
+                        and dppr.collection_request_status in ('', 'Pending', 'Success')
+                        and i.reference_doctype = 'Program Fee'
+                        and i.reference_name = %s
+                    order by 
+                        dppr.creation desc
+                    limit 1
+                """, (pf.program_fees_name), as_dict=True)
+
+                if latest_dppr and latest_dppr[0]:
+                    pf["has_dppr"] = True
+                    pf["dppr"] = latest_dppr[0]
+                else:
+                    pf["dppr"] = {
+                        "name": "",
+                        "collection_request_status": "",
+                        "applied_amount": "",
+                        "payment_method_charge_amount": "",
+                        "processed": "",
+                        "description": "",
+                        "payment_initiation_request_status": "",
+                        "reference_no": "",
+                        "payment_completion_message": "",
+                    }
+
+
                 program_fees_lines.append(pf)
 
         program_enrollment_line["program_fees"] = program_fees_lines
@@ -355,6 +399,7 @@ def pay_pending_enrollment_fees(student, proc_id, fees_to_pay):
             program_details.append(program_enrollment)
         
         total_amount = total_amount + fee["amount"]
+        print("pay_pending_enrollment_fees total_amount: {}".format(total_amount))
     
     description = '{0} '.format(student)
 

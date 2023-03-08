@@ -141,6 +141,8 @@ const app = Vue.createApp({
                 this.next();
                 this.is_loading = true;
 
+                this.pay_button_enabled = true;
+
                 this.program_fees_details = await this.get_program_fee_details();
                 this.get_subtotal_checkout();
                 this.payment_method_charge_amount = await this.get_default_payment_method_charge_amount();
@@ -148,6 +150,8 @@ const app = Vue.createApp({
                 this.total_amount_due_checkout = this.subtotal_checkout + this.payment_method_charge_amount;
 
                 this.available_processors = await this.dragonpay_get_available_processors(this.total_amount_due_checkout);
+                this.selected_payment_method_subtype = "";
+                this.selected_payment_method_type = 0;
                 this.is_loading = false;
             },
 
@@ -292,8 +296,10 @@ const app = Vue.createApp({
                             this.pay_pending_enrollment_fees(this.selected_student_name, this.selected_payment_method_subtype, this.selected_fees_objects)
                         },
                         () => {
+                            
                         }
                     );
+                    this.pay_button_enabled = true;
                 }
             },
             
