@@ -148,7 +148,7 @@ input.radio:checked + label::after {
                                 :for="'chk-'+[[ program_fee.program_fees_name ]]"
                                 >
                                     <div class="p-4 card-header bg-light">
-                                        <div class="border-bottom alert alert-danger" style="font-size: 0.8em;"
+                                        <div class="alert alert-danger" style="font-size: 0.8em;"
                                             v-if="program_fee.has_dppr">
                                             <div class="font-weight-bold">
                                                 An existing payment request has already been created.
@@ -166,7 +166,7 @@ input.radio:checked + label::after {
                                                 Payment Completion Message: [[ program_fee.dppr.payment_completion_message ]]
                                             </div>
                                             <div v-if="program_fee.dppr.collection_request_status == 'Success' && !program_fee.dppr.processed">
-                                                <span>Pending Posting</span>
+                                                <span>System Status: Pending Posting</span>
                                             </div>
                                             <div class="font-weight-bold" v-if="false">
                                                 Contact the administrator if you wish to make another payment request.
