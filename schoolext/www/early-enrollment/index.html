@@ -73,6 +73,17 @@ input.radio:checked + label::after {
     scrollbar-width: thin;
     scrollbar-color: rgb(255,204,104) transparent;
 }
+/* WebKit and Chromiums */
+.payment-processors::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: white;
+}
+
+.payment-processors::-webkit-scrollbar-thumb {
+  background: rgb(255,204,104);
+  border-radius: 5px;
+}
 </style>
 <div id="app" v-cloak>    
     <div style="max-width: 500px;">

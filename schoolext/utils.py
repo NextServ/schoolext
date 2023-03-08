@@ -67,11 +67,14 @@ def get_student_program_fees(student):
             pf.idx as program_fees_index,
             pf.academic_term,
             pf.due_date,
-            pf.amount as program_fees_amount
+            fs.total_amount as program_fees_amount
         from `tabProgram Enrollment` pe
         left join `tabProgram Fee` pf
         on 
             pe.name = pf.parent
+        left join `tabFee Structure` fs
+        on 
+            pf.fee_structure = fs.name
         where
             pe.docstatus = 0
             and pf.idx = 1
@@ -246,7 +249,7 @@ def get_program_fee_details(student, program_fee_names):
                 pf.idx as program_fees_index,
                 pf.academic_term,
                 pf.due_date,
-                pf.amount as program_fees_amount,
+                fs.total_amount as program_fees_amount,
                 fc.name as fee_component_name,
                 fc.idx as fee_component_index,
                 fc.fees_category,
