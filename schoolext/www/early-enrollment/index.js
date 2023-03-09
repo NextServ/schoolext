@@ -47,11 +47,6 @@ const app = Vue.createApp({
             }
         },
         methods: {
-            loaded: async function () {
-                // this.is_loaded = true;
-                // this.is_loading = false;
-            },
-    
             next() {
                 for (let i=0; i < this.tabs.length; i++) {
                     if (this.tabs[i].active) {
@@ -100,11 +95,6 @@ const app = Vue.createApp({
                 this.is_loading = true;
 
                 this.programs = await this.get_student_program_fees();
-                // this.reset_enrollment_data()
-    
-                // this.active_enrollment_academic_year = await this.get_active_enrollment_academic_year();
-                // this.fees_due_schedule_templates = await this.get_fees_due_schedule_templates();
-                // this.program_enrollment = await this.get_academic_year_program_enrollment();
     
                 this.is_loading = false;
             },
@@ -309,7 +299,9 @@ const app = Vue.createApp({
             
         },
         mounted: async function (){
-            this.active_enrollment_academic_year = await this.get_active_enrollment_academic_year();            
+            this.is_loaded = true;
+            this.active_enrollment_academic_year = await this.get_active_enrollment_academic_year();
+            this.is_loading = false;
         },
         filters: {
             double_quote_to_single: function (str) {
@@ -320,6 +312,6 @@ const app = Vue.createApp({
     
     app.mount('#app');
         
-    frappe.ready(function() {
-        
-    });
+frappe.ready(function() {
+    
+});

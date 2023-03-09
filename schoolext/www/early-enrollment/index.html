@@ -86,7 +86,10 @@ input.radio:checked + label::after {
 }
 </style>
 <div id="app" v-cloak>    
-    <div>
+    <div class="mt-4">
+        <div id="enrollment-agreement-reminder" class="alert alert-info fade show" role="alert">
+            Please review the <a href="#" class="text-decoration-none" @click="show_enrollment_agreement"><strong>Enrollment Agreement</strong></a> before initiating the enrollment process.
+        </div>
         <div class="w-100 text-left" v-if="is_loading">
             <div class="spinner-loader spinner-border spinner-border-sm text-info" role="status">
                 <span class="sr-only">Loading...</span>
