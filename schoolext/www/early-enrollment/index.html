@@ -365,39 +365,38 @@ input.radio:checked + label::after {
                                     OTC Banking/ATM/Transfer
                                 </div>
                             </div>
-                        </div>
-                        <Transition name="fade">
-                            <div class="row overflow-auto payment-processors" style="max-height: 250px; max-width: 500px;" :key="selected_payment_method_type">
-                                <div class="mb-1" v-for="proc in available_processors">
-                                    
-                                        <div class="mr-2" 
-                                            v-if="proc.type == selected_payment_method_type 
-                                                && proc.maxAmount >= total_amount_due_checkout 
-                                                && total_amount_due_checkout >= proc.minAmount">
-                                            <input class="form-radio-input" type="radio" 
-                                                name="radio-payment-method-subtype"
-                                                :id="proc.procId.toLowerCase()" 
-                                                :value="proc.procId"
-                                                :data-remarks="proc.remarks"
-                                                v-model="selected_payment_method_subtype"
-                                                @change="set_selected_payment_method_subtype_remarks">
-                                            <label class="border rounded p-3 text-muted text-center" :for="proc.procId.toLowerCase()" role="button">
-                                                <img :src="proc.logo" class="mx-auto" style="height: 30px; width: auto;"
-                                                onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';">
-                                                <div style="font-size: 0.6em;">[[ proc.shortName ]]</div>
-                                            </label>
-                                        </div>                                    
+                            <Transition name="fade">
+                                <div class="row overflow-auto payment-processors m-1" style="max-height: 250px;" :key="selected_payment_method_type">
+                                    <div class="mb-1" v-for="proc in available_processors">
+                                            <div class="mr-2" 
+                                                v-if="proc.type == selected_payment_method_type 
+                                                    && proc.maxAmount >= total_amount_due_checkout 
+                                                    && total_amount_due_checkout >= proc.minAmount">
+                                                <input class="form-radio-input" type="radio" 
+                                                    name="radio-payment-method-subtype"
+                                                    :id="proc.procId.toLowerCase()" 
+                                                    :value="proc.procId"
+                                                    :data-remarks="proc.remarks"
+                                                    v-model="selected_payment_method_subtype"
+                                                    @change="set_selected_payment_method_subtype_remarks">
+                                                <label class="border rounded p-3 text-muted text-center" :for="proc.procId.toLowerCase()" role="button">
+                                                    <img :src="proc.logo" class="mx-auto" style="height: 30px; width: auto;"
+                                                    onerror="this.onerror=null;this.src='/assets/schoolext/img/icons8-budget-85.png';">
+                                                    <div style="font-size: 0.6em;">[[ proc.shortName ]]</div>
+                                                </label>
+                                            </div>                                    
+                                    </div>
                                 </div>
-                            </div>
-                        </Transition>
-                        <Transition name="fade">
-                            <div class="alert alert-warning mt-4" 
-                                v-if="selected_payment_method_subtype != '' && selected_payment_method_subtype_remarks !=''" 
-                                v-html="selected_payment_method_subtype_remarks"
-                                :key="selected_payment_method_subtype_remarks">
-                                
-                            </div>
-                        </Transition>
+                            </Transition>
+                            <Transition name="fade">
+                                <div class="alert alert-warning mt-4" 
+                                    v-if="selected_payment_method_subtype != '' && selected_payment_method_subtype_remarks !=''" 
+                                    v-html="selected_payment_method_subtype_remarks"
+                                    :key="selected_payment_method_subtype_remarks">
+                                    
+                                </div>
+                            </Transition>
+                        </div>
 
                         <div class="btn-group mt-4 d-flex justify-content-end" role="group" aria-label="buttons">
                             <button class="btn btn-outline-secondary" id="btn-fees-selection" @click="previous">Previous</button>

@@ -292,6 +292,10 @@ const app = Vue.createApp({
                     this.pay_button_enabled = true;
                 }
             },
+
+            show_enrollment_agreement: function() {
+
+            },
             
             moment_from_now: function(date) {
                 return moment(date).endOf('day').fromNow();
