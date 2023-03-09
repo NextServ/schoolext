@@ -77,7 +77,8 @@ def dragonpay_get_available_processors(amount):
 
             delta = current_time - last_fetch_time
             # if getdate(now()) > getdate(settings.last_fetch_time):
-            if delta.total_seconds() >= 3600:
+            # fetch every 30min            
+            if delta.total_seconds() >= 1800:
                 retrieve_current = True
             # latest fetch is today
             else:

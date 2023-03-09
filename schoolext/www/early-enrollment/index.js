@@ -91,13 +91,20 @@ const app = Vue.createApp({
                 this.selected_student_name = e.target.getAttribute('data-name');
                 this.selected_student_gender = e.target.getAttribute('data-gender');
                 this.selected_student_student_name = e.target.getAttribute('data-student-name');
+                this.selected_program_fees = [];
+                this.selected_fees_objects = [];
+                this.selected_payment_method_type = 0;
+                this.selected_payment_method_subtype = "";
+                this.selected_payment_method_subtype_remarks = "";
+                this.subtotal_checkout = 0;
+
                 this.next();
                 this.is_loading = true;
 
                 this.programs = await this.get_student_program_fees();
     
                 this.is_loading = false;
-            },
+            },            
 
             get_student_program_fees: async function() {
                 const r = await frappe.call({

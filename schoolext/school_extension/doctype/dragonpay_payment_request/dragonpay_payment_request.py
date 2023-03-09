@@ -164,6 +164,8 @@ class DragonPayPaymentRequest(Document):
                             pe.paid_to = paid_to_account
                             pe.reference_no = self.name
                             pe.reference_date = getdate()
+
+                            # todo: dynamics dimensions
                             pe.campus = fees.campus
                             pe.save()
                             pe.reload()
