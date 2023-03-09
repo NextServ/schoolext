@@ -370,7 +370,7 @@ input.radio:checked + label::after {
                                     <div class="mb-1" v-for="proc in available_processors">
                                             <div class="mr-2" 
                                                 v-if="proc.type == selected_payment_method_type 
-                                                    && proc.maxAmount >= total_amount_due_checkout 
+                                                    && proc.maxAmount > total_amount_due_checkout 
                                                     && total_amount_due_checkout >= proc.minAmount">
                                                 <input class="form-radio-input" type="radio" 
                                                     name="radio-payment-method-subtype"
