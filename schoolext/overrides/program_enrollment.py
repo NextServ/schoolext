@@ -45,6 +45,7 @@ class CustomProgramEnrollment(ProgramEnrollment):
                     }
                 )
 
+                fees.campus = self.campus
                 fees.save(ignore_permissions=True)
                 print("fees.save()")
                 print("fees.name {} fees.program_fee_name {}".format(fees.name, fees.program_fee_name))
