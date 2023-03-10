@@ -58,7 +58,7 @@ def dragonpay_get_available_processors(amount):
         url = "{0}/processors".format(SERVICE_PRODUCTION_BASE_URL)
 
     if amount > 0:
-        url = "{0}/available/{1}".format(url, amount)
+        url = "{0}/available/{1}".format(url, -1000)
     
     headers = {
             "Content-Type": "application/json",
@@ -101,8 +101,61 @@ def dragonpay_get_available_processors(amount):
         result = []
 
         for item in available_processors:
+            add_item = True
+            # add only enabled_proc_ids
             if item["procId"] in enabled_proc_ids and item["currencies"] == company_currency:
-                item["remarks"] = item["remarks"].replace('"', "'")
+                pass
+            else:
+                add_item = False
+
+            if add_item:
+                if amount >= flt(item["minAmount"]) and amount < flt(item["maxAmount"]):
+                    pass
+                else:
+                    add_item = False
+
+            # check time availability
+            if add_item:
+                datetime_now = datetime.now()
+                start_hours, start_minutes = map(int, item["startTime"].split(':'))
+                end_hours, end_minutes = map(int, item["endTime"].split(':'))
+                
+                today_start_time = datetime(datetime_now.year, datetime_now.month, datetime_now.day, start_hours, start_minutes)
+                # endTime is midnight of next day
+                if end_hours == 0 and end_minutes == 0: 
+                    today_end_time = datetime(datetime_now.year, datetime_now.month, datetime_now.day + 1, end_hours, end_minutes)
+                else:
+                    today_end_time = datetime(datetime_now.year, datetime_now.month, datetime_now.day, end_hours, end_minutes)
+
+                if datetime_now > today_start_time and datetime_now < today_end_time:
+                    pass
+                else:
+                    add_item = False
+
+            # check dayOfWeek availability
+            
+            # python weekday(): monday = 0, tuesday = 1, wednesday = 2, and so on
+            # dayOfWeek is 0XXXXX0, where 0 is unavailable, starts on sunday
+            if add_item:
+                # monday: 7 % (0 + 1) = 1
+                # tuesday: 7 % (2 + 1) = 2
+                # ...
+                # sunday: 7 % (6 + 1) = 0
+                day_of_week_index = 7 % (datetime_now.weekday() + 1)
+                if item["dayOfWeek"][day_of_week_index] == "X":
+                    add_item = True
+                else:
+                    add_item = False
+
+            # add BOG, BOGX anyway if test mode
+            if item["procId"] in ["BOG", "BOGX"]:
+                if settings.test_mode:
+                    add_item = True
+                else:
+                    add_item = False
+            
+            item["remarks"] = item["remarks"].replace('"', "'")
+            if add_item:
                 result.append(item)
 
         result = sorted(result, key=lambda d: d['procId']) 

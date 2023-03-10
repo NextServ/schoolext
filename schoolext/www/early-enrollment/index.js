@@ -210,7 +210,7 @@ const app = Vue.createApp({
                     method: "schoolext.school_extension.dragonpay.dragonpay_get_available_processors",
                     type: "POST",
                     args: {
-                        "amount": -1000,
+                        "amount": amount,
                     },
                 });
     
