@@ -1,0 +1,68 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ _("Enrollment Agreement Acceptance") }}{% endblock %} 
+{% block header %}
+    <!-- override -->
+    <span>Enrollment Agreement Acceptance</span>
+{% endblock %} 
+
+{% block page_content %}
+<style>
+    
+</style>
+
+<div class="text-small" id="enrollment-agreement-acceptance d-flex justify-content-center">
+    {{ has_enrollment_agreement_acceptance }}
+    {% if has_enrollment_agreement_acceptance == True %}
+        <div class="mt-4 d-flex justify-content-center">
+            <img src="/assets/schoolext/img/icons8-approve-85.png" style="height: 40px; width: auto;">
+            Thank you for accepting the enrollment agreement!
+        </div>
+    {% else %}
+        <div class="mt-4">
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="{{ enrollment_agreement.enrollment_agreement_document }}"></iframe>
+            </div>
+        </div>
+        <div class="mt-4 d-flex justify-content-center">
+            <div class="w-75">
+                <div><span class="font-weight-bold">Parent Commitment</span></div>
+                <form method="post">
+                    <input type="hidden" name="academic_year" value="{{ enrollment_agreement.academic_year }}">
+                    <input type="hidden" name="enrollment_agreement" value="{{ enrollment_agreement.name }}">
+                    <input type="hidden" name="guardian" value="{{ guardian.name }}">
+                    <div class="row">
+                        <div class="form-group col-lg-6 col-sm-12">
+                            <label for="signatory-name">Guardian</label>
+                            <input type="text" class="form-control form-control-sm" 
+                                id="signatory-name" placeholder="Enter guardian name" value="{{ guardian.guardian_name }}" 
+                                name="signatory_name" required>
+                        </div>
+                        <div class="form-group col-lg-6 col-sm-12">
+                            <label for="email">Email address</label>
+                            <input type="email" class="form-control form-control-sm" 
+                                id="email" placeholder="Enter email" value="{{ email }}" 
+                                name="email" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agree" checked required>
+                                <label class="form-check-label" for="agree">
+                                    We have read and we accept all terms and conditions
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col">
+                            <button type="submit" class="btn btn-primary align-middle">Accept</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -340,3 +340,31 @@ def get_username_and_password():
 def basic_auth(username, password):
     token = b64encode(f"{username}:{password}".encode('utf-8')).decode("ascii")
     return f'Basic {token}'
+
+def get_dragonpay_refno_status(refno):
+    settings = frappe.get_doc("DragonPay Settings")
+
+    url = ""
+
+    if settings.test_mode:
+        url = "{0}/refno/{1}".format(SERVICE_TEST_BASE_URL, refno)
+    else:
+        url = "{0}/refno/{1}".format(SERVICE_PRODUCTION_BASE_URL, refno)
+    
+    headers = {
+            "Content-Type": "application/json",
+            "Authorization": get_authorization_string()
+            }
+    
+    try:
+        dragonpay_record = make_get_request(
+                url,
+                headers=headers
+            )
+
+        result = dragonpay_record
+
+        return result
+    except Exception as e:
+        frappe.log_error(title="get_dragonpay_refno_status", message=str(e))
+        frappe.throw(_("Error in get_dragonpay_refno_status request"))

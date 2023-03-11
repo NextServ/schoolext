@@ -458,3 +458,32 @@ def get_fees_due_schedule_template(fees_due_schedule_template):
     result = frappe.get_doc("Fees Due Schedule Template", fees_due_schedule_template)
 
     return result
+
+def sync_dragonpay_payment_request_status(dppr):
+    pass
+
+@frappe.whitelist(methods=["GET"])
+def get_enrollment_agreement_acceptance(guardian, ay, ea):
+    result = None
+
+    if frappe.db.exists("Enrollment Agreement", {"academic_year": ay}):
+        print("ea exists")
+        ea = frappe.get_last_doc("Enrollment Agreement", {"academic_year": ay})
+
+        if frappe.db.exists("Enrollment Agreement Acceptance", {"guardian": guardian, "enrollment_agreement": ea, "academic_year": ay}):
+            print("eaa exists")
+            result = frappe.get_last_doc("Enrollment Agreement Acceptance", {"guardian": guardian, "enrollment_agreement": ea, "academic_year": ay})
+
+    return result
+
+@frappe.whitelist(methods=["POST"])
+def create_enrollment_agreement_acceptance(academic_year, enrollment_agreement, guardian, signatory_name, email):
+    eaa = frappe.new_doc("Enrollment Agreement Acceptance")
+
+    eaa.academic_year = academic_year
+    eaa.enrollment_agreement = enrollment_agreement
+    eaa.guardian = guardian
+    eaa.signatory_name = signatory_name
+    eaa.email = email
+
+    eaa.insert(ignore_permissions=True)

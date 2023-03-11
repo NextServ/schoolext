@@ -88,7 +88,11 @@ input.radio:checked + label::after {
 <div id="app" v-cloak>    
     <div class="mt-4">
         <div id="enrollment-agreement-reminder" class="alert alert-info fade show" role="alert">
-            Please review the <a href="#" class="text-decoration-none" @click="show_enrollment_agreement"><strong>Enrollment Agreement</strong></a> before initiating the enrollment process.
+            Please review the 
+            <a href="/enrollment-agreement-acceptance-form" 
+            class="text-decoration-none">
+                <strong>Enrollment Agreement</strong>
+            </a> before initiating the enrollment process.
         </div>
         <div class="w-100 text-left" v-if="is_loading">
             <div class="spinner-loader spinner-border spinner-border-sm text-info" role="status">
@@ -96,7 +100,6 @@ input.radio:checked + label::after {
             </div>
         </div>
         <Transition name="fade">
-            <!-- <div class="text-small" id="my-students"> -->
             <div class="text-small" v-if="tabs[0].active && !is_loading" v-bind:id="tabs[0].id" style="max-width: 500px;">
                 <div>
                     <div class="mb-2">

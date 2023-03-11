@@ -301,7 +301,27 @@ const app = Vue.createApp({
             },
 
             show_enrollment_agreement: function() {
-
+                window.location.href = "/enrollment-agreement-acceptance-form";
+                // let agreement_url = `/files/2023 Enrolment contract874f26.pdf`;
+                // let agreement_message = 
+                //     `hello <br/>
+                //     <embed src='${agreement_url}'>`;
+                // let prompt = new Promise((resolve, reject) => {
+                //     frappe.confirm(
+                //         agreement_message,
+                //         () => resolve(),
+                //         () => reject()
+                //     );
+                // });
+                
+                // await prompt.then(
+                //     () => {
+                //         this.pay_pending_enrollment_fees(this.selected_student_name, this.selected_payment_method_subtype, this.selected_fees_objects)
+                //     },
+                //     () => {
+                        
+                //     }
+                // );
             },
             
             moment_from_now: function(date) {
