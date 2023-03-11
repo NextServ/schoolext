@@ -22,6 +22,7 @@ input:checked + label {
 input:checked + label::after {
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
+    color: rgb(71, 179, 71);
     content: ' \f00c';
 }
 
@@ -98,11 +99,13 @@ input.radio:checked + label::after {
                 </div>
             </div>
         </Transition>
-        <div class="w-100 text-left" v-if="is_loading">
-            <div class="spinner-loader spinner-border spinner-border-sm text-info" role="status">
-                <span class="sr-only">Loading...</span>
+        <Transition name="fade">
+            <div class="w-100 text-left" v-if="is_loading">
+                <div class="spinner-loader spinner-border spinner-border-sm text-info" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
             </div>
-        </div>
+        </Transition>
         <Transition name="fade">
             <div class="text-small" v-if="tabs[0].active && !is_loading" v-bind:id="tabs[0].id" style="max-width: 500px;">
                 <div>
@@ -132,12 +135,12 @@ input.radio:checked + label::after {
         </Transition>
         <Transition name="fade">
             <div v-if="tabs[1].active && !is_loading" v-bind:id="tabs[1].id" style="max-width: 500px;">
-                <h6 class="font-weight-bold">Pre-enrollment Fees</h6>
+                <!-- <h6 class="font-weight-bold">Pre-enrollment Fees</h6> -->
                 <div>
                     <div class="mt-4">
                         <img src="/assets/schoolext/img/icons8-business-85.png" style="height: 40px; width: auto;">
                         <span class="font-weight-bold ml-4">
-                            Fees - [[ selected_student_student_name ]]
+                            Pre-enrollment Fees - [[ selected_student_student_name ]]
                         </span>
                     </div>
                     <hr />
@@ -145,13 +148,12 @@ input.radio:checked + label::after {
                         You have no oustanding fees. Thank you for paying on time.
                     </div>
                     <div class="mb-3 mt-4" style="">
-                        <div v-for="prog_en in programs">
-                            <div>
-                                <h5>[[ prog_en.campus ]]</h5>
-                                <h6>[[ prog_en.program_name ]] : [[ prog_en.academic_year ]]</h6>
-                            </div>
-                            
+                        <div v-for="prog_en in programs">                            
                             <div class="mt-2 card" style="" v-for="program_fee in prog_en.program_fees">
+                                <div class="card-header bg-white">
+                                    <h5>[[ prog_en.campus ]]<sup><span class="badge badge-pill badge-success">5 slots left</span></sup></h5>
+                                    <h6>[[ prog_en.program_name ]] : [[ prog_en.academic_year ]]</h6>
+                                </div>
                                 <label class="d-inline" 
                                 role="button" 
                                 style="" 
@@ -369,7 +371,7 @@ input.radio:checked + label::after {
                                     Online Banking
                                 </div>
                                 <div class="d-inline ml-2 text-info" v-if="selected_payment_method_type == 2">
-                                    OTC Banking/ATM/Transfer
+                                    Over-the-counter Banking/ATM/Transfer
                                 </div>
                             </div>
                             <Transition name="fade">
@@ -396,7 +398,7 @@ input.radio:checked + label::after {
                                 </div>
                             </Transition>
                             <Transition name="fade">
-                                <div class="alert alert-warning mt-4" 
+                                <div class="alert alert-info mt-4 text-small" 
                                     v-if="selected_payment_method_subtype != '' && selected_payment_method_subtype_remarks !=''" 
                                     v-html="selected_payment_method_subtype_remarks"
                                     :key="selected_payment_method_subtype_remarks">
