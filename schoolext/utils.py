@@ -379,8 +379,25 @@ def validate_current_user_guardian(student):
 
 
 @frappe.whitelist(methods=["POST"])
-def pay_pending_enrollment_fees(student, proc_id, fees_to_pay):
+def pay_pending_enrollment_fees(student, proc_id, fees_to_pay):    
     guardian_doc = validate_current_user_guardian(student)
+
+    ay = get_active_enrollment_academic_year()
+        
+    # todo: specific campus?
+    ea = get_enrollment_agreement(ay)
+    eaa = get_enrollment_agreement_acceptance(ay, ea.name, guardian_doc.name)
+
+    if eaa:
+        pass
+    else:
+        frappe.throw("""
+            Please review the 
+                    <a href="/enrollment-agreement-acceptance-form" target="_blank"
+                    class="text-decoration-none">
+                        <strong>Enrollment Agreement</strong>
+                    </a> before processing payment of program fees.
+        """)
 
     fees_to_pay = json.loads(fees_to_pay)
     total_amount = 0
@@ -463,27 +480,59 @@ def sync_dragonpay_payment_request_status(dppr):
     pass
 
 @frappe.whitelist(methods=["GET"])
-def get_enrollment_agreement_acceptance(guardian, ay, ea):
+def get_enrollment_agreement_acceptance(ay, ea, guardian=None):
     result = None
 
-    if frappe.db.exists("Enrollment Agreement", {"academic_year": ay}):
-        print("ea exists")
-        ea = frappe.get_last_doc("Enrollment Agreement", {"academic_year": ay})
+    if not guardian:
+        current_user = frappe.session.user
 
-        if frappe.db.exists("Enrollment Agreement Acceptance", {"guardian": guardian, "enrollment_agreement": ea, "academic_year": ay}):
-            print("eaa exists")
-            result = frappe.get_last_doc("Enrollment Agreement Acceptance", {"guardian": guardian, "enrollment_agreement": ea, "academic_year": ay})
+        if frappe.db.exists("Guardian", {'email_address': current_user}):
+            guardian_doc = frappe.get_last_doc("Guardian", filters={"email_address": current_user})
+            guardian = guardian_doc.name
+        else:
+            frappe.throw(_("You do not have permission to access this resource."), frappe.PermissionError)
+
+    eaa_record = frappe.db.sql("""
+        select eaa.name
+        from `tabEnrollment Agreement Acceptance` eaa
+        where
+            eaa.academic_year = %s
+            and eaa.enrollment_agreement = %s
+            and eaa.guardian = %s
+        order by creation desc
+        limit 1
+    """, (ay, ea, guardian), as_dict=True)
+
+    if eaa_record and eaa_record[0]:
+        result = frappe.get_doc("Enrollment Agreement Acceptance", eaa_record[0].name)
 
     return result
 
 @frappe.whitelist(methods=["POST"])
 def create_enrollment_agreement_acceptance(academic_year, enrollment_agreement, guardian, signatory_name, email):
-    eaa = frappe.new_doc("Enrollment Agreement Acceptance")
+    eaa = get_enrollment_agreement_acceptance(academic_year, enrollment_agreement, guardian)
 
-    eaa.academic_year = academic_year
-    eaa.enrollment_agreement = enrollment_agreement
-    eaa.guardian = guardian
-    eaa.signatory_name = signatory_name
-    eaa.email = email
+    if eaa:
+        pass
+    else:
+        eaa = frappe.new_doc("Enrollment Agreement Acceptance")
 
-    eaa.insert(ignore_permissions=True)
+        eaa.academic_year = academic_year
+        eaa.enrollment_agreement = enrollment_agreement
+        eaa.guardian = guardian
+        eaa.signatory_name = signatory_name
+        eaa.email = email
+
+        eaa.insert(ignore_permissions=True)
+    
+    frappe.local.response["type"] = "redirect"
+    frappe.local.response["location"] = "/enrollment-agreement-acceptance-form"
+
+@frappe.whitelist(methods=["GET"])
+def get_enrollment_agreement(academic_year):
+    ea = None
+
+    if frappe.db.exists("Enrollment Agreement", {"academic_year": academic_year}):
+        ea = frappe.get_last_doc("Enrollment Agreement", {"academic_year": academic_year})
+
+    return ea

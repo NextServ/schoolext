@@ -12,9 +12,8 @@
 </style>
 
 <div class="text-small" id="enrollment-agreement-acceptance d-flex justify-content-center">
-    {{ has_enrollment_agreement_acceptance }}
     {% if has_enrollment_agreement_acceptance == True %}
-        <div class="mt-4 d-flex justify-content-center">
+        <div class="mt-4">
             <img src="/assets/schoolext/img/icons8-approve-85.png" style="height: 40px; width: auto;">
             Thank you for accepting the enrollment agreement!
         </div>
@@ -27,7 +26,7 @@
         <div class="mt-4 d-flex justify-content-center">
             <div class="w-75">
                 <div><span class="font-weight-bold">Parent Commitment</span></div>
-                <form method="post">
+                <form action="/api/method/schoolext.utils.create_enrollment_agreement_acceptance" method="post">
                     <input type="hidden" name="academic_year" value="{{ enrollment_agreement.academic_year }}">
                     <input type="hidden" name="enrollment_agreement" value="{{ enrollment_agreement.name }}">
                     <input type="hidden" name="guardian" value="{{ guardian.name }}">

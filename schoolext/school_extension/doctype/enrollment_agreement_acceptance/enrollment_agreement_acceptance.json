@@ -1,7 +1,7 @@
 {
  "actions": [],
- "autoname": "format:EAA-{academic_year}-{enrollment_agreement}-{guardian}",
- "creation": "2023-03-10 17:26:49.386228",
+ "autoname": "format:EAA-{academic_year}-{enrollment_agreement}-{guardian}-{####}",
+ "creation": "2023-03-12 02:49:02.271726",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -9,10 +9,11 @@
  "field_order": [
   "academic_year",
   "enrollment_agreement",
+  "accepted_on",
+  "column_break_iqrnr",
   "guardian",
   "signatory_name",
   "email",
-  "accepted_on",
   "amended_from"
  ],
  "fields": [
@@ -48,6 +49,13 @@
    "reqd": 1
   },
   {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "options": "Email",
+   "reqd": 1
+  },
+  {
    "default": "now",
    "fieldname": "accepted_on",
    "fieldtype": "Datetime",
@@ -64,17 +72,23 @@
    "read_only": 1
   },
   {
-   "fieldname": "email",
-   "fieldtype": "Data",
-   "label": "Email",
-   "options": "Email",
-   "reqd": 1
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Enrollment Agreement Acceptance",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_iqrnr",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-11 23:57:45.854864",
+ "modified": "2023-03-12 03:19:52.380331",
  "modified_by": "Administrator",
  "module": "School Extension",
  "name": "Enrollment Agreement Acceptance",

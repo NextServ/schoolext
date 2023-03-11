@@ -87,13 +87,17 @@ input.radio:checked + label::after {
 </style>
 <div id="app" v-cloak>    
     <div class="mt-4">
-        <div id="enrollment-agreement-reminder" class="alert alert-info fade show" role="alert">
-            Please review the 
-            <a href="/enrollment-agreement-acceptance-form" 
-            class="text-decoration-none">
-                <strong>Enrollment Agreement</strong>
-            </a> before initiating the enrollment process.
-        </div>
+        <Transition name="fade">
+            <div v-if="enrollment_agreement && !enrollment_agreement_acceptance.name && !is_loading">
+                <div id="enrollment-agreement-reminder" class="alert alert-info" role="alert">
+                    Please review the 
+                    <a href="/enrollment-agreement-acceptance-form" target="_blank"
+                    class="text-decoration-none">
+                        <strong>Enrollment Agreement</strong>
+                    </a> before initiating the enrollment process.
+                </div>
+            </div>
+        </Transition>
         <div class="w-100 text-left" v-if="is_loading">
             <div class="spinner-loader spinner-border spinner-border-sm text-info" role="status">
                 <span class="sr-only">Loading...</span>
@@ -128,7 +132,7 @@ input.radio:checked + label::after {
         </Transition>
         <Transition name="fade">
             <div v-if="tabs[1].active && !is_loading" v-bind:id="tabs[1].id" style="max-width: 500px;">
-                <h6>Pre-enrollment Fees</h6>
+                <h6 class="font-weight-bold">Pre-enrollment Fees</h6>
                 <div>
                     <div class="mt-4">
                         <img src="/assets/schoolext/img/icons8-business-85.png" style="height: 40px; width: auto;">

@@ -43,6 +43,9 @@ const app = Vue.createApp({
 
                 pay_button_enabled: true,
 
+                enrollment_agreement: "",
+                enrollment_agreement_acceptance: "",
+
                 program_fees_details: [],
             }
         },
@@ -300,28 +303,29 @@ const app = Vue.createApp({
                 }
             },
 
-            show_enrollment_agreement: function() {
-                window.location.href = "/enrollment-agreement-acceptance-form";
-                // let agreement_url = `/files/2023 Enrolment contract874f26.pdf`;
-                // let agreement_message = 
-                //     `hello <br/>
-                //     <embed src='${agreement_url}'>`;
-                // let prompt = new Promise((resolve, reject) => {
-                //     frappe.confirm(
-                //         agreement_message,
-                //         () => resolve(),
-                //         () => reject()
-                //     );
-                // });
-                
-                // await prompt.then(
-                //     () => {
-                //         this.pay_pending_enrollment_fees(this.selected_student_name, this.selected_payment_method_subtype, this.selected_fees_objects)
-                //     },
-                //     () => {
-                        
-                //     }
-                // );
+            get_enrollment_agreement_acceptance: async function(academic_year, enrollment_agreement) {
+                const r = await frappe.call({
+                    method: "schoolext.utils.get_enrollment_agreement_acceptance",
+                    type: "GET",
+                    args: {
+                        "ay": academic_year,
+                        "ea": enrollment_agreement,
+                    },
+                });
+    
+                return r.message;
+            },
+
+            get_enrollment_agreement: async function(academic_year) {
+                const r = await frappe.call({
+                    method: "schoolext.utils.get_enrollment_agreement",
+                    type: "GET",
+                    args: {
+                        "academic_year": academic_year,
+                    },
+                });
+    
+                return r.message;
             },
             
             moment_from_now: function(date) {
@@ -332,6 +336,8 @@ const app = Vue.createApp({
         mounted: async function (){
             this.is_loaded = true;
             this.active_enrollment_academic_year = await this.get_active_enrollment_academic_year();
+            this.enrollment_agreement = await this.get_enrollment_agreement(this.active_enrollment_academic_year)
+            this.enrollment_agreement_acceptance = await this.get_enrollment_agreement_acceptance(this.active_enrollment_academic_year, this.enrollment_agreement.name)
             this.is_loading = false;
         },
         filters: {

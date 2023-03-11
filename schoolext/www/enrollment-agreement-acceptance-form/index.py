@@ -6,7 +6,10 @@ from frappe import _
 import json
 import datetime
 
-from schoolext.utils import get_students, get_active_enrollment_academic_year, get_enrollment_agreement_acceptance, create_enrollment_agreement_acceptance
+from schoolext.utils import (
+    get_students, get_active_enrollment_academic_year, 
+    get_enrollment_agreement_acceptance, create_enrollment_agreement_acceptance,
+    get_enrollment_agreement)
 
 no_cache = 1
 
@@ -15,7 +18,7 @@ def default(o):
         return o.isoformat()
 
 def get_context(context):    
-    context.show_sidebar = 0
+    context.show_sidebar = 1
     context.has_enrollment_agreement_acceptance = False
 
     current_user = frappe.session.user
@@ -25,12 +28,8 @@ def get_context(context):
         ay = get_active_enrollment_academic_year()
         
         # todo: specific campus?
-        ea = None
-        eaa = None
-        
-        if frappe.db.exists("Enrollment Agreement", {"academic_year": ay}):
-            ea = frappe.get_last_doc("Enrollment Agreement", {"academic_year": ay})
-            eaa = get_enrollment_agreement_acceptance(guardian_doc.name, ay, ea.name)
+        ea = get_enrollment_agreement(ay)
+        eaa = get_enrollment_agreement_acceptance(ay, ea.name, guardian_doc.name)
 
         if eaa:
             context.has_enrollment_agreement_acceptance = True
