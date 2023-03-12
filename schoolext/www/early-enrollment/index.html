@@ -89,7 +89,7 @@ input.radio:checked + label::after {
 <div id="app" v-cloak>    
     <div class="mt-4">
         <Transition name="fade">
-            <div v-if="enrollment_agreement && !enrollment_agreement_acceptance.name && !is_loading">
+            <div v-if="enrollment_agreement && !enrollment_agreement_acceptance">
                 <div id="enrollment-agreement-reminder" class="alert alert-info" role="alert">
                     Please review the 
                     <a href="/enrollment-agreement-acceptance-form" target="_blank"

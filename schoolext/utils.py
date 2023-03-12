@@ -499,6 +499,7 @@ def get_enrollment_agreement_acceptance(ay, ea, guardian=None):
             eaa.academic_year = %s
             and eaa.enrollment_agreement = %s
             and eaa.guardian = %s
+            and eaa.docstatus = 1
         order by creation desc
         limit 1
     """, (ay, ea, guardian), as_dict=True)
@@ -524,6 +525,7 @@ def create_enrollment_agreement_acceptance(academic_year, enrollment_agreement, 
         eaa.email = email
 
         eaa.insert(ignore_permissions=True)
+        eaa.submit()
     
     frappe.local.response["type"] = "redirect"
     frappe.local.response["location"] = "/enrollment-agreement-acceptance-form"

@@ -50,7 +50,7 @@ const app = Vue.createApp({
             }
         },
         methods: {
-            next() {
+            next: async function () {
                 for (let i=0; i < this.tabs.length; i++) {
                     if (this.tabs[i].active) {
                         this.active_tab_index = i;
@@ -68,9 +68,10 @@ const app = Vue.createApp({
                     this.tabs[new_active_tab_index].active = true;
                     this.active_tab_index = new_active_tab_index;
                 }
+                await this.run_change_tab_actions();
             },
     
-            previous() {
+            previous: async function () {
                 for (let i=0; i < this.tabs.length; i++) {
                     if (this.tabs[i].active) {
                         this.active_tab_index = i;
@@ -88,6 +89,13 @@ const app = Vue.createApp({
                     this.tabs[new_active_tab_index].active = true;
                     this.active_tab_index = new_active_tab_index;
                 }
+
+                await this.run_change_tab_actions();
+            },
+
+            run_change_tab_actions: async function() {                           
+                this.enrollment_agreement = await this.get_enrollment_agreement(this.active_enrollment_academic_year)
+                this.enrollment_agreement_acceptance = await this.get_enrollment_agreement_acceptance(this.active_enrollment_academic_year, this.enrollment_agreement.name)
             },
 
             select_student: async function(e) {
@@ -101,7 +109,7 @@ const app = Vue.createApp({
                 this.selected_payment_method_subtype_remarks = "";
                 this.subtotal_checkout = 0;
 
-                this.next();
+                await this.next();
                 this.is_loading = true;
 
                 this.programs = await this.get_student_program_fees();
@@ -138,8 +146,11 @@ const app = Vue.createApp({
                         message: __('You have not selected any fees to pay.')
                     });
                 }
-                this.next();
+                await this.next();
                 this.is_loading = true;
+                    
+                this.enrollment_agreement = await this.get_enrollment_agreement(this.active_enrollment_academic_year)
+                this.enrollment_agreement_acceptance = await this.get_enrollment_agreement_acceptance(this.active_enrollment_academic_year, this.enrollment_agreement.name)
 
                 this.pay_button_enabled = true;
 
