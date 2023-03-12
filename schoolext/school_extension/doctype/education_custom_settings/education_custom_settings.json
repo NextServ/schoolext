@@ -8,6 +8,8 @@
  "field_order": [
   "active_enrollment_academic_year",
   "allow_enrollment_date_not_within_the_academic_year",
+  "enable_early_enrollment",
+  "section_break_yg421",
   "custom_guardian_welcome_email_template"
  ],
  "fields": [
@@ -28,12 +30,22 @@
    "fieldtype": "Link",
    "label": "Custom Guardian Welcome Email Template",
    "options": "Email Template"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_early_enrollment",
+   "fieldtype": "Check",
+   "label": "Enable Early Enrollment"
+  },
+  {
+   "fieldname": "section_break_yg421",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-03-13 00:39:11.277559",
+ "modified": "2023-03-13 03:44:26.625404",
  "modified_by": "Administrator",
  "module": "School Extension",
  "name": "Education Custom Settings",

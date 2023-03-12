@@ -23,7 +23,7 @@ app_include_js = "/assets/schoolext/js/schoolext.js"
 
 web_include_css = ["/assets/schoolext/css/schoolext.css"]
 web_include_js = [
-    "/assets/schoolext/js/schoolext.js", 
+    "/assets/schoolext/js/schoolext_web.js", 
     # "https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"
     "https://unpkg.com/vue@3/dist/vue.global.js",
     "https://kit.fontawesome.com/db14e72d6e.js"

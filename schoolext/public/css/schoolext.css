@@ -21,11 +21,6 @@
 
 .navbar-brand {
     color: rgb(68, 58, 23);
-    img {
-        display: inline-block;
-        max-width: 150px;
-        max-height: 25px;
-    }
 }
 
 /* .navbar-school {
@@ -70,4 +65,3 @@
 [v-cloak] {
     display: none;
 }
-  
