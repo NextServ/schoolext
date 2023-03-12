@@ -94,8 +94,16 @@ const app = Vue.createApp({
             },
 
             run_change_tab_actions: async function() {                           
+                
+            },
+
+            go_to_student_selection: async function() {
+                await this.previous();
+                
+                this.is_loading = true;
                 this.enrollment_agreement = await this.get_enrollment_agreement(this.active_enrollment_academic_year)
                 this.enrollment_agreement_acceptance = await this.get_enrollment_agreement_acceptance(this.active_enrollment_academic_year, this.enrollment_agreement.name)
+                this.is_loading = false;
             },
 
             select_student: async function(e) {
@@ -112,10 +120,22 @@ const app = Vue.createApp({
                 await this.next();
                 this.is_loading = true;
 
+                this.enrollment_agreement = await this.get_enrollment_agreement(this.active_enrollment_academic_year)
+                this.enrollment_agreement_acceptance = await this.get_enrollment_agreement_acceptance(this.active_enrollment_academic_year, this.enrollment_agreement.name)
+
                 this.programs = await this.get_student_program_fees();
     
                 this.is_loading = false;
-            },            
+            },
+
+            go_to_fees: async function() {
+                await this.previous();
+                
+                this.is_loading = true;
+                this.enrollment_agreement = await this.get_enrollment_agreement(this.active_enrollment_academic_year)
+                this.enrollment_agreement_acceptance = await this.get_enrollment_agreement_acceptance(this.active_enrollment_academic_year, this.enrollment_agreement.name)
+                this.is_loading = false;
+            },
 
             get_student_program_fees: async function() {
                 const r = await frappe.call({

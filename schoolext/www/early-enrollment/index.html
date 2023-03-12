@@ -263,7 +263,7 @@ input.radio:checked + label::after {
                         </div>
                     </div>
                     <div class="btn-group mt-4 d-flex justify-content-end" role="group" aria-label="buttons">
-                        <button class="btn btn-outline-secondary" id="btn-student-selection" @click="previous">Previous</button>
+                        <button class="btn btn-outline-secondary" id="btn-student-selection" @click="go_to_student_selection">Previous</button>
                         <button id="btn-checkout" class="btn btn-primary" type="button" :disabled="programs.length == 0" @click="checkout">Checkout</button>
                     </div>
                 </div>
@@ -418,7 +418,7 @@ input.radio:checked + label::after {
                         </div>
 
                         <div class="btn-group mt-4 d-flex justify-content-end" role="group" aria-label="buttons">
-                            <button class="btn btn-outline-secondary" id="btn-fees-selection" @click="previous">Previous</button>
+                            <button class="btn btn-outline-secondary" id="btn-fees-selection" @click="go_to_fees">Previous</button>
                             <button id="btn-pay" class="btn btn-primary" type="button" @click="process_payment" :disabled="!pay_button_enabled">Pay</button>
                         </div>
                     </div>
