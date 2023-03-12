@@ -119,7 +119,8 @@ doctype_js = {
 
 override_doctype_class = {
 	"Fees": "schoolext.overrides.fees.CustomFees",
-    "Program Enrollment": "schoolext.overrides.program_enrollment.CustomProgramEnrollment"
+    "Program Enrollment": "schoolext.overrides.program_enrollment.CustomProgramEnrollment",
+    "User": "schoolext.overrides.user.CustomUser"
 }
 
 accounting_dimension_doctypes = [
