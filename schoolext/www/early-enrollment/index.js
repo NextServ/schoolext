@@ -273,7 +273,7 @@ const app = Vue.createApp({
                 }
                 else {
                     console.log("error pay_pending_enrollment_fees");
-                    frappe.show_alert({message:__("Error in error pay_pending_enrollment_fees."), indicator:'red'});                        
+                    frappe.show_alert({message:__("Error in error pay_pending_enrollment_fees."), indicator:'red'});
                 }
         
                 this.pay_button_enabled = true;
@@ -372,28 +372,32 @@ const app = Vue.createApp({
                 });
 
                 await prompt.then(
-                    function () {
-                        this.is_loading = true;
-                        this.cancel_dragonpay_payment_request(dppr_name);
-
-                        this.selected_program_fees = [];
-                        this.selected_fees_objects = [];
-                        this.selected_payment_method_type = 0;
-                        this.selected_payment_method_subtype = "";
-                        this.selected_payment_method_subtype_remarks = "";
-                        this.subtotal_checkout = 0;
-        
-                        this.enrollment_agreement = this.get_enrollment_agreement(this.active_enrollment_academic_year)
-                        this.enrollment_agreement_acceptance = this.get_enrollment_agreement_acceptance(this.active_enrollment_academic_year, this.enrollment_agreement.name)
-        
-                        this.programs = this.get_student_program_fees();
-                
-                        this.is_loading = false;
+                    () => {
+                        this.process_cancel_program_fee_dragonpay_payment_request(dppr_name)
                     },
-                    function () {
+                    () => {
                         
                     }
                 );
+            },
+
+            process_cancel_program_fee_dragonpay_payment_request: async function(dppr_name) {
+                this.is_loading = true;
+                await this.cancel_dragonpay_payment_request(dppr_name);
+
+                this.selected_program_fees = [];
+                this.selected_fees_objects = [];
+                this.selected_payment_method_type = 0;
+                this.selected_payment_method_subtype = "";
+                this.selected_payment_method_subtype_remarks = "";
+                this.subtotal_checkout = 0;
+
+                this.enrollment_agreement = await this.get_enrollment_agreement(this.active_enrollment_academic_year)
+                this.enrollment_agreement_acceptance = await this.get_enrollment_agreement_acceptance(this.active_enrollment_academic_year, this.enrollment_agreement.name)
+
+                this.programs = await this.get_student_program_fees();
+                
+                this.is_loading = false;                
             },
 
             cancel_dragonpay_payment_request: async function(dppr_name) {
