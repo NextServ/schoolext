@@ -71,6 +71,9 @@ class CustomFees(Fees):
                     },
                     item=component,
                 )
+
+                print("component_receivable_entry: {}".format(component_receivable_entry))
+                print("component_income_entry: {}".format(component_income_entry))
                 gle_map.append(component_receivable_entry)
                 gle_map.append(component_income_entry)
 
