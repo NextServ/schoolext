@@ -118,7 +118,7 @@ def get_student_program_fees(student):
             and pe.student = %s
             and pe.academic_year = %s
         order by
-            pe.program, pf.idx
+            pe.program, pf.idx, fc.portal_item_group_label
     """, (student, active_enrollment_academic_year), as_dict=True)
 
     for pe in pending_program_enrollments:
@@ -321,6 +321,7 @@ def get_program_fee_details(student, program_fee_names):
             where
                 pe.docstatus = 0
                 and pf.name = %s
+            order by fc.portal_item_group_label
         """, (program_fee_name), as_dict=True)
 
         # print("program_fees_components: {}".format(frappe.as_json(program_fees_components)))

@@ -218,14 +218,14 @@ input.radio:checked + label::after {
                                             </span>
                                         </div>
                                         <div>
-                                            <ul class="mb-0" style="font-size: 0.8em;">
+                                            <ul class="mb-0" style="font-size: 0.8em; list-style-type: none;">
                                                 <li v-for="fees_component in program_fee.program_fees_components">
                                                     <div class="d-flex justify-content-between">
-                                                        <div>
-                                                            [[ fees_component.portal_item_group_label ]]
+                                                        <div v-html="fees_component.portal_item_group_label">
+                                                            
                                                         </div>
                                                         <div>
-                                                            [[ fees_component.component_amount.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                                            [[ fees_component.component_amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) ]]
                                                         </div>
                                                     </div>
                                                 </li>
@@ -245,7 +245,7 @@ input.radio:checked + label::after {
                                         </div>
                                         <div class="">
                                             <span class="font-weight-bold">
-                                                [[ program_fee.program_fees_amount.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                                [[ program_fee.program_fees_amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) ]]
                                             </span>
                                         </div>
                                     </div>
@@ -260,7 +260,7 @@ input.radio:checked + label::after {
                         </div>
                         <div class="d-inline">
                             <span id="total-amount-due" class="font-weight-bold text-info">
-                                [[ subtotal_checkout.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                [[ subtotal_checkout.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) ]]
                             </span>
                         </div>
                     </div>
@@ -291,14 +291,14 @@ input.radio:checked + label::after {
                                     </span>
                                 </div>
                                 <div>
-                                    <ul class="mb-0" style="font-size: 0.8em;">
+                                    <ul class="mb-0" style="font-size: 0.8em; list-style-type: none;">
                                         <li v-for="fees_component in program_fee.details.program_fees_components">
                                             <div class="d-flex justify-content-between">
-                                                <div>
-                                                    [[ fees_component.portal_item_group_label ]]
+                                                <div v-html="fees_component.portal_item_group_label">
+                                                    
                                                 </div>
                                                 <div>
-                                                    [[ fees_component.component_amount.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                                    [[ fees_component.component_amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) ]]
                                                 </div>
                                             </div>
                                         </li>
@@ -314,7 +314,7 @@ input.radio:checked + label::after {
                                 </div>
                                 <div class="">
                                     <span class="font-weight-bold"> 
-                                        [[ program_fee.details.program_fees_amount.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                        [[ program_fee.details.program_fees_amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) ]]
                                     </span>
                                 </div>
                             </div>
@@ -327,7 +327,7 @@ input.radio:checked + label::after {
                                 </div>
                                 <div class="d-inline">
                                     <span id="subtotal-checkout" class="font-weight-bold text-info">
-                                        [[ subtotal_checkout.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                        [[ subtotal_checkout.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) ]]
                                     </span>
                                 </div>
                             </div>
@@ -337,7 +337,7 @@ input.radio:checked + label::after {
                                 </div>
                                 <div class="d-inline">
                                     <span id="payment-method-charge-amount" class="font-weight-bold">
-                                        [[ payment_method_charge_amount.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                        [[ payment_method_charge_amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) ]]
                                     </span>
                                 </div>
                             </div>
@@ -350,7 +350,7 @@ input.radio:checked + label::after {
                                 </div>
                                 <div class="d-inline">
                                     <span id="total-amount-due-checkout" class="font-weight-bold text-info">
-                                        PHP [[ total_amount_due_checkout.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
+                                        PHP [[ total_amount_due_checkout.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) ]]
                                     </span>
                                 </div>
                             </div>
@@ -421,7 +421,7 @@ input.radio:checked + label::after {
 
                         <div class="btn-group mt-4 d-flex justify-content-end" role="group" aria-label="buttons">
                             <button class="btn btn-outline-secondary" id="btn-fees-selection" @click="go_to_fees">Previous</button>
-                            <button id="btn-pay" class="btn btn-primary" type="button" @click="process_payment" :disabled="!pay_button_enabled">Pay</button>
+                            <button id="btn-pay" class="btn btn-success" type="button" @click="process_payment" :disabled="!pay_button_enabled">Pay</button>
                         </div>
                     </div>
                 </div>

@@ -378,7 +378,7 @@
    "docstatus": 0,
    "dt": "Fee Component",
    "fetch_from": "fees_category.portal_item_group_label",
-   "fetch_if_empty": 0,
+   "fetch_if_empty": 1,
    "fieldname": "portal_item_group_label",
    "fieldtype": "Data",
    "hidden": 0,

@@ -294,9 +294,9 @@ const app = Vue.createApp({
             process_payment: async function() {
                 if (this.selected_payment_method_subtype==="") {
                     frappe.msgprint({
-                        title: __('Payment method'),
+                        title: __('Payment processor'),
                         indicator: 'error',
-                        message: __('Please select a payment method.')
+                        message: __('Please select a payment processor.')
                     });
                 }
                 else {
@@ -304,7 +304,7 @@ const app = Vue.createApp({
                     let selected_procid_remarks = proc_id_item.remarks;
                     let proc_id_logo = proc_id_item.logo
                     let confirm_message = `
-                    You are about to process payment of <strong>PHP ${this.total_amount_due_checkout.toLocaleString(undefined, {minimumFractionDigits: 2})}</strong> 
+                    You are about to process payment of <strong>PHP ${this.total_amount_due_checkout.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong> 
                     for ${this.selected_student_name}:${this.selected_student_student_name}.
                     Do you want to continue?
                     <br />

@@ -5,7 +5,7 @@ import json
 import frappe
 from schoolext.school_extension.dragonpay import get_authorization_string, get_username_and_password
 from frappe import _
-from frappe.utils import getdate
+from frappe.utils import getdate, flt
 from frappe.model.document import Document
 from frappe.integrations.utils import (
     create_request_log,
@@ -19,6 +19,11 @@ from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_ent
 precision = cint(frappe.db.get_default("currency_precision")) or 2
 
 class DragonPayPaymentRequest(Document):
+    def validate(self):
+        self.applied_amount = flt(self.applied_amount, precision)
+        self.payment_method_charge_amount = flt(self.payment_method_charge_amount, precision)
+        self.amount = flt(self.amount, precision)
+        
     def on_submit(self):
         self.create_payment_request()
 
