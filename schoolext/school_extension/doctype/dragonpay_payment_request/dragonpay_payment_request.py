@@ -29,10 +29,10 @@ class DragonPayPaymentRequest(Document):
     
     def on_cancel(self):
         r = void_dragonpay_transaction(self.name)
-        if r.message.Status == 0 or r.message.Message == "Successfully voided":
+        if r.Status == 0 or r.Message == "Successfully voided":
             pass
         else:
-            frappe.throw(_(r.message.Message))
+            frappe.throw(_(r.Message))
 
     def get_payment_url(self, **kwargs):
         integration_request = create_request_log(kwargs, service_name="DragonPay")
