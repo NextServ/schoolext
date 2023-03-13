@@ -39,6 +39,7 @@ class CustomFees(Fees):
         
         gle_map = []
 
+        print("self.components: {}".format(self.components))
         for component in self.components:
             if component.amount:
                 if component.fee_category_type == 'Discount' and component.amount > 0:
