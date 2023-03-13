@@ -47,6 +47,16 @@ class CustomFees(Fees):
                 component_income_account = ((component.custom_income_account or self.income_account) 
                     if not component.enable_unearned_income else component.custom_unearned_income_account)
 
+
+                
+                print("component.fees_category: {}".format(component.fees_category))
+                print("component.custom_income_account: {}".format(component.custom_income_account))
+                print("self.income_account: {}".format(self.income_account))
+                print("component.enable_unearned_income: {}".format(component.enable_unearned_income))
+                print("component.custom_unearned_income_account: {}".format(component.custom_unearned_income_account))
+
+                print("component_income_account: {}".format(component_income_account))
+
                 component_receivable_entry = self.get_gl_dict(
                     {
                         "account": component.custom_receivable_account or self.receivable_account,
