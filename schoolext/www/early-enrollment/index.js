@@ -370,30 +370,30 @@ const app = Vue.createApp({
                         () => reject()
                     );
                 });
-                
-                this.is_loading = true;
+
                 await prompt.then(
-                    () => {
-                        this.cancel_dragonpay_payment_request(dppr_name)
+                    function () {
+                        this.is_loading = true;
+                        await this.cancel_dragonpay_payment_request(dppr_name);
+
+                        this.selected_program_fees = [];
+                        this.selected_fees_objects = [];
+                        this.selected_payment_method_type = 0;
+                        this.selected_payment_method_subtype = "";
+                        this.selected_payment_method_subtype_remarks = "";
+                        this.subtotal_checkout = 0;
+        
+                        this.enrollment_agreement = await this.get_enrollment_agreement(this.active_enrollment_academic_year)
+                        this.enrollment_agreement_acceptance = await this.get_enrollment_agreement_acceptance(this.active_enrollment_academic_year, this.enrollment_agreement.name)
+        
+                        this.programs = await this.get_student_program_fees();
+                
+                        this.is_loading = false;
                     },
-                    () => {
+                    function () {
                         
                     }
                 );
-
-                this.selected_program_fees = [];
-                this.selected_fees_objects = [];
-                this.selected_payment_method_type = 0;
-                this.selected_payment_method_subtype = "";
-                this.selected_payment_method_subtype_remarks = "";
-                this.subtotal_checkout = 0;
-
-                this.enrollment_agreement = await this.get_enrollment_agreement(this.active_enrollment_academic_year)
-                this.enrollment_agreement_acceptance = await this.get_enrollment_agreement_acceptance(this.active_enrollment_academic_year, this.enrollment_agreement.name)
-
-                this.programs = await this.get_student_program_fees();
-                
-                this.is_loading = false;
             },
 
             cancel_dragonpay_payment_request: async function(dppr_name) {
