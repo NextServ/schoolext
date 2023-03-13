@@ -64,7 +64,7 @@ input.radio:checked + label::after {
 </div>
 
 <div id="app" v-cloak>    
-    <div style="max-width: 500px;">
+    <div style="max-width: 500px;" v-if="false">
         <Transition name="fade">
             <!-- <div class="text-small" id="my-students"> -->
             <div class="text-small" v-if="tabs['0'].active" v-bind:id="tabs['0'].id">

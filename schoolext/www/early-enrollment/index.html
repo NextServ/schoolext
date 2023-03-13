@@ -161,7 +161,9 @@ input.radio:checked + label::after {
                         <div v-for="prog_en in programs">                            
                             <div class="mt-2 card" style="" v-for="program_fee in prog_en.program_fees">
                                 <div class="card-header bg-white">
-                                    <h5>[[ prog_en.campus ]]<sup><span class="badge badge-pill badge-success">5 slots left</span></sup></h5>
+                                    <div>
+                                        <h5>[[ prog_en.campus ]]<span class="badge badge-pill badge-success float-right">5 slots left</span></h5>
+                                    </div>
                                     <h6>[[ prog_en.program_name ]] : [[ prog_en.academic_year ]]</h6>
                                 </div>
                                 <label class="d-inline" 

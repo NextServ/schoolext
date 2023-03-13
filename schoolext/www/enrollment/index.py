@@ -15,6 +15,7 @@ def default(o):
         return o.isoformat()
 
 def get_context(context):
+    education_custom_settings = frappe.get_doc("Education Custom Settings")
     context.show_sidebar = 1
 
     current_user = frappe.session.user
