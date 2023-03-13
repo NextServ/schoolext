@@ -45,10 +45,8 @@ class CustomFees(Fees):
                     frappe.throw("Discount amount must be negative.")
 
                 component_income_account = ((component.custom_income_account or self.income_account) 
-                    if not component.enable_unearned_income else component.custom_unearned_income_account)
+                    if (not component.enable_unearned_income) else component.custom_unearned_income_account)
 
-
-                
                 print("component.fees_category: {}".format(component.fees_category))
                 print("component.custom_income_account: {}".format(component.custom_income_account))
                 print("self.income_account: {}".format(self.income_account))
