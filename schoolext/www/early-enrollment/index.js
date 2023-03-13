@@ -374,7 +374,7 @@ const app = Vue.createApp({
                 await prompt.then(
                     function () {
                         this.is_loading = true;
-                        await this.cancel_dragonpay_payment_request(dppr_name);
+                        this.cancel_dragonpay_payment_request(dppr_name);
 
                         this.selected_program_fees = [];
                         this.selected_fees_objects = [];
@@ -383,10 +383,10 @@ const app = Vue.createApp({
                         this.selected_payment_method_subtype_remarks = "";
                         this.subtotal_checkout = 0;
         
-                        this.enrollment_agreement = await this.get_enrollment_agreement(this.active_enrollment_academic_year)
-                        this.enrollment_agreement_acceptance = await this.get_enrollment_agreement_acceptance(this.active_enrollment_academic_year, this.enrollment_agreement.name)
+                        this.enrollment_agreement = this.get_enrollment_agreement(this.active_enrollment_academic_year)
+                        this.enrollment_agreement_acceptance = this.get_enrollment_agreement_acceptance(this.active_enrollment_academic_year, this.enrollment_agreement.name)
         
-                        this.programs = await this.get_student_program_fees();
+                        this.programs = this.get_student_program_fees();
                 
                         this.is_loading = false;
                     },
