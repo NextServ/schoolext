@@ -79,7 +79,7 @@ def custom_get_fee_components(fee_structure):
             "Fee Component",
             fields=["fees_category", "description", "amount", 
                 "enable_unearned_income", "fee_category_type", "discount_applicable", 
-                "custom_receivable_account", "custom_income_account"],
+                "custom_receivable_account", "custom_income_account", "custom_unearned_income_account"],
             filters={"parent": fee_structure},
             order_by="idx",
         )
