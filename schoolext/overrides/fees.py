@@ -44,7 +44,7 @@ class CustomFees(Fees):
                 if component.fee_category_type == 'Discount' and component.amount > 0:
                     frappe.throw("Discount amount must be negative.")
 
-                component_income_account = ((component.custom_receivable_account or self.receivable_account) 
+                component_income_account = ((component.custom_income_account or self.income_account) 
                     if not component.enable_unearned_income else component.custom_unearned_income_account)
 
                 component_receivable_entry = self.get_gl_dict(
