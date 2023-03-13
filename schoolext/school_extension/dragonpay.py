@@ -341,6 +341,7 @@ def basic_auth(username, password):
     token = b64encode(f"{username}:{password}".encode('utf-8')).decode("ascii")
     return f'Basic {token}'
 
+@frappe.whitelist(methods=["GET"])
 def get_dragonpay_refno_status(refno):
     settings = frappe.get_doc("DragonPay Settings")
 
@@ -355,10 +356,14 @@ def get_dragonpay_refno_status(refno):
             "Content-Type": "application/json",
             "Authorization": get_authorization_string()
             }
+
+    username, password = get_username_and_password()
+    auth = (username, password)
     
     try:
         dragonpay_record = make_get_request(
                 url,
+                auth=auth,
                 headers=headers
             )
 
@@ -368,3 +373,36 @@ def get_dragonpay_refno_status(refno):
     except Exception as e:
         frappe.log_error(title="get_dragonpay_refno_status", message=str(e))
         frappe.throw(_("Error in get_dragonpay_refno_status request"))
+
+@frappe.whitelist(methods=["GET"])
+def void_dragonpay_transaction(txnid):
+    settings = frappe.get_doc("DragonPay Settings")
+
+    url = ""
+
+    if settings.test_mode:
+        url = "{0}/void/{1}".format(SERVICE_TEST_BASE_URL, txnid)
+    else:
+        url = "{0}/void/{1}".format(SERVICE_PRODUCTION_BASE_URL, txnid)
+    
+    headers = {
+            "Content-Type": "application/json",
+            "Authorization": get_authorization_string()
+            }
+
+    username, password = get_username_and_password()
+    auth = (username, password)
+    
+    try:
+        response = make_get_request(
+                url,
+                auth=auth,
+                headers=headers
+            )
+
+        result = response
+
+        return result
+    except Exception as e:
+        frappe.log_error(title="void_dragonpay_transaction", message=str(e))
+        frappe.throw(_("Error in void_dragonpay_transaction request"))

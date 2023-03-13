@@ -361,6 +361,52 @@ const app = Vue.createApp({
     
                 return r.message;
             },
+
+            cancel_program_fee_dragonpay_payment_request: async function(dppr_name) {
+                let prompt = new Promise((resolve, reject) => {
+                    frappe.confirm(
+                        `Are you sure you want to cancel this payment request?`,
+                        () => resolve(),
+                        () => reject()
+                    );
+                });
+                
+                this.is_loading = true;
+                await prompt.then(
+                    () => {
+                        this.cancel_dragonpay_payment_request(dppr_name)
+                    },
+                    () => {
+                        
+                    }
+                );
+
+                this.selected_program_fees = [];
+                this.selected_fees_objects = [];
+                this.selected_payment_method_type = 0;
+                this.selected_payment_method_subtype = "";
+                this.selected_payment_method_subtype_remarks = "";
+                this.subtotal_checkout = 0;
+
+                this.enrollment_agreement = await this.get_enrollment_agreement(this.active_enrollment_academic_year)
+                this.enrollment_agreement_acceptance = await this.get_enrollment_agreement_acceptance(this.active_enrollment_academic_year, this.enrollment_agreement.name)
+
+                this.programs = await this.get_student_program_fees();
+                
+                this.is_loading = false;
+            },
+
+            cancel_dragonpay_payment_request: async function(dppr_name) {
+                const r = await frappe.call({
+                    method: "schoolext.utils.cancel_dragonpay_payment_request",
+                    type: "POST",
+                    args: {
+                        "dppr": dppr_name,
+                    },
+                });
+    
+                return r.message;
+            },
             
             moment_from_now: function(date) {
                 return moment(date).endOf('day').fromNow();

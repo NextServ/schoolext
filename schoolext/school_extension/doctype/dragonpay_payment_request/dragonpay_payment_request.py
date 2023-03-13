@@ -3,7 +3,7 @@
 
 import json
 import frappe
-from schoolext.school_extension.dragonpay import get_authorization_string, get_username_and_password
+from schoolext.school_extension.dragonpay import get_authorization_string, get_username_and_password, void_dragonpay_transaction
 from frappe import _
 from frappe.utils import getdate, flt
 from frappe.model.document import Document
@@ -26,6 +26,13 @@ class DragonPayPaymentRequest(Document):
         
     def on_submit(self):
         self.create_payment_request()
+    
+    def on_cancel(self):
+        r = void_dragonpay_transaction(self.name)
+        if r.message.Status == 0 or r.message.Message == "Successfully voided":
+            pass
+        else:
+            frappe.throw(_(r.message.Message))
 
     def get_payment_url(self, **kwargs):
         integration_request = create_request_log(kwargs, service_name="DragonPay")

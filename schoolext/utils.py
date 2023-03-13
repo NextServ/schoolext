@@ -543,3 +543,17 @@ def get_enrollment_agreement(academic_year):
         ea = frappe.get_last_doc("Enrollment Agreement", {"academic_year": academic_year})
 
     return ea
+
+@frappe.whitelist(methods=["POST"])
+def cancel_dragonpay_payment_request(dppr):
+    result = 0
+    dppr_doc = frappe.get_doc("DragonPay Payment Request", dppr)
+
+    try:
+        dppr_doc.cancel()
+    except Exception as e:
+        result = -1
+        frappe.log_error(title="cancel_dragonpay_payment_request", message=str(e))
+        frappe.throw(_("Error in cancel_dragonpay_payment_request request"))
+    
+    return result

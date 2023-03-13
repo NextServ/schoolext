@@ -173,13 +173,14 @@ input.radio:checked + label::after {
                                 >
                                     <div class="p-4 card-header bg-light">
                                         <div class="alert" 
-                                        :class="{ 
-                                                'alert-warning':  program_fee.dppr.collection_request_status == 'Pending',
-                                                'alert-success':  program_fee.dppr.collection_request_status == 'Success',
-                                                'alert-danger':  program_fee.dppr.collection_request_status == ''
-                                                }" 
-                                        style="font-size: 0.8em;"
+                                            :class="{ 
+                                                    'alert-warning':  program_fee.dppr.collection_request_status == 'Pending',
+                                                    'alert-success':  program_fee.dppr.collection_request_status == 'Success',
+                                                    'alert-info':  program_fee.dppr.collection_request_status == ''
+                                                    }" 
+                                            style="font-size: 0.8em;"                                            
                                             v-if="program_fee.has_dppr">
+                                            <!-- program_fee.has_dppr -->
                                             <div class="font-weight-bold">
                                                 An existing payment request has already been created.
                                             </div>
@@ -200,6 +201,9 @@ input.radio:checked + label::after {
                                             </div>
                                             <div class="font-weight-bold" v-if="false">
                                                 Contact the administrator if you wish to make another payment request.
+                                            </div>
+                                            <div class="text-right" v-if="program_fee.dppr.collection_request_status != 'Success'">
+                                                <button id="btn-checkout" class="btn btn-danger btn-sm" type="button" @click="cancel_program_fee_dragonpay_payment_request(program_fee.dppr.name)">Cancel</button>
                                             </div>
                                         </div>
                                         <input type="checkbox" class="program-fee-checkbox"                                                 
