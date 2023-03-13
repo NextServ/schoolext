@@ -16,6 +16,8 @@ from frappe.utils import call_hook_method, cint, get_timestamp, get_url, flt
 from schoolext.school_extension.doctype.dragonpay_settings.dragonpay_settings import SERVICE_PRODUCTION_BASE_URL, SERVICE_TEST_BASE_URL
 from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
 
+from schoolext.utils import validate_current_user_guardian
+
 precision = cint(frappe.db.get_default("currency_precision")) or 2
 
 class DragonPayPaymentRequest(Document):
@@ -28,6 +30,10 @@ class DragonPayPaymentRequest(Document):
         self.create_payment_request()
     
     def on_cancel(self):
+        if frappe.session.user != "Administrator" and "System Manager" not in frappe.get_roles(frappe.session.user):
+            if self.party_type == "Student":
+                validate_current_user_guardian(self.party)
+                
         r = void_dragonpay_transaction(self.name)
         print(r)
         if r['Status'] == 0 or r['Message'] == "Successfully voided":
