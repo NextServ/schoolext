@@ -92,11 +92,7 @@ def get_student_program_fees(student):
             pe.program,
             pe.academic_year,
             pf.name as program_fees_name,
-            fc.name as fee_component_name,
-            fc.idx as fee_component_index,
-            fc.fees_category,
-            IFNULL(fc.description, '') as description,
-            fc.fee_category_type,
+            fc.portal_item_group_label,
             fc.amount as component_amount
         from `tabProgram Enrollment` pe
         left join `tabProgram Fee` pf
@@ -105,7 +101,15 @@ def get_student_program_fees(student):
         left join `tabFee Structure` fs
         on 
             pf.fee_structure = fs.name
-        left join `tabFee Component` fc
+        left join
+        (
+            select 
+                fc1.parent,
+                (case when ifnull(fc1.portal_item_group_label, '')='' then fc1.fees_category else fc1.portal_item_group_label end) as portal_item_group_label,
+                sum(fc1.amount) as amount
+            from `tabFee Component` fc1
+            group by fc1.parent, (case when ifnull(fc1.portal_item_group_label, '')='' then fc1.fees_category else fc1.portal_item_group_label end)
+        ) fc
         on
             fs.name = fc.parent
         where
@@ -114,7 +118,7 @@ def get_student_program_fees(student):
             and pe.student = %s
             and pe.academic_year = %s
         order by
-            pe.program, pf.idx, fc.idx
+            pe.program, pf.idx
     """, (student, active_enrollment_academic_year), as_dict=True)
 
     for pe in pending_program_enrollments:
@@ -294,11 +298,7 @@ def get_program_fee_details(student, program_fee_names):
                 pf.academic_term,
                 pf.due_date,
                 fs.total_amount as program_fees_amount,
-                fc.name as fee_component_name,
-                fc.idx as fee_component_index,
-                fc.fees_category,
-                IFNULL(fc.description, '') as description,
-                fc.fee_category_type,
+                fc.portal_item_group_label,
                 fc.amount as component_amount
             from `tabProgram Enrollment` pe
             left join `tabProgram Fee` pf
@@ -307,7 +307,15 @@ def get_program_fee_details(student, program_fee_names):
             left join `tabFee Structure` fs
             on 
                 pf.fee_structure = fs.name
-            left join `tabFee Component` fc
+            left join 
+            (
+                select 
+                    fc1.parent,
+                    (case when ifnull(fc1.portal_item_group_label, '')='' then fc1.fees_category else fc1.portal_item_group_label end) as portal_item_group_label,
+                    sum(fc1.amount) as amount
+                from `tabFee Component` fc1
+                group by fc1.parent, (case when ifnull(fc1.portal_item_group_label, '')='' then fc1.fees_category else fc1.portal_item_group_label end)
+            ) fc
             on
                 fs.name = fc.parent
             where
@@ -325,11 +333,7 @@ def get_program_fee_details(student, program_fee_names):
 
             for c in program_fees_components:
                 c_line = {
-                    "fee_component_name": c.fee_component_name,
-                    "fee_component_index": c.fee_component_index,
-                    "fees_category": c.fees_category,
-                    "description": c.description,
-                    "fee_category_type": c.fee_category_type,
+                    "portal_item_group_label": c.portal_item_group_label,
                     "component_amount": c.component_amount
                 }
                 fees_components.append(c_line)

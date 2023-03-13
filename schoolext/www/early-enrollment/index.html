@@ -222,7 +222,7 @@ input.radio:checked + label::after {
                                                 <li v-for="fees_component in program_fee.program_fees_components">
                                                     <div class="d-flex justify-content-between">
                                                         <div>
-                                                            [[ fees_component.fees_category ]]:[[ fees_component.description ]]
+                                                            [[ fees_component.portal_item_group_label ]]
                                                         </div>
                                                         <div>
                                                             [[ fees_component.component_amount.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
@@ -295,7 +295,7 @@ input.radio:checked + label::after {
                                         <li v-for="fees_component in program_fee.details.program_fees_components">
                                             <div class="d-flex justify-content-between">
                                                 <div>
-                                                    [[ fees_component.fees_category ]]:[[ fees_component.description ]]
+                                                    [[ fees_component.portal_item_group_label ]]
                                                 </div>
                                                 <div>
                                                     [[ fees_component.component_amount.toLocaleString(undefined, {minimumFractionDigits: 2}) ]]
